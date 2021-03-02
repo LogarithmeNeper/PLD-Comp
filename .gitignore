@@ -33,3 +33,5 @@
 
 # Others
 .vscode
+tests/pld-test-output
+tests/.test_if.sh.swp
