@@ -1,4 +1,7 @@
 int main() {
     int a=42;
-    return a;
+    if(a!=35) {
+        printf("%d", a);
+    }
+    return 0;
 }
