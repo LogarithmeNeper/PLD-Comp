@@ -183,6 +183,7 @@ for jobname in jobs:
             dumpfile("gcc-execute.txt")
             
     ## PADAWAN compiler
+    print(wrapper)
     pldstatus=command(wrapper+" asm-pld.s input.c", "pld-compile.txt")
     
     if gccstatus != 0 and pldstatus != 0:
@@ -208,7 +209,7 @@ for jobname in jobs:
                 dumpfile("pld-link.txt")
             continue
 
-    ## both compilers  did produce an  executable, so now we  run both
+    ## both compilers  did produce an  executable, so now we run both
     ## these executables and compare the results.
         
     exepldstatus=command("./exe-pld","pld-execute.txt")

@@ -33,5 +33,8 @@ int main(int argn, const char **argv) {
   Visitor visitor;
   visitor.visit(tree);
 
+  //Commande pour compiler l'asm : 
+  //
+
   return 0;
 }
