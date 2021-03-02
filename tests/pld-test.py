@@ -183,7 +183,6 @@ for jobname in jobs:
             dumpfile("gcc-execute.txt")
             
     ## PADAWAN compiler
-    print(wrapper)
     pldstatus=command(wrapper+" asm-pld.s input.c", "pld-compile.txt")
     
     if gccstatus != 0 and pldstatus != 0:
