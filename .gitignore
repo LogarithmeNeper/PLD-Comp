@@ -35,3 +35,4 @@
 .vscode
 tests/pld-test-output
 tests/.test_if.sh.swp
+compiler/antlr4-generated
