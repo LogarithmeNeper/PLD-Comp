@@ -1,9 +1,8 @@
-DESTNAME=$1
-SOURCENAME=$2
+SOURCENAME=$1
 
 ./ifcc $SOURCENAME >asm-pld.s
-gcc -o $DESTNAME asm-pld.s
-./exe
+gcc -o exe-pld asm-pld.s
+./exe-pld
 
 echo retcode=$?
 
