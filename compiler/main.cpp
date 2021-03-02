@@ -23,9 +23,9 @@ int main(int argn, const char **argv) {
   CommonTokenStream tokens(&lexer);
 
   tokens.fill();
-//  for (auto token : tokens.getTokens()) {
-//    std::cout << token->toString() << std::endl;
-//  }
+  /*for (auto token : tokens.getTokens()) {
+    std::cout << token->toString() << std::endl;
+  }*/
 
   ifccParser parser(&tokens);
   tree::ParseTree* tree = parser.axiom();
