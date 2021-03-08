@@ -1,10 +1,14 @@
 input.c: In function ‘main’:
 input.c:4:9: warning: implicit declaration of function ‘printf’ [-Wimplicit-function-declaration]
-    4 |         printf("%d", a);
-      |         ^~~~~~
+         printf("%d", a);
+         ^~~~~~
 input.c:4:9: warning: incompatible implicit declaration of built-in function ‘printf’
-input.c:1:1: note: include ‘<stdio.h>’ or provide a declaration of ‘printf’
-  +++ |+#include <stdio.h>
-    1 | int main() {
+input.c:4:9: note: include ‘<stdio.h>’ or provide a declaration of ‘printf’
+input.c:1:1:
++#include <stdio.h>
+ int main() {
+input.c:4:9:
+         printf("%d", a);
+         ^~~~~~
 
 return code: 0
