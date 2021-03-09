@@ -40,11 +40,12 @@ public:
 
   virtual antlrcpp::Any visitDeclaration(ifccParser::DeclarationContext *context) override
   {
-    List<TerminalNode> liste = context->getTokens(4);
-    int i = liste.size();
-    for(int j = 0; j < i; ++j) {
-      std::cout << liste[j] << std::endl;
-    }
+    // List<TerminalNode> liste = context->getTokens(4);
+    // int i = liste.size();
+    // for(int j = 0; j < i; ++j) {
+    //   std::cout << liste[j] << std::endl;
+    // }
+    std::cout << context->getChildCount() << std::endl;
     return 0;
   }
 
