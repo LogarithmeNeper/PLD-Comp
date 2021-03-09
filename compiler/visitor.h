@@ -47,4 +47,12 @@ public:
     std::cout << "\tmovl $" << varValue << ", -4(%rbp)" << std::endl;
     return 0;
   }
+
+  virtual antlrcpp::Any visitExpression(ifccParser::ExpressionContext *context) override
+  {
+    int constValue = stoi(context->CONST()->getText());
+    std::cout << "\tmovl $" << varValue << ", -4(%rbp)" << std::endl;
+    return 0;
+  }
+
 };
