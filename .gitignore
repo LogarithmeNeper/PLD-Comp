@@ -37,3 +37,4 @@ tests/pld-test-output
 compiler/antlr4-generated
 compiler/.antlr
 compiler/output
+compiler/asm-pld.s
