@@ -38,6 +38,7 @@ public:
 
   virtual antlrcpp::Any visitDeclaration(ifccParser::DeclarationContext *context) override
   {
+    std::cout << context->VARIABLENF(0)->getText();
     return 0;
   }
 
