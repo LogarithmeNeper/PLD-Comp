@@ -38,8 +38,11 @@ public:
 
   virtual antlrcpp::Any visitDeclaration(ifccParser::DeclarationContext *context) override
   {
-    std::cout << context->VARIABLENF(0)->getText();
-    std::cout << context->VARIABLE()->getText();
+    List<TerminalNode> liste = context->getTokens(4);
+    int i = liste.size();
+    for(int j = 0; j < i; ++j) {
+      std::cout << liste[j] << std::endl;
+    }
     return 0;
   }
 
