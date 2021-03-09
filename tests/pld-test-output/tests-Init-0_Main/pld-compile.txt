@@ -1,2 +1,4 @@
+line 2:3 mismatched input 'return' expecting 'int'
+Segmentation fault (core dumped)
 
-return code: 0
+return code: 139

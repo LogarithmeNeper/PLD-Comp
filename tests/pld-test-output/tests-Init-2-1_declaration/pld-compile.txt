@@ -1,5 +1,4 @@
-line 2:8 token recognition error at: 'a'
-line 2:9 token recognition error at: '='
-line 2:4 mismatched input 'int' expecting 'return'
+line 2:9 mismatched input '=' expecting ';'
+Segmentation fault (core dumped)
 
-return code: 0
+return code: 139

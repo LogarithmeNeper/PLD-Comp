@@ -27,6 +27,10 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual antlrcpp::Any visitAffectation(ifccParser::AffectationContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
 
 };
 

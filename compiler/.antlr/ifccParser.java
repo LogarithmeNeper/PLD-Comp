@@ -16,27 +16,27 @@ public class ifccParser extends Parser {
 	protected static final PredictionContextCache _sharedContextCache =
 		new PredictionContextCache();
 	public static final int
-		T__0=1, T__1=2, T__2=3, T__3=4, T__4=5, T__5=6, T__6=7, RETURN=8, CONST=9, 
-		VARIABLE=10, COMMENT=11, DIRECTIVE=12, WS=13;
+		T__0=1, T__1=2, T__2=3, T__3=4, T__4=5, T__5=6, T__6=7, T__7=8, RETURN=9, 
+		CONST=10, VARIABLE=11, COMMENT=12, DIRECTIVE=13, WS=14;
 	public static final int
-		RULE_axiom = 0, RULE_prog = 1, RULE_declaration = 2;
+		RULE_axiom = 0, RULE_prog = 1, RULE_declaration = 2, RULE_affectation = 3;
 	private static String[] makeRuleNames() {
 		return new String[] {
-			"axiom", "prog", "declaration"
+			"axiom", "prog", "declaration", "affectation"
 		};
 	}
 	public static final String[] ruleNames = makeRuleNames();
 
 	private static String[] makeLiteralNames() {
 		return new String[] {
-			null, "'int'", "'main'", "'('", "')'", "'{'", "';'", "'}'", "'return'"
+			null, "'int'", "'main'", "'('", "')'", "'{'", "';'", "'}'", "'='", "'return'"
 		};
 	}
 	private static final String[] _LITERAL_NAMES = makeLiteralNames();
 	private static String[] makeSymbolicNames() {
 		return new String[] {
-			null, null, null, null, null, null, null, null, "RETURN", "CONST", "VARIABLE", 
-			"COMMENT", "DIRECTIVE", "WS"
+			null, null, null, null, null, null, null, null, null, "RETURN", "CONST", 
+			"VARIABLE", "COMMENT", "DIRECTIVE", "WS"
 		};
 	}
 	private static final String[] _SYMBOLIC_NAMES = makeSymbolicNames();
@@ -106,7 +106,7 @@ public class ifccParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(6);
+			setState(8);
 			prog();
 			}
 		}
@@ -125,6 +125,9 @@ public class ifccParser extends Parser {
 		public DeclarationContext declaration() {
 			return getRuleContext(DeclarationContext.class,0);
 		}
+		public AffectationContext affectation() {
+			return getRuleContext(AffectationContext.class,0);
+		}
 		public TerminalNode RETURN() { return getToken(ifccParser.RETURN, 0); }
 		public TerminalNode CONST() { return getToken(ifccParser.CONST, 0); }
 		public ProgContext(ParserRuleContext parent, int invokingState) {
@@ -139,25 +142,27 @@ public class ifccParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(8);
-			match(T__0);
-			setState(9);
-			match(T__1);
 			setState(10);
-			match(T__2);
+			match(T__0);
 			setState(11);
-			match(T__3);
+			match(T__1);
 			setState(12);
-			match(T__4);
+			match(T__2);
 			setState(13);
-			declaration();
+			match(T__3);
 			setState(14);
-			match(RETURN);
+			match(T__4);
 			setState(15);
-			match(CONST);
+			declaration();
 			setState(16);
-			match(T__5);
+			affectation();
 			setState(17);
+			match(RETURN);
+			setState(18);
+			match(CONST);
+			setState(19);
+			match(T__5);
+			setState(20);
 			match(T__6);
 			}
 		}
@@ -186,11 +191,47 @@ public class ifccParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(19);
+			setState(22);
 			match(T__0);
-			setState(20);
+			setState(23);
 			match(VARIABLE);
-			setState(21);
+			setState(24);
+			match(T__5);
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
+	public static class AffectationContext extends ParserRuleContext {
+		public TerminalNode VARIABLE() { return getToken(ifccParser.VARIABLE, 0); }
+		public TerminalNode CONST() { return getToken(ifccParser.CONST, 0); }
+		public AffectationContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_affectation; }
+	}
+
+	public final AffectationContext affectation() throws RecognitionException {
+		AffectationContext _localctx = new AffectationContext(_ctx, getState());
+		enterRule(_localctx, 6, RULE_affectation);
+		try {
+			enterOuterAlt(_localctx, 1);
+			{
+			setState(26);
+			match(VARIABLE);
+			setState(27);
+			match(T__7);
+			setState(28);
+			match(CONST);
+			setState(29);
 			match(T__5);
 			}
 		}
@@ -206,13 +247,15 @@ public class ifccParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\17\32\4\2\t\2\4\3"+
-		"\t\3\4\4\t\4\3\2\3\2\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\4\3"+
-		"\4\3\4\3\4\3\4\2\2\5\2\4\6\2\2\2\26\2\b\3\2\2\2\4\n\3\2\2\2\6\25\3\2\2"+
-		"\2\b\t\5\4\3\2\t\3\3\2\2\2\n\13\7\3\2\2\13\f\7\4\2\2\f\r\7\5\2\2\r\16"+
-		"\7\6\2\2\16\17\7\7\2\2\17\20\5\6\4\2\20\21\7\n\2\2\21\22\7\13\2\2\22\23"+
-		"\7\b\2\2\23\24\7\t\2\2\24\5\3\2\2\2\25\26\7\3\2\2\26\27\7\f\2\2\27\30"+
-		"\7\b\2\2\30\7\3\2\2\2\2";
+		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\20\"\4\2\t\2\4\3"+
+		"\t\3\4\4\t\4\4\5\t\5\3\2\3\2\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3"+
+		"\3\3\3\3\4\3\4\3\4\3\4\3\5\3\5\3\5\3\5\3\5\3\5\2\2\6\2\4\6\b\2\2\2\35"+
+		"\2\n\3\2\2\2\4\f\3\2\2\2\6\30\3\2\2\2\b\34\3\2\2\2\n\13\5\4\3\2\13\3\3"+
+		"\2\2\2\f\r\7\3\2\2\r\16\7\4\2\2\16\17\7\5\2\2\17\20\7\6\2\2\20\21\7\7"+
+		"\2\2\21\22\5\6\4\2\22\23\5\b\5\2\23\24\7\13\2\2\24\25\7\f\2\2\25\26\7"+
+		"\b\2\2\26\27\7\t\2\2\27\5\3\2\2\2\30\31\7\3\2\2\31\32\7\r\2\2\32\33\7"+
+		"\b\2\2\33\7\3\2\2\2\34\35\7\r\2\2\35\36\7\n\2\2\36\37\7\f\2\2\37 \7\b"+
+		"\2\2 \t\3\2\2\2\2";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {

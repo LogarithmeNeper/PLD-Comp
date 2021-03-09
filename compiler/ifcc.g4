@@ -3,10 +3,9 @@ grammar ifcc;
 axiom : prog       
       ;
 
-prog : 'int' 'main' '(' ')' '{' declaration RETURN CONST ';' '}' ;
-
-// STATEMENT : DECLARATION ;
+prog : 'int' 'main' '(' ')' '{' declaration affectation RETURN CONST ';' '}' ;
 declaration : 'int' VARIABLE ';' ;
+affectation : VARIABLE '=' CONST ';' ;
 
 RETURN : 'return' ;
 CONST : [0-9]+ ;

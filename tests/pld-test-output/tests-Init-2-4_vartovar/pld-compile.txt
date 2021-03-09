@@ -1,0 +1,5 @@
+line 2:9 token recognition error at: ','
+line 2:10 extraneous input 'b' expecting ';'
+line 4:4 mismatched input 'b' expecting 'return'
+
+return code: 0
