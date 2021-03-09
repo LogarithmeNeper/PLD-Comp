@@ -30,6 +30,8 @@ public:
      return 0;
   }
 
-
+  virtual antlrcpp::Any visitDeclaration(ifccParser::DeclarationContext *context) override {
+    return 0;
+  }
 };
 

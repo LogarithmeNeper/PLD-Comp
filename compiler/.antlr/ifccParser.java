@@ -17,12 +17,12 @@ public class ifccParser extends Parser {
 		new PredictionContextCache();
 	public static final int
 		T__0=1, T__1=2, T__2=3, T__3=4, T__4=5, T__5=6, T__6=7, RETURN=8, CONST=9, 
-		COMMENT=10, DIRECTIVE=11, WS=12;
+		VARIABLE=10, COMMENT=11, DIRECTIVE=12, WS=13;
 	public static final int
-		RULE_axiom = 0, RULE_prog = 1;
+		RULE_axiom = 0, RULE_prog = 1, RULE_declaration = 2;
 	private static String[] makeRuleNames() {
 		return new String[] {
-			"axiom", "prog"
+			"axiom", "prog", "declaration"
 		};
 	}
 	public static final String[] ruleNames = makeRuleNames();
@@ -35,8 +35,8 @@ public class ifccParser extends Parser {
 	private static final String[] _LITERAL_NAMES = makeLiteralNames();
 	private static String[] makeSymbolicNames() {
 		return new String[] {
-			null, null, null, null, null, null, null, null, "RETURN", "CONST", "COMMENT", 
-			"DIRECTIVE", "WS"
+			null, null, null, null, null, null, null, null, "RETURN", "CONST", "VARIABLE", 
+			"COMMENT", "DIRECTIVE", "WS"
 		};
 	}
 	private static final String[] _SYMBOLIC_NAMES = makeSymbolicNames();
@@ -106,7 +106,7 @@ public class ifccParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(4);
+			setState(6);
 			prog();
 			}
 		}
@@ -122,6 +122,9 @@ public class ifccParser extends Parser {
 	}
 
 	public static class ProgContext extends ParserRuleContext {
+		public DeclarationContext declaration() {
+			return getRuleContext(DeclarationContext.class,0);
+		}
 		public TerminalNode RETURN() { return getToken(ifccParser.RETURN, 0); }
 		public TerminalNode CONST() { return getToken(ifccParser.CONST, 0); }
 		public ProgContext(ParserRuleContext parent, int invokingState) {
@@ -136,23 +139,25 @@ public class ifccParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(6);
-			match(T__0);
-			setState(7);
-			match(T__1);
 			setState(8);
-			match(T__2);
+			match(T__0);
 			setState(9);
-			match(T__3);
+			match(T__1);
 			setState(10);
-			match(T__4);
+			match(T__2);
 			setState(11);
-			match(RETURN);
+			match(T__3);
 			setState(12);
-			match(CONST);
+			match(T__4);
 			setState(13);
-			match(T__5);
+			declaration();
 			setState(14);
+			match(RETURN);
+			setState(15);
+			match(CONST);
+			setState(16);
+			match(T__5);
+			setState(17);
 			match(T__6);
 			}
 		}
@@ -167,12 +172,47 @@ public class ifccParser extends Parser {
 		return _localctx;
 	}
 
+	public static class DeclarationContext extends ParserRuleContext {
+		public TerminalNode VARIABLE() { return getToken(ifccParser.VARIABLE, 0); }
+		public DeclarationContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_declaration; }
+	}
+
+	public final DeclarationContext declaration() throws RecognitionException {
+		DeclarationContext _localctx = new DeclarationContext(_ctx, getState());
+		enterRule(_localctx, 4, RULE_declaration);
+		try {
+			enterOuterAlt(_localctx, 1);
+			{
+			setState(19);
+			match(T__0);
+			setState(20);
+			match(VARIABLE);
+			setState(21);
+			match(T__5);
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
 	public static final String _serializedATN =
-		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\16\23\4\2\t\2\4\3"+
-		"\t\3\3\2\3\2\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\2\2\4\2\4\2\2"+
-		"\2\20\2\6\3\2\2\2\4\b\3\2\2\2\6\7\5\4\3\2\7\3\3\2\2\2\b\t\7\3\2\2\t\n"+
-		"\7\4\2\2\n\13\7\5\2\2\13\f\7\6\2\2\f\r\7\7\2\2\r\16\7\n\2\2\16\17\7\13"+
-		"\2\2\17\20\7\b\2\2\20\21\7\t\2\2\21\5\3\2\2\2\2";
+		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\17\32\4\2\t\2\4\3"+
+		"\t\3\4\4\t\4\3\2\3\2\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\4\3"+
+		"\4\3\4\3\4\3\4\2\2\5\2\4\6\2\2\2\26\2\b\3\2\2\2\4\n\3\2\2\2\6\25\3\2\2"+
+		"\2\b\t\5\4\3\2\t\3\3\2\2\2\n\13\7\3\2\2\13\f\7\4\2\2\f\r\7\5\2\2\r\16"+
+		"\7\6\2\2\16\17\7\7\2\2\17\20\5\6\4\2\20\21\7\n\2\2\21\22\7\13\2\2\22\23"+
+		"\7\b\2\2\23\24\7\t\2\2\24\5\3\2\2\2\25\26\7\3\2\2\26\27\7\f\2\2\27\30"+
+		"\7\b\2\2\30\7\3\2\2\2\2";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {

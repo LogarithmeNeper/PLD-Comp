@@ -23,6 +23,8 @@ public:
 
     virtual antlrcpp::Any visitProg(ifccParser::ProgContext *context) = 0;
 
+    virtual antlrcpp::Any visitDeclaration(ifccParser::DeclarationContext *context) = 0;
+
 
 };
 
