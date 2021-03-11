@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include <list>
+#include <map>
 
 #include "antlr4-runtime.h"
 #include "antlr4-generated/ifccBaseVisitor.h"
@@ -45,8 +45,15 @@ public:
     // for(int j = 0; j < i; ++j) {
     //   std::cout << liste[j] << std::endl;
     // }
+    int variablesNumber = context->VARIABLENF().size()+1; // +1 for the final variable
+    int variableOffset = variablesNumber*4; // initializes the highest offset for the first variable
+    std::map<std::string, int> symbolTable; // SymbolTable
+    for(int i=0; i<variablesNumber-1; i++) {
+      symbolTable.insert({context->VARIABLENF()[i]->getText(), variableOffset});
+      variableOffset -=4;
+    }
+    symbolTable.insert({context->VARIABLE()->getText(), variableOffset});
 
-      std::cout << context->VARIABLENF().size()<<std::endl;
     
     return 0;
   }
