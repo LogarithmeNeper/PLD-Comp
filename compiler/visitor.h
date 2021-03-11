@@ -45,7 +45,9 @@ public:
     // for(int j = 0; j < i; ++j) {
     //   std::cout << liste[j] << std::endl;
     // }
-    std::cout << context->VARIABLENF()->getChildCount() << std::endl;
+
+      std::cout << context->VARIABLENF().size()<<std::endl;
+    
     return 0;
   }
 
