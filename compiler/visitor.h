@@ -4,6 +4,7 @@
 #pragma once
 
 #include <map>
+#include <algorithm>
 
 #include "antlr4-runtime.h"
 #include "antlr4-generated/ifccBaseVisitor.h"
@@ -40,20 +41,15 @@ public:
 
   virtual antlrcpp::Any visitDeclaration(ifccParser::DeclarationContext *context) override
   {
-    // List<TerminalNode> liste = context->getTokens(4);
-    // int i = liste.size();
-    // for(int j = 0; j < i; ++j) {
-    //   std::cout << liste[j] << std::endl;
-    // }
     int variablesNumber = context->VARIABLENF().size()+1; // +1 for the final variable
     int variableOffset = variablesNumber*4; // initializes the highest offset for the first variable
     std::map<std::string, int> symbolTable; // SymbolTable
     for(int i=0; i<variablesNumber-1; i++) {
-      symbolTable.insert({context->VARIABLENF()[i]->getText(), variableOffset});
+      symbolTable.insert({removeLastCharFromString(context->VARIABLENF()[i]->getText()), variableOffset});
       variableOffset -=4;
     }
     symbolTable.insert({context->VARIABLE()->getText(), variableOffset});
-
+    this->symbolTable = symbolTable; // Copy the symbolTable for the whole visitor object
     
     return 0;
   }
@@ -61,7 +57,25 @@ public:
   virtual antlrcpp::Any visitAffectation(ifccParser::AffectationContext *context) override
   {
     int varValue = stoi(context->CONST()->getText());
-    std::cout << "\tmovl $" << varValue << ", -4(%rbp)" << std::endl;
+    std::cout << "\tmovl $" << varValue << ", -" << this->symbolTable[context->VARIABLE()->getText()] << "(%rbp)" << std::endl;
     return 0;
   }
+
+/*  print a map for debug
+  void print_map(std::string comment, const std::map<std::string, int>& m)
+  {
+      std::cout << comment;
+      for (const auto& [key, value] : m) {
+          std::cout << key << " = " << value << "; ";
+      }
+      std::cout << "\n";
+  }
+*/
+
+  std::string removeLastCharFromString(std::string str) {
+    return str.substr(0, str.size()-1);
+  }
+
+  protected : 
+    std::map<std::string, int> symbolTable;
 };
