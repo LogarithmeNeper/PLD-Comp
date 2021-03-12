@@ -5,7 +5,9 @@ axiom : prog
 
 prog : 'int' 'main' '(' ')' '{' declaration affectation* RETURN CONST ';' '}' ;
 declaration : 'int' VARIABLENF* VARIABLE ';' ;
-affectation : VARIABLE '=' CONST ';' ;
+affectation : VARIABLE '=' CONST ';' #ConstAffectation
+             | VARIABLE '=' VARIABLE ';' #VarToVarAffectation
+              ;
 
 RETURN : 'return' ;
 CONST : [0-9]+ ;
