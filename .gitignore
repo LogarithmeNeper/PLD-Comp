@@ -38,7 +38,13 @@ compiler/antlr4-generated
 compiler/.antlr
 compiler/output
 <<<<<<< HEAD
+<<<<<<< HEAD
 compiler/asm-pld.s
 =======
+compiler/ifcc
+>>>>>>> main
+=======
+compiler/asm-pld.s
+compiler/exe-pld
 compiler/ifcc
 >>>>>>> main
