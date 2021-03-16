@@ -4,16 +4,18 @@ axiom : prog
       ;
 
 prog : 'int' 'main' '(' ')' '{' declaration* affectation* RETURN CONST ';' '}' ;
-declaration : 'int' VARIABLENF* VARIABLE ';' ;
+declaration : 'int' (declarationvar ',')* declarationvar ';' ;
 affectation : VARIABLE '=' CONST ';' #ConstAffectation
             | VARIABLE '=' VARIABLE ';' #VarToVarAffectation
               ;
 
-expression : expression '+' expression |
-             CONST;
+declarationvar : VARIABLE #DeclarationSeule
+            | VARIABLE '=' CONST #DeclarationInitialiseeConst
+            | VARIABLE '=' VARIABLE #DeclarationInitialiseeVar
+              ;
+
 RETURN : 'return' ;
 CONST : [0-9]+ ;
-VARIABLENF : [a-z][a-zA-Z0-9_]*',' ;
 VARIABLE : [a-z][a-zA-Z0-9_]* ;
 COMMENT : '/*' .*? '*/' -> skip ;
 DIRECTIVE : '#' .*? '\n' -> skip ;

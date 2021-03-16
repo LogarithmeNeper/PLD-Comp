@@ -43,16 +43,46 @@ public:
 
   virtual antlrcpp::Any visitDeclaration(ifccParser::DeclarationContext *context) override
   {
-    int variablesNumber = context->VARIABLENF().size()+1; // +1 for the final variable
+    int variablesNumber = context-> declarationvar().size();
     int variableOffset = variablesNumber*4; // initializes the highest offset for the first variable
     std::map<std::string, int> symbolTable; // SymbolTable
-    for(int i=0; i<variablesNumber-1; i++) {
+    this->symbolTable = symbolTable; // Copy the symbolTable for the whole visitor object
+    this->variableOffset = variableOffset;
+    visitChildren(context);
+    /*for(int i=0; i<variablesNumber-1; i++) {
       symbolTable.insert({removeLastCharFromString(context->VARIABLENF()[i]->getText()), variableOffset});
       variableOffset -=4;
     }
     symbolTable.insert({context->VARIABLE()->getText(), variableOffset});
     this->symbolTable = symbolTable; // Copy the symbolTable for the whole visitor object
-    
+    */
+    return 0;
+  }
+
+  virtual antlrcpp::Any visitDeclarationSeule(ifccParser::DeclarationSeuleContext *context) override
+  {
+    symbolTable.insert({context->VARIABLE()->getText(), variableOffset});
+    this->variableOffset -=4;
+    return 0;
+  }
+
+  virtual antlrcpp::Any visitDeclarationInitialiseeConst(ifccParser::DeclarationInitialiseeConstContext *context) override
+  {
+    symbolTable.insert({context->VARIABLE()->getText(), variableOffset});
+    this->variableOffset -=4;
+    int varValue = stoi(context->CONST()->getText());
+    std::cout << "\tmovl $" << varValue << ", -" << this->symbolTable[context->VARIABLE()->getText()] << "(%rbp)" << std::endl;
+    return 0;
+  }
+  
+  virtual antlrcpp::Any visitDeclarationInitialiseeVar(ifccParser::DeclarationInitialiseeVarContext *context) override
+  {
+    symbolTable.insert({context->VARIABLE(0)->getText(), variableOffset});
+    this->variableOffset -=4;
+    std::string leftVarName = context->VARIABLE(0)->getText();
+    std::string rightVarName = context->VARIABLE(1)->getText();
+    std::cout << "\tmovl -" << this->symbolTable[rightVarName] << "(%rbp), " << "%eax" << std::endl;
+    std::cout << "\tmovl %eax, -" << this->symbolTable[leftVarName] << "(%rbp)" << std::endl;
     return 0;
   }
 
@@ -89,12 +119,5 @@ public:
 
   protected : 
     std::map<std::string, int> symbolTable;
-
-  virtual antlrcpp::Any visitExpression(ifccParser::ExpressionContext *context) override
-  {
-    int constValue = stoi(context->CONST()->getText());
-    std::cout << "\tmovl $" << constValue << ", -4(%rbp)" << std::endl;
-    return 0;
-  }
-
+    int variableOffset;
 };
