@@ -1,5 +1,5 @@
 int main() {
-    int a,b,c,d,e,f;
+    int a,b=7,c=a,d=b,e,f;
     a=5;
     b=a;
     d=0;
