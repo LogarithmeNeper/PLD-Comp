@@ -44,7 +44,7 @@ public:
   virtual antlrcpp::Any visitDeclaration(ifccParser::DeclarationContext *context) override
   {
     int variablesNumber = context-> declarationvar().size();
-    std::cout << variableOffset << std::endl;
+    std::cout << variablesNumber << std::endl;
     int variableOffset = variablesNumber*4; // initializes the highest offset for the first variable
     std::map<std::string, int> symbolTable; // SymbolTable
     this->symbolTable = symbolTable; // Copy the symbolTable for the whole visitor object
