@@ -48,6 +48,7 @@ public:
     std::map<std::string, int> symbolTable; // SymbolTable
     this->symbolTable = symbolTable; // Copy the symbolTable for the whole visitor object
     this->variableOffset = variableOffset;
+    visitChildren(ctx);
     /*for(int i=0; i<variablesNumber-1; i++) {
       symbolTable.insert({removeLastCharFromString(context->VARIABLENF()[i]->getText()), variableOffset});
       variableOffset -=4;
