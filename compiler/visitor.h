@@ -62,7 +62,6 @@ public:
   virtual antlrcpp::Any visitDeclarationSeule(ifccParser::DeclarationSeuleContext *context) override
   {
     symbolTable.insert({context->VARIABLE()->getText(), variableOffset});
-    std::cout << this->variableOffset << std::endl;
     this->variableOffset -=4;
     return 0;
   }
@@ -70,7 +69,6 @@ public:
   virtual antlrcpp::Any visitDeclarationInitialiseeConst(ifccParser::DeclarationInitialiseeConstContext *context) override
   {
     symbolTable.insert({context->VARIABLE()->getText(), variableOffset});
-    std::cout << this->variableOffset << std::endl;
     this->variableOffset -=4;
     int varValue = stoi(context->CONST()->getText());
     std::cout << "\tmovl $" << varValue << ", -" << this->symbolTable[context->VARIABLE()->getText()] << "(%rbp)" << std::endl;
@@ -80,7 +78,6 @@ public:
   virtual antlrcpp::Any visitDeclarationInitialiseeVar(ifccParser::DeclarationInitialiseeVarContext *context) override
   {
     symbolTable.insert({context->VARIABLE(0)->getText(), variableOffset});
-    std::cout << this->variableOffset << std::endl;
     this->variableOffset -=4;
     std::string leftVarName = context->VARIABLE(0)->getText();
     std::string rightVarName = context->VARIABLE(1)->getText();
