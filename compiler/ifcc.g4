@@ -6,9 +6,9 @@ axiom : prog
 prog : 'int' 'main' '(' ')' '{' declaration* affectation* RETURN CONST ';' '}' ;
 
 declaration : 'int' VARIABLENF* VARIABLE ';' ;
-affectation : VARIABLE '=' expr ';' #ExprAffectation
-      | VARIABLE '=' CONST ';' #ConstAffectation
+affectation : VARIABLE '=' CONST ';' #ConstAffectation
       | VARIABLE '=' VARIABLE ';' #VarToVarAffectation
+      | VARIABLE '=' expr ';' #ExprAffectation
       ;
 
 expr : expr '*' expr #multExpr

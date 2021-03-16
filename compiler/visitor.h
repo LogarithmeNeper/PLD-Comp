@@ -71,10 +71,12 @@ public:
   virtual antlrcpp::Any visitExprAffectation(ifccParser::ExprAffectationContext *context) override
   {
     std::string leftVarName = context->VARIABLE()->getText();
-    int exprOffset = visitChildren(context->expr());
+    int exprOffset = visit(context->expr());
     std::cout << "\tmovl -"
               << exprOffset
-              << "(%rbp), -"
+              << "(%rbp), %eax"
+              << std::endl;
+    std::cout << "\tmovl %eax, -"
               << this->symbolTable[leftVarName]
               << "(%rbp)"
               << std::endl;
@@ -109,16 +111,16 @@ public:
 
   virtual antlrcpp::Any visitAddExpr(ifccParser::AddExprContext *ctx) override
   {
-    int offsetLeft = visitChildren(ctx->expr(0));
-    int offsetRight = visitChildren(ctx->expr(1));
+    int offsetLeft = visit(ctx->expr(0));
+    int offsetRight = visit(ctx->expr(1));
     std::cout 
       << "\tmovl -"
       << offsetLeft
       << "(%rbp), %eax"
       << std::endl;
     std::cout
-      << "addl -"
-      << offsetRight
+      << "\taddl -"
+      << offsetRight 
       << "(%rbp), %eax"
       << std::endl;
     return createTemporaryVariable();
@@ -143,8 +145,8 @@ public:
 
   virtual antlrcpp::Any visitSublExpr(ifccParser::SublExprContext *ctx) override
   {
-    int offsetLeft = visitChildren(ctx->expr(0));
-    int offsetRight = visitChildren(ctx->expr(1));
+    int offsetLeft = visit(ctx->expr(0));
+    int offsetRight = visit(ctx->expr(1));
     std::cout 
       << "\tmovl -"
       << offsetLeft
@@ -179,6 +181,7 @@ public:
 
   int createTemporaryVariable() 
   {
+
     this->maxOffset += 4;
     this->symbolTable.insert({"tmp" + std::to_string(this->maxOffset), this->maxOffset});
     std::cout
