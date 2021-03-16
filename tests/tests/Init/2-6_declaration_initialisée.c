@@ -1,11 +1,8 @@
 int main() {
-    int a,b,c,d,e,f;
+    int a,b=7,c=b,d;
     a=5;
     b=a;
     d=0;
-    e=1;
-    f=d;
-    f=e;
     d=b;
     return 6;
 }
