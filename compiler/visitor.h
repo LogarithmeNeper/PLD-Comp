@@ -13,6 +13,10 @@
  * This class provides an empty implementation of ifccVisitor, which can be
  * extended to create a visitor which only needs to handle a subset of the available methods.
  */
+
+// Base pointer offset for the affectations of multiple variables
+inline int offsetBP = 4;
+
 class Visitor : public ifccBaseVisitor
 {
 public:
