@@ -37,4 +37,8 @@ tests/pld-test-output
 compiler/antlr4-generated
 compiler/.antlr
 compiler/output
+<<<<<<< HEAD
 compiler/asm-pld.s
+=======
+compiler/ifcc
+>>>>>>> main

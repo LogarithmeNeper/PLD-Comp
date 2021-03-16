@@ -3,14 +3,16 @@ grammar ifcc;
 axiom : prog       
       ;
 
-prog : 'int' 'main' '(' ')' '{' declaration affectation RETURN CONST ';' '}' ;
-declaration : 'int' VARIABLE ';' ;
-affectation : VARIABLE '=' expression ';';
+prog : 'int' 'main' '(' ')' '{' declaration affectation* RETURN CONST ';' '}' ;
+declaration : 'int' VARIABLENF* VARIABLE ';' ;
+//affectation : VARIABLE '=' CONST ';' ;
+affectation : VARIABLE '=' expression ';' ;
+
 expression : expression '+' expression |
              CONST;
-
 RETURN : 'return' ;
 CONST : [0-9]+ ;
+VARIABLENF : [a-z][a-zA-Z0-9_]* ',';
 VARIABLE : [a-z][a-zA-Z0-9_]* ;
 COMMENT : '/*' .*? '*/' -> skip ;
 DIRECTIVE : '#' .*? '\n' -> skip ;
