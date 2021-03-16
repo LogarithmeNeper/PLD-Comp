@@ -68,6 +68,19 @@ public:
     return 0;
   }
 
+  virtual antlrcpp::Any visitExprAffectation(ifccParser::ExprAffectationContext *context) override
+  {
+    std::string leftVarName = context->VARIABLE()->getText();
+    int exprOffset = visitChildren(context->expr());
+    std::cout << "\tmovl -"
+              << exprOffset
+              << "(%rbp), -"
+              << this->symbolTable[leftVarName]
+              << "(%rbp)"
+              << std::endl;
+    return 0;
+  }
+
   /*  print a map for debug
   void print_map(std::string comment, const std::map<std::string, int>& m)
   {
