@@ -128,8 +128,8 @@ public:
 
   virtual antlrcpp::Any visitMultExpr(ifccParser::MultExprContext *ctx) override
   {
-    int offsetLeft = visitChildren(ctx->expr(0));
-    int offsetRight = visitChildren(ctx->expr(1));
+    int offsetLeft = visit(ctx->expr(0));
+    int offsetRight = visit(ctx->expr(1));
     std::cout 
       << "\tmovl -"
       << offsetRight
