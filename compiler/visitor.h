@@ -136,7 +136,7 @@ public:
       << "(%rbp), %eax"
       << std::endl;
     std::cout
-      << "imull -"
+      << "\timull -"
       << offsetLeft
       << "(%rbp), %eax"
       << std::endl;
