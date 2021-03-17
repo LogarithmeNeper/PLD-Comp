@@ -106,7 +106,7 @@ public:
 
   virtual antlrcpp::Any visitParExpr(ifccParser::ParExprContext *ctx) override
   {
-    return visitChildren(ctx);
+    return visit(ctx->expr());
   }
 
   virtual antlrcpp::Any visitAddExpr(ifccParser::AddExprContext *ctx) override
