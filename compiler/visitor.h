@@ -19,19 +19,31 @@ class Visitor : public ifccBaseVisitor
 public:
   virtual antlrcpp::Any visitProg(ifccParser::ProgContext *ctx) override
   {
-
-    int retval = stoi(ctx->CONST()->getText());
     std::cout << ".globl	main\n"
               << " main: \n"
               << "\tpushq %rbp\n"
               << "\tmovq %rsp, %rbp\n";
     visitChildren(ctx);
+    return 0;
+  }
+
+  virtual antlrcpp::Any visitVarReturn(ifccParser::VarReturnContext *ctx) override {
+    int offsetVar = this->symbolTable[ctx->VARIABLE()->getText()];
+    std::cout << "\tmovl	-"
+              << offsetVar
+              << "(%rbp), %eax\n"
+              << "\tpopq %rbp\n"
+              << "\tret\n";
+    return visitChildren(ctx);
+  }
+
+  virtual antlrcpp::Any visitConstReturn(ifccParser::ConstReturnContext *ctx) override {
+    int retval = stoi(ctx->CONST()->getText());
     std::cout << "\tmovl	$"
               << retval
               << ", %eax\n"
               << "\tpopq %rbp\n"
               << "\tret\n";
-
     return 0;
   }
 
