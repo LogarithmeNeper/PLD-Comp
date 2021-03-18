@@ -3,7 +3,7 @@ grammar ifcc;
 axiom : prog       
       ;
 
-prog : 'int' 'main' '(' ')' '{' declaration* affectation* RETURN CONST ';' '}' ;
+prog : 'int' 'main' '(' ')' '{' declaration* affectation* RETURN valRet ';' '}' ;
 
 declaration : 'int' VARIABLENF* VARIABLE ';' ;
 affectation : VARIABLE '=' CONST ';' #ConstAffectation
@@ -18,6 +18,10 @@ expr : expr '*' expr #multExpr
       | VARIABLE #varExpr
       | '(' expr ')' #parExpr
       ; 
+
+valRet : VARIABLE #varReturn
+      | CONST #constReturn
+      ;
 
 RETURN : 'return' ;
 CONST : [0-9]+ ;
