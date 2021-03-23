@@ -56,13 +56,6 @@ public:
     this->variableOffset = variableOffset;
     this->maxOffset = variableOffset;
     visitChildren(context);
-    /*for(int i=0; i<variablesNumber-1; i++) {
-      symbolTable.insert({removeLastCharFromString(context->VARIABLENF()[i]->getText()), variableOffset});
-      variableOffset -= 4;
-    }
-    symbolTable.insert({context->VARIABLE()->getText(), variableOffset});
-    this->symbolTable = symbolTable; // Copy the symbolTable for the whole visitor object
-    */
     return 0;
   }
 
