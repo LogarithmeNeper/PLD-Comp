@@ -27,24 +27,14 @@ public:
     return 0;
   }
 
-  virtual antlrcpp::Any visitVarReturn(ifccParser::VarReturnContext *ctx) override {
-    int offsetVar = this->symbolTable[ctx->VARIABLE()->getText()];
+  virtual antlrcpp::Any visitRet(ifccParser::RetContext *ctx) override {
+    int offsetExpr = visit(ctx->expr());
     std::cout << "\tmovl	-"
-              << offsetVar
+              << offsetExpr
               << "(%rbp), %eax\n"
               << "\tpopq %rbp\n"
               << "\tret\n";
     return visitChildren(ctx);
-  }
-
-  virtual antlrcpp::Any visitConstReturn(ifccParser::ConstReturnContext *ctx) override {
-    int retval = stoi(ctx->CONST()->getText());
-    std::cout << "\tmovl	$"
-              << retval
-              << ", %eax\n"
-              << "\tpopq %rbp\n"
-              << "\tret\n";
-    return 0;
   }
 
   virtual antlrcpp::Any visitDeclaration(ifccParser::DeclarationContext *context) override
