@@ -15,16 +15,13 @@ affectation : VARIABLE '=' CONST ';' #ConstAffectation
       ;
 
 expr : expr '*' expr #multExpr
-      | expr '+' expr #addExpr
-      | expr '-' expr #sublExpr
+      | expr ('+'|'-') expr #minusAddExpr
       | CONST #constExpr
       | VARIABLE #varExpr
       | '(' expr ')' #parExpr
       ; 
 
-valRet : VARIABLE #varReturn
-      | CONST #constReturn
-      ;
+ret : RETURN expr;
 
 RETURN : 'return' ;
 CONST : [0-9]+ ;
