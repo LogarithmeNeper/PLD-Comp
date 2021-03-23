@@ -10,8 +10,7 @@ declaration : 'int' VARIABLENF* VARIABLE ';' ;
 affectation : VARIABLE '=' expr ';' ;
 
 expr : expr '*' expr #multExpr
-      | expr '+' expr #addExpr
-      | expr '-' expr #sublExpr
+      | expr ('+'|'-') expr #minusAddExpr
       | CONST #constExpr
       | VARIABLE #varExpr
       | '(' expr ')' #parExpr

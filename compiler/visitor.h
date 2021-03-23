@@ -68,17 +68,6 @@ public:
     return 0;
   }
 
-  /*  print a map for debug
-  void print_map(std::string comment, const std::map<std::string, int>& m)
-  {
-      std::cout << comment;
-      for (const auto& [key, value] : m) {
-          std::cout << key << " = " << value << "; ";
-      }
-      std::cout << "\n";
-  }
-*/
-
   virtual antlrcpp::Any visitVarExpr(ifccParser::VarExprContext *ctx) override
   {
     return symbolTable[ctx->VARIABLE()->getText()]; // returns an int
@@ -94,20 +83,31 @@ public:
     return visit(ctx->expr());
   }
 
-  virtual antlrcpp::Any visitAddExpr(ifccParser::AddExprContext *ctx) override
+  virtual antlrcpp::Any visitMinusAddExpr(ifccParser::MinusAddExprContext *ctx) override
   {
     int offsetLeft = visit(ctx->expr(0));
     int offsetRight = visit(ctx->expr(1));
+    
     std::cout 
       << "\tmovl -"
       << offsetLeft
       << "(%rbp), %eax"
       << std::endl;
-    std::cout
+    if(ctx->children[1]->getText() == "+")
+    {
+      std::cout
       << "\taddl -"
       << offsetRight 
       << "(%rbp), %eax"
       << std::endl;
+    } else if (ctx->children[1]->getText() == "-") {
+      std::cout
+      << "\tsubl -"
+      << offsetRight 
+      << "(%rbp), %eax"
+      << std::endl;
+    }
+    
     return createTemporaryVariable();
   }
 
@@ -123,23 +123,6 @@ public:
     std::cout
       << "\timull -"
       << offsetLeft
-      << "(%rbp), %eax"
-      << std::endl;
-    return createTemporaryVariable();
-  }
-
-  virtual antlrcpp::Any visitSublExpr(ifccParser::SublExprContext *ctx) override
-  {
-    int offsetLeft = visit(ctx->expr(0));
-    int offsetRight = visit(ctx->expr(1));
-    std::cout 
-      << "\tmovl -"
-      << offsetLeft
-      << "(%rbp), %eax"
-      << std::endl;
-    std::cout
-      << "subl -"
-      << offsetRight
       << "(%rbp), %eax"
       << std::endl;
     return createTemporaryVariable();
@@ -176,6 +159,17 @@ public:
         << std::endl;
     return this->maxOffset;
   }
+
+  /* print a map for debug
+  void print_map(std::string comment, const std::map<std::string, int>& m)
+  {
+      std::cout << comment;
+      for (const auto& [key, value] : m) {
+          std::cout << key << " = " << value << "; ";
+      }
+      std::cout << "\n";
+  }
+*/
 
 protected:
   std::map<std::string, int> symbolTable;
