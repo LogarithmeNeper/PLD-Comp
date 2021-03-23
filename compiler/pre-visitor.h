@@ -42,8 +42,15 @@ public:
 
   antlrcpp::Any preVisitDeclarationSeule(ifccParser::DeclarationSeuleContext *context) 
   {
-    symbolTable.insert({context->VARIABLE()->getText(), variableOffset});
-    this->variableOffset -=4;
+    if(symbolTable.insert({context->VARIABLE()->getText(), variableOffset}).second == true) {
+        this->variableOffset -=4;
+    } else {
+        std::cerr << "The variable "
+                  << context->VARIABLE()->getText()
+                  << " is already declared."
+                  << std::endl;
+    };
+
     return 0;
   }
 
@@ -111,6 +118,7 @@ public:
                   << leftVarName
                   << " is not declared."
                   << std::endl;
+        this->correctCode=false;
     }
     return 0;
   }
@@ -126,6 +134,7 @@ public:
                   << " is not declard. Code : "
                   << code
                   << std::endl;
+        this->correctCode=false;
     }
     return symbolTable[ctx->VARIABLE()->getText()]; // returns an int
   }
