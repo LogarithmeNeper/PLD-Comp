@@ -14,30 +14,36 @@
  * extended to create a visitor which only needs to handle a subset of the available methods.
  */
 
-
 class Visitor : public ifccBaseVisitor
 {
 public:
-  virtual antlrcpp::Any visitAxiom(ifccParser::AxiomContext *ctx) override
-  {
-    return visitChildren(ctx);
-  }
-
   virtual antlrcpp::Any visitProg(ifccParser::ProgContext *ctx) override
   {
-
-    int retval = stoi(ctx->CONST()->getText());
     std::cout << ".globl	main\n"
               << " main: \n"
               << "\tpushq %rbp\n"
               << "\tmovq %rsp, %rbp\n";
     visitChildren(ctx);
+    return 0;
+  }
+
+  virtual antlrcpp::Any visitVarReturn(ifccParser::VarReturnContext *ctx) override {
+    int offsetVar = this->symbolTable[ctx->VARIABLE()->getText()];
+    std::cout << "\tmovl	-"
+              << offsetVar
+              << "(%rbp), %eax\n"
+              << "\tpopq %rbp\n"
+              << "\tret\n";
+    return visitChildren(ctx);
+  }
+
+  virtual antlrcpp::Any visitConstReturn(ifccParser::ConstReturnContext *ctx) override {
+    int retval = stoi(ctx->CONST()->getText());
     std::cout << "\tmovl	$"
-              << retval 
+              << retval
               << ", %eax\n"
               << "\tpopq %rbp\n"
               << "\tret\n";
-
     return 0;
   }
 
@@ -48,10 +54,11 @@ public:
     std::map<std::string, int> symbolTable; // SymbolTable
     this->symbolTable = symbolTable; // Copy the symbolTable for the whole visitor object
     this->variableOffset = variableOffset;
+    this->maxOffset = variableOffset;
     visitChildren(context);
     /*for(int i=0; i<variablesNumber-1; i++) {
       symbolTable.insert({removeLastCharFromString(context->VARIABLENF()[i]->getText()), variableOffset});
-      variableOffset -=4;
+      variableOffset -= 4;
     }
     symbolTable.insert({context->VARIABLE()->getText(), variableOffset});
     this->symbolTable = symbolTable; // Copy the symbolTable for the whole visitor object
@@ -97,12 +104,28 @@ public:
   {
     std::string leftVarName = context->VARIABLE(0)->getText();
     std::string rightVarName = context->VARIABLE(1)->getText();
-    std::cout << "\tmovl -" << this->symbolTable[rightVarName] << "(%rbp), " << "%eax" << std::endl;
+    std::cout << "\tmovl -" << this->symbolTable[rightVarName] << "(%rbp), "
+              << "%eax" << std::endl;
     std::cout << "\tmovl %eax, -" << this->symbolTable[leftVarName] << "(%rbp)" << std::endl;
     return 0;
   }
 
-/*  print a map for debug
+  virtual antlrcpp::Any visitExprAffectation(ifccParser::ExprAffectationContext *context) override
+  {
+    std::string leftVarName = context->VARIABLE()->getText();
+    int exprOffset = visit(context->expr());
+    std::cout << "\tmovl -"
+              << exprOffset
+              << "(%rbp), %eax"
+              << std::endl;
+    std::cout << "\tmovl %eax, -"
+              << this->symbolTable[leftVarName]
+              << "(%rbp)"
+              << std::endl;
+    return 0;
+  }
+
+  /*  print a map for debug
   void print_map(std::string comment, const std::map<std::string, int>& m)
   {
       std::cout << comment;
@@ -113,11 +136,106 @@ public:
   }
 */
 
-  std::string removeLastCharFromString(std::string str) {
-    return str.substr(0, str.size()-1);
+  virtual antlrcpp::Any visitVarExpr(ifccParser::VarExprContext *ctx) override
+  {
+    return symbolTable[ctx->VARIABLE()->getText()]; // returns an int
   }
 
-  protected : 
-    std::map<std::string, int> symbolTable;
-    int variableOffset;
+  virtual antlrcpp::Any visitConstExpr(ifccParser::ConstExprContext *ctx) override
+  {
+    return createTemporaryFromConstant(stoi(ctx->CONST()->getText())); // returns an int
+  }
+
+  virtual antlrcpp::Any visitParExpr(ifccParser::ParExprContext *ctx) override
+  {
+    return visit(ctx->expr());
+  }
+
+  virtual antlrcpp::Any visitAddExpr(ifccParser::AddExprContext *ctx) override
+  {
+    int offsetLeft = visit(ctx->expr(0));
+    int offsetRight = visit(ctx->expr(1));
+    std::cout 
+      << "\tmovl -"
+      << offsetLeft
+      << "(%rbp), %eax"
+      << std::endl;
+    std::cout
+      << "\taddl -"
+      << offsetRight 
+      << "(%rbp), %eax"
+      << std::endl;
+    return createTemporaryVariable();
+  }
+
+  virtual antlrcpp::Any visitMultExpr(ifccParser::MultExprContext *ctx) override
+  {
+    int offsetLeft = visit(ctx->expr(0));
+    int offsetRight = visit(ctx->expr(1));
+    std::cout 
+      << "\tmovl -"
+      << offsetRight
+      << "(%rbp), %eax"
+      << std::endl;
+    std::cout
+      << "\timull -"
+      << offsetLeft
+      << "(%rbp), %eax"
+      << std::endl;
+    return createTemporaryVariable();
+  }
+
+  virtual antlrcpp::Any visitSublExpr(ifccParser::SublExprContext *ctx) override
+  {
+    int offsetLeft = visit(ctx->expr(0));
+    int offsetRight = visit(ctx->expr(1));
+    std::cout 
+      << "\tmovl -"
+      << offsetLeft
+      << "(%rbp), %eax"
+      << std::endl;
+    std::cout
+      << "subl -"
+      << offsetRight
+      << "(%rbp), %eax"
+      << std::endl;
+    return createTemporaryVariable();
+  }
+
+  std::string removeLastCharFromString(std::string str)
+  {
+    return str.substr(0, str.size() - 1);
+  }
+
+  int createTemporaryFromConstant(int val) 
+  {
+    this->maxOffset += 4;
+    this->symbolTable.insert({"tmp"+std::to_string(this->maxOffset), this->maxOffset});
+    std::cout
+        << "\tmovl $" 
+        << val
+        << ", -" 
+        << this->maxOffset 
+        << "(%rbp)" 
+        << std::endl;
+    return this->maxOffset;
+  }
+
+  int createTemporaryVariable() 
+  {
+
+    this->maxOffset += 4;
+    this->symbolTable.insert({"tmp" + std::to_string(this->maxOffset), this->maxOffset});
+    std::cout
+        << "\tmovl %eax, -" 
+        << this->maxOffset 
+        << "(%rbp)" 
+        << std::endl;
+    return this->maxOffset;
+  }
+
+protected:
+  std::map<std::string, int> symbolTable;
+  int maxOffset;
+  int variableOffset;
 };
