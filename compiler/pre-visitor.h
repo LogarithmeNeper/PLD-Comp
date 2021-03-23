@@ -17,20 +17,59 @@
 class PreVisitor : public ifccBaseVisitor
 {
 public:
-   antlrcpp::Any preVisitProg(ifccParser::ProgContext *ctx) override
+   antlrcpp::Any preVisitProg(ifccParser::ProgContext *ctx) 
   {
     visitChildren(ctx);
     return 0;
   }
 
-   antlrcpp::Any preVisitRet(ifccParser::RetContext *ctx) override {
+   antlrcpp::Any preVisitRet(ifccParser::RetContext *ctx)  {
     int offsetExpr = visit(ctx->expr());
     return visitChildren(ctx);
   }
 
-   antlrcpp::Any preVisitDeclaration(ifccParser::DeclarationContext *context) override
+    antlrcpp::Any preVisitDeclaration(ifccParser::DeclarationContext *context) 
   {
-    int variablesNumber = context->VARIABLENF().size() + 1; // +1 for the final variable
+    int variablesNumber = context-> declarationvar().size();
+    int variableOffset = variablesNumber*4; // initializes the highest offset for the first variable
+    std::map<std::string, int> symbolTable; // SymbolTable
+    this->symbolTable = symbolTable; // Copy the symbolTable for the whole visitor object
+    this->variableOffset = variableOffset;
+    this->maxOffset = variableOffset;
+    visitChildren(context);
+    return 0;
+  }
+
+  antlrcpp::Any preVisitDeclarationSeule(ifccParser::DeclarationSeuleContext *context) 
+  {
+    symbolTable.insert({context->VARIABLE()->getText(), variableOffset});
+    this->variableOffset -=4;
+    return 0;
+  }
+
+  antlrcpp::Any preVisitDeclarationInitialiseeConst(ifccParser::DeclarationInitialiseeConstContext *context) 
+  {
+    symbolTable.insert({context->VARIABLE()->getText(), variableOffset});
+    this->variableOffset -=4;
+    int varValue = stoi(context->CONST()->getText());
+    std::cout << "\tmovl $" << varValue << ", -" << this->symbolTable[context->VARIABLE()->getText()] << "(%rbp)" << std::endl;
+    return 0;
+  }
+  
+  antlrcpp::Any preVisitDeclarationInitialiseeVar(ifccParser::DeclarationInitialiseeVarContext *context) 
+  {
+    symbolTable.insert({context->VARIABLE(0)->getText(), variableOffset});
+    this->variableOffset -=4;
+    std::string leftVarName = context->VARIABLE(0)->getText();
+    std::string rightVarName = context->VARIABLE(1)->getText();
+    std::cout << "\tmovl -" << this->symbolTable[rightVarName] << "(%rbp), " << "%eax" << std::endl;
+    std::cout << "\tmovl %eax, -" << this->symbolTable[leftVarName] << "(%rbp)" << std::endl;
+    return 0;
+  }
+
+/*   antlrcpp::Any preVisitDeclaration(ifccParser::DeclarationContext *context) 
+  {
+    int variablesNumber = context->VARIABLE().size() + 1; // +1 for the final variable
     int variableOffset = variablesNumber * 4;               // initializes the highest offset for the first variable
     this->maxOffset = variableOffset;
     std::map<std::string, int> symbolTable; // SymbolTable
@@ -61,25 +100,25 @@ public:
     this->symbolTable = symbolTable; // Copy the symbolTable for the whole visitor object
     return 0;
   }
-
-   antlrcpp::Any preVisitAffectation(ifccParser::AffectationContext *context) override
+*/
+   antlrcpp::Any preVisitAffectation(ifccParser::AffectationContext *context) 
   {
     std::string leftVarName = context->VARIABLE()->getText();
-    try(this->symbolTable.count(leftVarName) == 1) {
+    if(this->symbolTable.count(leftVarName) == 1) {
         int exprOffset = visit(context->expr());
-    } catch(int code) {
+    } else {
         std::cerr << "The variable " 
                   << leftVarName
-                  << " is not declared. Code : "
-                  << code
+                  << " is not declared."
                   << std::endl;
     }
     return 0;
   }
 
-   antlrcpp::Any preVisitVarExpr(ifccParser::VarExprContext *ctx) override
+   antlrcpp::Any preVisitVarExpr(ifccParser::VarExprContext *ctx) 
   {
-    try(symbolTable[ctx->VARIABLE()->getText()]) {
+    try{
+        symbolTable[ctx->VARIABLE()->getText()] ;
         return symbolTable[ctx->VARIABLE()->getText()];
     } catch (int code) {
         std::cerr << "The variable " 
@@ -91,29 +130,24 @@ public:
     return symbolTable[ctx->VARIABLE()->getText()]; // returns an int
   }
 
-   antlrcpp::Any preVisitConstExpr(ifccParser::ConstExprContext *ctx) override
+   antlrcpp::Any preVisitConstExpr(ifccParser::ConstExprContext *ctx) 
   {
     return createTemporaryFromConstant(stoi(ctx->CONST()->getText())); // returns an int
   }
 
-   antlrcpp::Any preVisitParExpr(ifccParser::ParExprContext *ctx) override
+   antlrcpp::Any preVisitParExpr(ifccParser::ParExprContext *ctx) 
   {
     return visit(ctx->expr());
   }
 
-   antlrcpp::Any preVisitMinusAddExpr(ifccParser::MinusAddExprContext *ctx) override
+   antlrcpp::Any preVisitMinusAddExpr(ifccParser::MinusAddExprContext *ctx) 
   {
     int offsetLeft = visit(ctx->expr(0));
     int offsetRight = visit(ctx->expr(1));
-    if(ctx->children[1]->getText() == "+")
-    {
-    } else if (ctx->children[1]->getText() == "-") {
-    }
-    
     return createTemporaryVariable();
   }
 
-   antlrcpp::Any preVisitMultExpr(ifccParser::MultExprContext *ctx) override
+   antlrcpp::Any preVisitMultExpr(ifccParser::MultExprContext *ctx) 
   {
     int offsetLeft = visit(ctx->expr(0));
     int offsetRight = visit(ctx->expr(1));
@@ -151,7 +185,13 @@ public:
   }
 */
 
+  bool getCorrectCode() {
+      return this->correctCode;
+  }
+
 protected:
   std::map<std::string, int> symbolTable;
   int maxOffset;
+  int variableOffset;
+  bool correctCode = true;
 };
