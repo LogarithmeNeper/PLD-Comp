@@ -53,24 +53,7 @@ public:
     return 0;
   }
 
-  virtual antlrcpp::Any visitConstAffectation(ifccParser::ConstAffectationContext *context) override
-  {
-    int varValue = stoi(context->CONST()->getText());
-    std::cout << "\tmovl $" << varValue << ", -" << this->symbolTable[context->VARIABLE()->getText()] << "(%rbp)" << std::endl;
-    return 0;
-  }
-
-  virtual antlrcpp::Any visitVarToVarAffectation(ifccParser::VarToVarAffectationContext *context) override
-  {
-    std::string leftVarName = context->VARIABLE(0)->getText();
-    std::string rightVarName = context->VARIABLE(1)->getText();
-    std::cout << "\tmovl -" << this->symbolTable[rightVarName] << "(%rbp), "
-              << "%eax" << std::endl;
-    std::cout << "\tmovl %eax, -" << this->symbolTable[leftVarName] << "(%rbp)" << std::endl;
-    return 0;
-  }
-
-  virtual antlrcpp::Any visitExprAffectation(ifccParser::ExprAffectationContext *context) override
+  virtual antlrcpp::Any visitAffectation(ifccParser::AffectationContext *context) override
   {
     std::string leftVarName = context->VARIABLE()->getText();
     int exprOffset = visit(context->expr());
