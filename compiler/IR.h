@@ -5,6 +5,10 @@
 #include <string>
 #include <iostream>
 #include <initializer_list>
+#include <map>
+#include <list>
+
+using namespace std;
 
 // Declarations from the parser -- replace with your own
 //#include "type.h"
@@ -13,6 +17,7 @@
 class BasicBlock;
 class CFG; // Control Flow Graph
 class DefFonction;
+class Program;
 
 
 //! The class for one 3-address instruction
@@ -21,30 +26,37 @@ class IRInstr {
    public:
 	/** The instructions themselves -- feel free to subclass instead */
 	typedef enum {
-		ldconst,
-		copy,
-		add,
-		sub,
-		mul,
-		rmem,
-		wmem,
-		call, 
-		cmp_eq,
-		cmp_lt,
-		cmp_le
+		ldconst, // load a constant into a var
+		copy, // copy the value of a var in an other var
+		add, // addition
+		sub, // subtraction
+		mul, // multiplication
+		rmem, // read the value of a memory space (used only for tabs)
+		wmem, // write a value in a memory space (used only for tabs)
+		call, // call to a function
+		cmp_eq, // ==
+		cmp_lt, // <
+		cmp_le // <=
 	} Operation;
 
 
 	/**  constructor */
-	IRInstr(BasicBlock* bb_, Operation op, Type t, vector<string> params);
+	//IRInstr(/*BasicBlock* bb_,*/ Operation op/*, Type t*/, vector<string> params)
+	//{
+		//this->bb = bb_;
+	//	this->op = op;
+	//	this-> params = params;
+	//}
+	IRInstr(){}
+	~IRInstr(){}
 	
 	/** Actual code generation */
-	void gen_asm(ostream &o); /**< x86 assembly code generation for this IR instruction */
+	//virtual void gen_asm(ostream &o); /**< x86 assembly code generation for this IR instruction */
 	
  private:
-	BasicBlock* bb; /**< The BB this instruction belongs to, which provides a pointer to the CFG this instruction belong to */
+	//BasicBlock* bb; /**< The BB this instruction belongs to, which provides a pointer to the CFG this instruction belong to */
 	Operation op;
-	Type t;
+	//Type t;
 	vector<string> params; /**< For 3-op instrs: d, x, y; for ldconst: d, c;  For call: label, d, params;  for wmem and rmem: choose yourself */
 	// if you subclass IRInstr, each IRInstr subclass has its parameters and the previous (very important) comment becomes useless: it would be a better design. 
 };
@@ -85,7 +97,7 @@ class BasicBlock {
 	BasicBlock(CFG* cfg, string entry_label);
 	void gen_asm(ostream &o); /**< x86 assembly code generation for this basic block (very simple) */
 
-	void add_IRInstr(IRInstr::Operation op, Type t, vector<string> params);
+	void add_IRInstr(IRInstr::Operation op/*, Type t*/, vector<string> params);
 
 	// No encapsulation whatsoever here. Feel free to do better.
 	BasicBlock* exit_true;  /**< pointer to the next basic block, true branch. If nullptr, return from procedure */ 
@@ -93,7 +105,7 @@ class BasicBlock {
 	string label; /**< label of the BB, also will be the label in the generated code */
 	CFG* cfg; /** < the CFG where this block belongs */
 	vector<IRInstr*> instrs; /** < the instructions themselves. */
-  string test_var_name;  /** < when generating IR code for an if(expr) or while(expr) etc,
+  	string test_var_name;  /** < when generating IR code for an if(expr) or while(expr) etc,
 													 store here the name of the variable that holds the value of expr */
  protected:
 
@@ -127,22 +139,38 @@ class CFG {
 	void gen_asm_epilogue(ostream& o);
 
 	// symbol table methods
-	void add_to_symbol_table(string name, Type t);
-	string create_new_tempvar(Type t);
+	void add_to_symbol_table(string name/*, Type t*/);
+	string create_new_tempvar(/*Type t*/);
 	int get_var_index(string name);
-	Type get_var_type(string name);
+	//Type get_var_type(string name);
 
 	// basic block management
 	string new_BB_name();
 	BasicBlock* current_bb;
 
  protected:
-	map <string, Type> SymbolType; /**< part of the symbol table  */
+	//map <string, Type> SymbolType; /**< part of the symbol table  */
 	map <string, int> SymbolIndex; /**< part of the symbol table  */
 	int nextFreeSymbolIndex; /**< to allocate new symbols in the symbol table */
 	int nextBBnumber; /**< just for naming */
 	
 	vector <BasicBlock*> bbs; /**< all the basic blocks of this CFG*/
+};
+
+class Program{
+	public:
+		Program(){
+			this->listInstr = new list<IRInstr*>();
+		}
+		void gen_asm(ostream& o){
+
+		}
+		void push_back_in_list(IRInstr* irinstr){
+			this->listInstr->push_back(irinstr);
+		}
+
+	protected:
+		list<IRInstr*>* listInstr; // First implementation, after it will be a list of control flow containing a list of bb containing a list of ir.
 };
 
 

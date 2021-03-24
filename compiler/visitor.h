@@ -1,13 +1,18 @@
 
 // Generated from ifcc.g4 by ANTLR 4.7.2
 
-#pragma once
+#ifndef VISITOR_H
+#define VISITOR_H
 
 #include <map>
 #include <algorithm>
+#include <list>
+#include <vector>
 
 #include "antlr4-runtime.h"
 #include "antlr4-generated/ifccBaseVisitor.h"
+#include "ldconst.h"
+#include "IR.h"
 
 /**
  * This class provides an empty implementation of ifccVisitor, which can be
@@ -49,10 +54,10 @@ public:
 
   virtual antlrcpp::Any visitDeclaration(ifccParser::DeclarationContext *context) override
   {
+    std::map<std::string, int> symbolTable; // SymbolTable
     int variablesNumber = context->VARIABLENF().size() + 1; // +1 for the final variable
     int variableOffset = variablesNumber * 4;               // initializes the highest offset for the first variable
     this->maxOffset = variableOffset;
-    std::map<std::string, int> symbolTable; // SymbolTable
     for (int i = 0; i < variablesNumber - 1; i++)
     {
       symbolTable.insert({removeLastCharFromString(context->VARIABLENF()[i]->getText()), variableOffset});
@@ -66,7 +71,9 @@ public:
   virtual antlrcpp::Any visitConstAffectation(ifccParser::ConstAffectationContext *context) override
   {
     int varValue = stoi(context->CONST()->getText());
-    std::cout << "\tmovl $" << varValue << ", -" << this->symbolTable[context->VARIABLE()->getText()] << "(%rbp)" << std::endl;
+    //std::cout << "\tmovl $" << varValue << ", -" << this->symbolTable[context->VARIABLE()->getText()] << "(%rbp)" << std::endl;
+    ldconst instr(varValue, this->symbolTable[context->VARIABLE()->getText()]);
+    this->program.push_back_in_list(dynamic_cast<IRInstr*> (&instr));
     return 0;
   }
 
@@ -207,4 +214,7 @@ public:
 protected:
   std::map<std::string, int> symbolTable;
   int maxOffset;
+  Program program;
 };
+
+#endif
