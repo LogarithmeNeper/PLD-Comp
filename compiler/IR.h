@@ -1,5 +1,4 @@
-#ifndef IR_H
-#define IR_H
+#pragma once
 
 #include <vector>
 #include <string>
@@ -7,6 +6,7 @@
 #include <initializer_list>
 #include <map>
 #include <list>
+
 
 using namespace std;
 
@@ -47,11 +47,12 @@ class IRInstr {
 	//	this->op = op;
 	//	this-> params = params;
 	//}
-	IRInstr(){}
+	IRInstr(std::string description=""):description(description){}
+	string getDescription(){return this->description;}
 	~IRInstr(){}
 	
 	/** Actual code generation */
-	//virtual void gen_asm(ostream &o); /**< x86 assembly code generation for this IR instruction */
+	virtual void gen_asm(ostream & o = cout)=0; /**< x86 assembly code generation for this IR instruction */
 	
  private:
 	//BasicBlock* bb; /**< The BB this instruction belongs to, which provides a pointer to the CFG this instruction belong to */
@@ -59,6 +60,7 @@ class IRInstr {
 	//Type t;
 	vector<string> params; /**< For 3-op instrs: d, x, y; for ldconst: d, c;  For call: label, d, params;  for wmem and rmem: choose yourself */
 	// if you subclass IRInstr, each IRInstr subclass has its parameters and the previous (very important) comment becomes useless: it would be a better design. 
+	std::string description;
 };
 
 
@@ -160,18 +162,22 @@ class CFG {
 class Program{
 	public:
 		Program(){
-			this->listInstr = new list<IRInstr*>();
+			this->listInstr = list<IRInstr*>();
 		}
 		void gen_asm(ostream& o){
+			// Insert here the generation of the prolog
+			while(this->listInstr.size() > 0){
+				this->listInstr.front()->gen_asm(cout);
+				this->listInstr.pop_front();
+			}
 
+			// Insert here the genration of the epilog
 		}
-		void push_back_in_list(IRInstr* irinstr){
-			this->listInstr->push_back(irinstr);
+		void push_back_in_list(IRInstr** irinstr){
+			this->listInstr.push_back(*irinstr);
 		}
+		list<IRInstr*> listInstr; // First implementation, after it will be a list of control flow containing a list of bb containing a list of ir.
 
 	protected:
-		list<IRInstr*>* listInstr; // First implementation, after it will be a list of control flow containing a list of bb containing a list of ir.
+		
 };
-
-
-#endif

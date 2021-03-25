@@ -1,8 +1,7 @@
 
 // Generated from ifcc.g4 by ANTLR 4.7.2
 
-#ifndef VISITOR_H
-#define VISITOR_H
+#pragma once
 
 #include <map>
 #include <algorithm>
@@ -12,7 +11,6 @@
 #include "antlr4-runtime.h"
 #include "antlr4-generated/ifccBaseVisitor.h"
 #include "ldconst.h"
-#include "IR.h"
 
 /**
  * This class provides an empty implementation of ifccVisitor, which can be
@@ -29,6 +27,7 @@ public:
               << "\tpushq %rbp\n"
               << "\tmovq %rsp, %rbp\n";
     visitChildren(ctx);
+    this->program = Program(); // We initialise the Program one we visit the axiom of the grammar
     return 0;
   }
 
@@ -39,6 +38,7 @@ public:
               << "(%rbp), %eax\n"
               << "\tpopq %rbp\n"
               << "\tret\n";
+    this->program.gen_asm(cout);
     return visitChildren(ctx);
   }
 
@@ -72,8 +72,9 @@ public:
   {
     int varValue = stoi(context->CONST()->getText());
     //std::cout << "\tmovl $" << varValue << ", -" << this->symbolTable[context->VARIABLE()->getText()] << "(%rbp)" << std::endl;
-    ldconst instr(varValue, this->symbolTable[context->VARIABLE()->getText()]);
-    this->program.push_back_in_list(dynamic_cast<IRInstr*> (&instr));
+    ldconst* instr = new ldconst(varValue, this->symbolTable[context->VARIABLE()->getText()]);
+    IRInstr* irinstr = dynamic_cast<IRInstr*> (instr);
+    this->program.push_back_in_list(&irinstr);
     return 0;
   }
 
@@ -216,5 +217,3 @@ protected:
   int maxOffset;
   Program program;
 };
-
-#endif
