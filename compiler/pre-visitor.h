@@ -17,18 +17,18 @@
 class PreVisitor : public ifccBaseVisitor
 {
 public:
-   antlrcpp::Any preVisitProg(ifccParser::ProgContext *ctx) 
+   antlrcpp::Any visitProg(ifccParser::ProgContext *ctx) 
   {
     visitChildren(ctx);
     return 0;
   }
 
-   antlrcpp::Any preVisitRet(ifccParser::RetContext *ctx)  {
+   antlrcpp::Any visitRet(ifccParser::RetContext *ctx)  {
     int offsetExpr = visit(ctx->expr());
     return visitChildren(ctx);
   }
 
-    antlrcpp::Any preVisitDeclaration(ifccParser::DeclarationContext *context) 
+    antlrcpp::Any visitDeclaration(ifccParser::DeclarationContext *context) 
   {
     int variablesNumber = context-> declarationvar().size();
     int variableOffset = variablesNumber*4; // initializes the highest offset for the first variable
@@ -40,7 +40,22 @@ public:
     return 0;
   }
 
-  antlrcpp::Any preVisitDeclarationSeule(ifccParser::DeclarationSeuleContext *context) 
+  antlrcpp::Any visitDeclarationSeule(ifccParser::DeclarationSeuleContext *context) 
+  {
+    if(this->symbolTable.insert({context->VARIABLE()->getText(), variableOffset}).second == true) {
+        this->variableOffset -=4;
+    } else {
+        std::cerr << "The variable "
+                  << context->VARIABLE()->getText()
+                  << " is already declared."
+                  << std::endl;
+        this->correctCode=false;
+    };
+
+    return 0;
+  }
+
+  antlrcpp::Any visitDeclarationInitialiseeConst(ifccParser::DeclarationInitialiseeConstContext *context) 
   {
     if(symbolTable.insert({context->VARIABLE()->getText(), variableOffset}).second == true) {
         this->variableOffset -=4;
@@ -49,66 +64,35 @@ public:
                   << context->VARIABLE()->getText()
                   << " is already declared."
                   << std::endl;
+        this->correctCode=false;
     };
-
-    return 0;
-  }
-
-  antlrcpp::Any preVisitDeclarationInitialiseeConst(ifccParser::DeclarationInitialiseeConstContext *context) 
-  {
-    symbolTable.insert({context->VARIABLE()->getText(), variableOffset});
-    this->variableOffset -=4;
-    int varValue = stoi(context->CONST()->getText());
-    std::cout << "\tmovl $" << varValue << ", -" << this->symbolTable[context->VARIABLE()->getText()] << "(%rbp)" << std::endl;
     return 0;
   }
   
-  antlrcpp::Any preVisitDeclarationInitialiseeVar(ifccParser::DeclarationInitialiseeVarContext *context) 
+  antlrcpp::Any visitDeclarationInitialiseeVar(ifccParser::DeclarationInitialiseeVarContext *context) 
   {
-    symbolTable.insert({context->VARIABLE(0)->getText(), variableOffset});
-    this->variableOffset -=4;
     std::string leftVarName = context->VARIABLE(0)->getText();
     std::string rightVarName = context->VARIABLE(1)->getText();
-    std::cout << "\tmovl -" << this->symbolTable[rightVarName] << "(%rbp), " << "%eax" << std::endl;
-    std::cout << "\tmovl %eax, -" << this->symbolTable[leftVarName] << "(%rbp)" << std::endl;
+    if(symbolTable.insert({leftVarName, variableOffset}).second == true) {
+        this->variableOffset -=4;
+    } else {
+        std::cerr << "The variable "
+                  << leftVarName
+                  << " is already declared."
+                  << std::endl;
+        this->correctCode=false;
+    };
+    if(symbolTable.find(rightVarName) == symbolTable.end()) {
+      std::cerr << "The variable "
+                  << rightVarName
+                  << " doesn't exist."
+                  << std::endl;
+      this->correctCode=false;
+    }
     return 0;
   }
 
-/*   antlrcpp::Any preVisitDeclaration(ifccParser::DeclarationContext *context) 
-  {
-    int variablesNumber = context->VARIABLE().size() + 1; // +1 for the final variable
-    int variableOffset = variablesNumber * 4;               // initializes the highest offset for the first variable
-    this->maxOffset = variableOffset;
-    std::map<std::string, int> symbolTable; // SymbolTable
-    for (int i = 0; i < variablesNumber - 1; i++)
-    {
-      try(symbolTable.count(removeLastCharFromString(context->VARIABLENF()[i]->getText())) == 0) {
-        symbolTable.insert({removeLastCharFromString(context->VARIABLENF()[i]->getText()), variableOffset});
-        variableOffset -= 4;
-      } catch (int code){
-        std::cerr << "The variable " 
-                  << removeLastCharFromString(context->VARIABLENF()[i]->getText())
-                  << " is already declared. Code : "
-                  << code
-                  << std::endl;
-      }
-      
-    }
-    try(symbolTable.count(context->VARIABLE()->getText()) == 0) {
-        symbolTable.insert({context->VARIABLE()->getText()), variableOffset});
-        variableOffset -= 4;
-      } catch (int code){
-        std::cerr << "The variable " 
-                  << context->VARIABLE()->getText()
-                  << " is already declared. Code : "
-                  << code
-                  << std::endl;
-    symbolTable.insert({context->VARIABLE()->getText(), variableOffset});
-    this->symbolTable = symbolTable; // Copy the symbolTable for the whole visitor object
-    return 0;
-  }
-*/
-   antlrcpp::Any preVisitAffectation(ifccParser::AffectationContext *context) 
+   antlrcpp::Any visitAffectation(ifccParser::AffectationContext *context) 
   {
     std::string leftVarName = context->VARIABLE()->getText();
     if(this->symbolTable.count(leftVarName) == 1) {
@@ -123,40 +107,38 @@ public:
     return 0;
   }
 
-   antlrcpp::Any preVisitVarExpr(ifccParser::VarExprContext *ctx) 
+   antlrcpp::Any visitVarExpr(ifccParser::VarExprContext *ctx) 
   {
-    try{
-        symbolTable[ctx->VARIABLE()->getText()] ;
+    if(this->symbolTable.count(ctx->VARIABLE()->getText()) == 1){
         return symbolTable[ctx->VARIABLE()->getText()];
-    } catch (int code) {
+    } else {
         std::cerr << "The variable " 
                   << ctx->VARIABLE()->getText()
-                  << " is not declard. Code : "
-                  << code
+                  << " is not declared."
                   << std::endl;
         this->correctCode=false;
     }
     return symbolTable[ctx->VARIABLE()->getText()]; // returns an int
   }
 
-   antlrcpp::Any preVisitConstExpr(ifccParser::ConstExprContext *ctx) 
+   antlrcpp::Any visitConstExpr(ifccParser::ConstExprContext *ctx) 
   {
     return createTemporaryFromConstant(stoi(ctx->CONST()->getText())); // returns an int
   }
 
-   antlrcpp::Any preVisitParExpr(ifccParser::ParExprContext *ctx) 
+   antlrcpp::Any visitParExpr(ifccParser::ParExprContext *ctx) 
   {
     return visit(ctx->expr());
   }
 
-   antlrcpp::Any preVisitMinusAddExpr(ifccParser::MinusAddExprContext *ctx) 
+   antlrcpp::Any visitMinusAddExpr(ifccParser::MinusAddExprContext *ctx) 
   {
     int offsetLeft = visit(ctx->expr(0));
     int offsetRight = visit(ctx->expr(1));
     return createTemporaryVariable();
   }
 
-   antlrcpp::Any preVisitMultExpr(ifccParser::MultExprContext *ctx) 
+   antlrcpp::Any visitMultExpr(ifccParser::MultExprContext *ctx) 
   {
     int offsetLeft = visit(ctx->expr(0));
     int offsetRight = visit(ctx->expr(1));

@@ -36,6 +36,8 @@ int main(int argn, const char **argv) {
   preVisitor.visit(tree);
   if(preVisitor.getCorrectCode()) {
     visitor.visit(tree);
+  } else {
+    exit(1);
   }
   
 
