@@ -164,14 +164,23 @@ class Program{
 		Program(){
 			this->listInstr = list<IRInstr*>();
 		}
-		void gen_asm(ostream& o){
-			// Insert here the generation of the prolog
+		void gen_asm(ostream& o, int offsetReturn){
+			// Generation of the prolog
+			cout << ".globl	main\n"
+        	<< " main: \n"
+        	<< "\tpushq %rbp\n"
+            << "\tmovq %rsp, %rbp\n";
+			// End of generation of the prolog
 			while(this->listInstr.size() > 0){
 				this->listInstr.front()->gen_asm(cout);
 				this->listInstr.pop_front();
 			}
-
-			// Insert here the genration of the epilog
+			// Generation of the epilog
+			std::cout << "\tmovl	-"
+              << offsetReturn
+              << "(%rbp), %eax\n"
+              << "\tpopq %rbp\n"
+              << "\tret\n";
 		}
 		void push_back_in_list(IRInstr** irinstr){
 			this->listInstr.push_back(*irinstr);
