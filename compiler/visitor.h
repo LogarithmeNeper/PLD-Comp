@@ -32,10 +32,10 @@ public:
     return 0;
   }
 
-  virtual antlrcpp::Any visitVarReturn(ifccParser::VarReturnContext *ctx) override {
-    int offsetVar = this->symbolTable[ctx->VARIABLE()->getText()];
+  virtual antlrcpp::Any visitRet(ifccParser::RetContext *ctx) override {
+    int offsetExpr = visit(ctx->expr());
     std::cout << "\tmovl	-"
-              << offsetVar
+              << offsetExpr
               << "(%rbp), %eax\n"
               << "\tpopq %rbp\n"
               << "\tret\n";
@@ -43,53 +43,37 @@ public:
     return visitChildren(ctx);
   }
 
-  virtual antlrcpp::Any visitConstReturn(ifccParser::ConstReturnContext *ctx) override {
-    int retval = stoi(ctx->CONST()->getText());
-    std::cout << "\tmovl	$"
-              << retval
-              << ", %eax\n"
-              << "\tpopq %rbp\n"
-              << "\tret\n";
-    return 0;
-  }
-
   virtual antlrcpp::Any visitDeclaration(ifccParser::DeclarationContext *context) override
   {
+    int variablesNumber = context-> declarationvar().size();
+    int variableOffset = variablesNumber*4; // initializes the highest offset for the first variable
     std::map<std::string, int> symbolTable; // SymbolTable
-    int variablesNumber = context->VARIABLENF().size() + 1; // +1 for the final variable
-    int variableOffset = variablesNumber * 4;               // initializes the highest offset for the first variable
-    this->maxOffset = variableOffset;
-    for (int i = 0; i < variablesNumber - 1; i++)
-    {
-      symbolTable.insert({removeLastCharFromString(context->VARIABLENF()[i]->getText()), variableOffset});
-      variableOffset -= 4;
-    }
-    symbolTable.insert({context->VARIABLE()->getText(), variableOffset});
     this->symbolTable = symbolTable; // Copy the symbolTable for the whole visitor object
+    this->variableOffset = variableOffset;
+    this->maxOffset = variableOffset;
+    visitChildren(context);
     return 0;
   }
 
-  virtual antlrcpp::Any visitConstAffectation(ifccParser::ConstAffectationContext *context) override
+  virtual antlrcpp::Any visitDeclarationSeule(ifccParser::DeclarationSeuleContext *context) override
   {
-    int varValue = stoi(context->CONST()->getText());
-    //std::cout << "\tmovl $" << varValue << ", -" << this->symbolTable[context->VARIABLE()->getText()] << "(%rbp)" << std::endl;
-    ldconst* instr = new ldconst(varValue, this->symbolTable[context->VARIABLE()->getText()]);
-    IRInstr* irinstr = dynamic_cast<IRInstr*> (instr);
-    this->program.push_back_in_list(&irinstr);
+    symbolTable.insert({context->VARIABLE()->getText(), variableOffset});
+    this->variableOffset -=4;
     return 0;
   }
 
-  virtual antlrcpp::Any visitVarToVarAffectation(ifccParser::VarToVarAffectationContext *context) override
+  virtual antlrcpp::Any visitDeclarationInitialisee(ifccParser::DeclarationInitialiseeContext *context) override
   {
-    std::string leftVarName = context->VARIABLE(0)->getText();
-    std::string rightVarName = context->VARIABLE(1)->getText();
-    std::cout << "\tmovl -" << this->symbolTable[rightVarName] << "(%rbp), "
-              << "%eax" << std::endl;
+    symbolTable.insert({context->VARIABLE()->getText(), variableOffset});
+    this->variableOffset -=4;
+    std::string leftVarName = context->VARIABLE()->getText();
+    int exprOffset = visit(context->expr());
+    std::cout << "\tmovl -" << exprOffset << "(%rbp), " << "%eax" << std::endl;
     std::cout << "\tmovl %eax, -" << this->symbolTable[leftVarName] << "(%rbp)" << std::endl;
     return 0;
   }
 
-  virtual antlrcpp::Any visitExprAffectation(ifccParser::ExprAffectationContext *context) override
+  virtual antlrcpp::Any visitAffectation(ifccParser::AffectationContext *context) override
   {
     std::string leftVarName = context->VARIABLE()->getText();
     int exprOffset = visit(context->expr());
@@ -103,17 +87,6 @@ public:
               << std::endl;
     return 0;
   }
-
-  /*  print a map for debug
-  void print_map(std::string comment, const std::map<std::string, int>& m)
-  {
-      std::cout << comment;
-      for (const auto& [key, value] : m) {
-          std::cout << key << " = " << value << "; ";
-      }
-      std::cout << "\n";
-  }
-*/
 
   virtual antlrcpp::Any visitVarExpr(ifccParser::VarExprContext *ctx) override
   {
@@ -130,20 +103,31 @@ public:
     return visit(ctx->expr());
   }
 
-  virtual antlrcpp::Any visitAddExpr(ifccParser::AddExprContext *ctx) override
+  virtual antlrcpp::Any visitMinusAddExpr(ifccParser::MinusAddExprContext *ctx) override
   {
     int offsetLeft = visit(ctx->expr(0));
     int offsetRight = visit(ctx->expr(1));
+    
     std::cout 
       << "\tmovl -"
       << offsetLeft
       << "(%rbp), %eax"
       << std::endl;
-    std::cout
+    if(ctx->children[1]->getText() == "+")
+    {
+      std::cout
       << "\taddl -"
       << offsetRight 
       << "(%rbp), %eax"
       << std::endl;
+    } else if (ctx->children[1]->getText() == "-") {
+      std::cout
+      << "\tsubl -"
+      << offsetRight 
+      << "(%rbp), %eax"
+      << std::endl;
+    }
+    
     return createTemporaryVariable();
   }
 
@@ -159,23 +143,6 @@ public:
     std::cout
       << "\timull -"
       << offsetLeft
-      << "(%rbp), %eax"
-      << std::endl;
-    return createTemporaryVariable();
-  }
-
-  virtual antlrcpp::Any visitSublExpr(ifccParser::SublExprContext *ctx) override
-  {
-    int offsetLeft = visit(ctx->expr(0));
-    int offsetRight = visit(ctx->expr(1));
-    std::cout 
-      << "\tmovl -"
-      << offsetLeft
-      << "(%rbp), %eax"
-      << std::endl;
-    std::cout
-      << "subl -"
-      << offsetRight
       << "(%rbp), %eax"
       << std::endl;
     return createTemporaryVariable();
@@ -213,8 +180,20 @@ public:
     return this->maxOffset;
   }
 
+  /* print a map for debug
+  void print_map(std::string comment, const std::map<std::string, int>& m)
+  {
+      std::cout << comment;
+      for (const auto& [key, value] : m) {
+          std::cout << key << " = " << value << "; ";
+      }
+      std::cout << "\n";
+  }
+*/
+
 protected:
   std::map<std::string, int> symbolTable;
   int maxOffset;
   Program program;
+  int variableOffset;
 };
