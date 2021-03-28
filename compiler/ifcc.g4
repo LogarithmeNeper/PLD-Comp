@@ -3,12 +3,26 @@ grammar ifcc;
 axiom : prog       
       ;
 
-prog : 'int' 'main' '(' ')' '{' declaration* affectation* ret ';' '}' ;
+prog : 'int' 'main' '(' ')' '{' (declaration | declarationchar | declaration64)* affectation* ret ';' '}' ;
 declaration : 'int' (declarationvar ',')* declarationvar ';' ;
+declarationchar : 'char' (declarationvarchar ',')* declarationvarchar ';';
+declaration64 : 'int64_t' (declarationvar64 ',')* declarationvar64 ';' ;
+
 declarationvar : VARIABLE #DeclarationSeule
             | VARIABLE '=' CONST #DeclarationInitialiseeConst
             | VARIABLE '=' VARIABLE #DeclarationInitialiseeVar
               ;
+
+declarationvarchar : VARIABLE #DeclarationSeule
+            | VARIABLE '=' '\'' CONSTCHAR '\'' #DeclarationInitialiseeConst
+            | VARIABLE '=' VARIABLE #DeclarationInitialiseeVar
+              ;
+
+declarationvar64 : VARIABLE #DeclarationSeule
+            | VARIABLE '=' CONST #DeclarationInitialiseeConst
+            | VARIABLE '=' VARIABLE #DeclarationInitialiseeVar
+              ;
+
 affectation : VARIABLE '=' expr ';';
 
 expr : expr '*' expr #multExpr
@@ -22,6 +36,7 @@ ret : RETURN expr;
 
 RETURN : 'return' ;
 CONST : [0-9]+ ;
+CONSTCHAR : [ -~] ;
 VARIABLE : [a-z][a-zA-Z0-9_]* ;
 COMMENT : '/*' .*? '*/' -> skip ;
 DIRECTIVE : '#' .*? '\n' -> skip ;
