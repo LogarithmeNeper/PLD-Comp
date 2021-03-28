@@ -11,6 +11,7 @@
 #include "antlr4-runtime.h"
 #include "antlr4-generated/ifccBaseVisitor.h"
 #include "ldconst.h"
+#include "copy.h"
 
 /**
  * This class provides an empty implementation of ifccVisitor, which can be

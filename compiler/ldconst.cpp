@@ -7,7 +7,7 @@ ldconst::ldconst(const int & _constValue, const int & _offset) : IRInstr("ldcons
 
 }
 
-void ldconst::gen_asm(ostream & o)
+void ldconst::gen_asm(ostream & o) // x86 asm for now
 {
     o << "\tmovl $" << this->constValue << ", -" << this->offset << "(%rbp)" << std::endl;
 
