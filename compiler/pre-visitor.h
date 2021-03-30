@@ -4,6 +4,7 @@
 #pragma once
 
 #include <map>
+#include <set>
 #include <algorithm>
 
 #include "antlr4-runtime.h"
@@ -51,12 +52,12 @@ public:
                   << std::endl;
         this->correctCode=false;
     };
-
     return 0;
   }
 
-  antlrcpp::Any visitDeclarationInitialiseeConst(ifccParser::DeclarationInitialiseeConstContext *context) 
+  antlrcpp::Any visitDeclarationInitialisee(ifccParser::DeclarationInitialiseeContext *context) 
   {
+    int currentOffset = variableOffset;
     if(symbolTable.insert({context->VARIABLE()->getText(), variableOffset}).second == true) {
         this->variableOffset -=4;
     } else {
@@ -66,28 +67,17 @@ public:
                   << std::endl;
         this->correctCode=false;
     };
-    return 0;
-  }
-  
-  antlrcpp::Any visitDeclarationInitialiseeVar(ifccParser::DeclarationInitialiseeVarContext *context) 
-  {
-    std::string leftVarName = context->VARIABLE(0)->getText();
-    std::string rightVarName = context->VARIABLE(1)->getText();
-    if(symbolTable.insert({leftVarName, variableOffset}).second == true) {
-        this->variableOffset -=4;
-    } else {
+    int exprOffset = visit(context->expr());
+    if(exprOffset != -1) {
+      if(affectedOffsets.count(exprOffset) == 1) {
+        this->affectedOffsets.insert(currentOffset);
+      } else {
         std::cerr << "The variable "
-                  << leftVarName
-                  << " is already declared."
+                  << findVariableNameFromOffset(exprOffset)
+                  << " is not yet initialized."
                   << std::endl;
-        this->correctCode=false;
-    };
-    if(symbolTable.find(rightVarName) == symbolTable.end()) {
-      std::cerr << "The variable "
-                  << rightVarName
-                  << " doesn't exist."
-                  << std::endl;
-      this->correctCode=false;
+      }
+        
     }
     return 0;
   }
@@ -97,6 +87,16 @@ public:
     std::string leftVarName = context->VARIABLE()->getText();
     if(this->symbolTable.count(leftVarName) == 1) {
         int exprOffset = visit(context->expr());
+        if(exprOffset != -1) {
+          if(affectedOffsets.count(exprOffset) == 1) {
+            this->affectedOffsets.insert(this->symbolTable[leftVarName]);
+          } else {
+            std::cerr << "The variable "
+                  << findVariableNameFromOffset(exprOffset)
+                  << " is not yet initialized."
+                  << std::endl;
+          }
+        }
     } else {
         std::cerr << "The variable " 
                   << leftVarName
@@ -117,6 +117,7 @@ public:
                   << " is not declared."
                   << std::endl;
         this->correctCode=false;
+        return -1;
     }
     return symbolTable[ctx->VARIABLE()->getText()]; // returns an int
   }
@@ -134,14 +135,46 @@ public:
    antlrcpp::Any visitMinusAddExpr(ifccParser::MinusAddExprContext *ctx) 
   {
     int offsetLeft = visit(ctx->expr(0));
+    if(offsetLeft != -1) {
+      if(affectedOffsets.count(offsetLeft) != 1) {
+        std::cerr << "The variable "
+              << findVariableNameFromOffset(offsetLeft)
+              << " is not yet initialized."
+              << std::endl;
+      }
+    }
     int offsetRight = visit(ctx->expr(1));
+    if(offsetRight != -1) {
+      if(affectedOffsets.count(offsetRight) != 1) {
+        std::cerr << "The variable "
+              << findVariableNameFromOffset(offsetRight)
+              << " is not yet initialized."
+              << std::endl;
+      }
+    }
     return createTemporaryVariable();
   }
 
    antlrcpp::Any visitMultExpr(ifccParser::MultExprContext *ctx) 
   {
     int offsetLeft = visit(ctx->expr(0));
+    if(offsetLeft != -1) {
+      if(affectedOffsets.count(offsetLeft) != 1) {
+        std::cerr << "The variable "
+              << findVariableNameFromOffset(offsetLeft)
+              << " is not yet initialized."
+              << std::endl;
+      }
+    }
     int offsetRight = visit(ctx->expr(1));
+    if(offsetRight != -1) {
+      if(affectedOffsets.count(offsetRight) != 1) {
+        std::cerr << "The variable "
+              << findVariableNameFromOffset(offsetRight)
+              << " is not yet initialized."
+              << std::endl;
+      }
+    }
     return createTemporaryVariable();
   }
 
@@ -165,6 +198,15 @@ public:
     return this->maxOffset;
   }
 
+  std::string findVariableNameFromOffset(int offset) {
+    for (auto it = this->symbolTable.begin(); it != symbolTable.end(); ++it) {
+      if (it->second == offset) {
+        return it->first;
+      }   
+    }
+    return "";
+  }
+
   /* print a map for debug
   void print_map(std::string comment, const std::map<std::string, int>& m)
   {
@@ -182,6 +224,7 @@ public:
 
 protected:
   std::map<std::string, int> symbolTable;
+  std::set<int> affectedOffsets;
   int maxOffset;
   int variableOffset;
   bool correctCode = true;
