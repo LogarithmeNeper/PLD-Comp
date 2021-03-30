@@ -1,3 +1,5 @@
+#include <cstdint>
+
 int main() {
     int a,b;
     char c,d;
