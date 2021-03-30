@@ -56,22 +56,13 @@ public:
     return 0;
   }
 
-  virtual antlrcpp::Any visitDeclarationInitialiseeConst(ifccParser::DeclarationInitialiseeConstContext *context) override
+  virtual antlrcpp::Any visitDeclarationInitialisee(ifccParser::DeclarationInitialiseeContext *context) override
   {
     symbolTable.insert({context->VARIABLE()->getText(), variableOffset});
     this->variableOffset -=4;
-    int varValue = stoi(context->CONST()->getText());
-    std::cout << "\tmovl $" << varValue << ", -" << this->symbolTable[context->VARIABLE()->getText()] << "(%rbp)" << std::endl;
-    return 0;
-  }
-  
-  virtual antlrcpp::Any visitDeclarationInitialiseeVar(ifccParser::DeclarationInitialiseeVarContext *context) override
-  {
-    symbolTable.insert({context->VARIABLE(0)->getText(), variableOffset});
-    this->variableOffset -=4;
-    std::string leftVarName = context->VARIABLE(0)->getText();
-    std::string rightVarName = context->VARIABLE(1)->getText();
-    std::cout << "\tmovl -" << this->symbolTable[rightVarName] << "(%rbp), " << "%eax" << std::endl;
+    std::string leftVarName = context->VARIABLE()->getText();
+    int exprOffset = visit(context->expr());
+    std::cout << "\tmovl -" << exprOffset << "(%rbp), " << "%eax" << std::endl;
     std::cout << "\tmovl %eax, -" << this->symbolTable[leftVarName] << "(%rbp)" << std::endl;
     return 0;
   }

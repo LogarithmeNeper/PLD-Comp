@@ -6,9 +6,8 @@ axiom : prog
 prog : 'int' 'main' '(' ')' '{' declaration* affectation* ret ';' '}' ;
 declaration : 'int' (declarationvar ',')* declarationvar ';' ;
 declarationvar : VARIABLE #DeclarationSeule
-            | VARIABLE '=' CONST #DeclarationInitialiseeConst
-            | VARIABLE '=' VARIABLE #DeclarationInitialiseeVar
-              ;
+            | VARIABLE '=' expr #DeclarationInitialisee ;
+            
 affectation : VARIABLE '=' expr ';';
 
 expr : expr '*' expr #multExpr
