@@ -39,8 +39,10 @@ public:
 
   virtual antlrcpp::Any visitDeclaration(ifccParser::DeclarationContext *context) override
   {
-    int variablesNumber = context-> declarationvar().size();
-    int variableOffset = variablesNumber*4; // initializes the highest offset for the first variable
+    int variablesNumberInt = context-> declarationvarint().size();
+    int variablesNumberChar = context-> declarationvarchar().size();
+    int variablesNumber64 = context-> declarationvar64().size();
+    int variableOffset = variablesNumberInt*4 + variablesNumberChar + variablesNumber64*8; // initializes the highest offset for the first variable
     std::map<std::string, int> symbolTable; // SymbolTable
     this->symbolTable = symbolTable; // Copy the symbolTable for the whole visitor object
     this->variableOffset = variableOffset;

@@ -3,24 +3,25 @@ grammar ifcc;
 axiom : prog       
       ;
 
-prog : 'int' 'main' '(' ')' '{' (declaration | declarationchar | declaration64)* affectation* ret ';' '}' ;
-declaration : 'int' (declarationvar ',')* declarationvar ';' ;
+prog : 'int' 'main' '(' ')' '{' declaration* affectation* ret ';' '}' ;
+declaration : (declarationint | declarationchar | declaration64);
+declarationint : 'int' (declarationvarint ',')* declarationvarint ';' ;
 declarationchar : 'char' (declarationvarchar ',')* declarationvarchar ';';
 declaration64 : 'int64_t' (declarationvar64 ',')* declarationvar64 ';' ;
 
-declarationvar : VARIABLE #DeclarationSeule
-            | VARIABLE '=' CONST #DeclarationInitialiseeConst
-            | VARIABLE '=' VARIABLE #DeclarationInitialiseeVar
+declarationvarint : VARIABLE #DeclarationSeuleInt
+            | VARIABLE '=' CONST #DeclarationInitialiseeConstInt
+            | VARIABLE '=' VARIABLE #DeclarationInitialiseeVarInt
               ;
 
-declarationvarchar : VARIABLE #DeclarationSeule
-            | VARIABLE '=' '\'' CONSTCHAR '\'' #DeclarationInitialiseeConst
-            | VARIABLE '=' VARIABLE #DeclarationInitialiseeVar
+declarationvarchar : VARIABLE #DeclarationSeuleChar
+            | VARIABLE '=' '\'' CONSTCHAR '\'' #DeclarationInitialiseeConstChar
+            | VARIABLE '=' VARIABLE #DeclarationInitialiseeVarChar
               ;
 
-declarationvar64 : VARIABLE #DeclarationSeule
-            | VARIABLE '=' CONST #DeclarationInitialiseeConst
-            | VARIABLE '=' VARIABLE #DeclarationInitialiseeVar
+declarationvar64 : VARIABLE #DeclarationSeule64
+            | VARIABLE '=' CONST #DeclarationInitialiseeConst64
+            | VARIABLE '=' VARIABLE #DeclarationInitialiseeVar64
               ;
 
 affectation : VARIABLE '=' expr ';';
