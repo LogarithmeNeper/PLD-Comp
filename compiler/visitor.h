@@ -26,14 +26,16 @@ class Visitor : public ifccBaseVisitor
 public:
   virtual antlrcpp::Any visitProg(ifccParser::ProgContext *ctx) override
   {
-    this->program = Program(); // We initialise the Program one we visit the axiom of the grammar
+    this->program = new Program(); // We initialise the Program one we visit the axiom of the grammar
+    this->program->add_cfg(new CFG(this->program));
+    this->program->get_cfg_by_index(0)->add_bb(new BasicBlock(this->program->get_cfg_by_index(0), "main"));
     visitChildren(ctx);
     return 0;
   }
 
   virtual antlrcpp::Any visitRet(ifccParser::RetContext *ctx) override {
     int offsetExpr = visit(ctx->expr());
-    this->program.gen_asm(cout, offsetExpr);
+    this->program->gen_asm(cout, offsetExpr);
     return visitChildren(ctx);
   }
 
@@ -65,7 +67,7 @@ public:
 
     Copy* copyInstr = new Copy(exprOffset, this->symbolTable[leftVarName]);
     IRInstr* instr = dynamic_cast<IRInstr*> (copyInstr);
-    this->program.push_back_in_list(&instr);
+    this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr);
     
     return 0;
   }
@@ -76,7 +78,7 @@ public:
     int exprOffset = visit(context->expr());
     Copy* copyInstr = new Copy(exprOffset, this->symbolTable[leftVarName]);
     IRInstr* instr = dynamic_cast<IRInstr*> (copyInstr);
-    this->program.push_back_in_list(&instr);
+    this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr);
     return 0;
   }
 
@@ -107,13 +109,13 @@ public:
     {
       Add* addInstr = new Add(offsetLeft, offsetRight, maxOffset);
       IRInstr* instr = dynamic_cast<IRInstr*> (addInstr);
-      this->program.push_back_in_list(&instr);
+      this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr);
     }
     else if(ctx->children[1]->getText() == "-")
     {
       Sub* subInstr = new Sub(offsetLeft, offsetRight, maxOffset);
       IRInstr* instr = dynamic_cast<IRInstr*> (subInstr);
-      this->program.push_back_in_list(&instr);
+      this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr);
     }
 
     return maxOffset;
@@ -129,7 +131,7 @@ public:
 
     Mul* mulInstr = new Mul(offsetLeft, offsetRight, maxOffset);
     IRInstr* instr = dynamic_cast<IRInstr*> (mulInstr);
-    this->program.push_back_in_list(&instr);
+    this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr);
 
     return maxOffset;
   }
@@ -146,7 +148,7 @@ public:
 
     ldconst* ldconstInstr = new ldconst(val, this->maxOffset);
     IRInstr* instr = dynamic_cast<IRInstr*> (ldconstInstr);
-    this->program.push_back_in_list(&instr);
+    this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr);
 
     return this->maxOffset;
   }
@@ -167,6 +169,6 @@ public:
 protected:
   std::map<std::string, int> symbolTable;
   int maxOffset;
-  Program program;
+  Program* program;
   int variableOffset;
 };

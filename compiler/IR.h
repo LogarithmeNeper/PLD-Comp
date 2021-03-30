@@ -99,7 +99,7 @@ class BasicBlock {
 	BasicBlock(CFG* cfg, string entry_label);
 	void gen_asm(ostream &o); /**< x86 assembly code generation for this basic block (very simple) */
 
-	void add_IRInstr(IRInstr::Operation op/*, Type t*/, vector<string> params);
+	void add_IRInstr(IRInstr* instr);
 
 	// No encapsulation whatsoever here. Feel free to do better.
 	BasicBlock* exit_true;  /**< pointer to the next basic block, true branch. If nullptr, return from procedure */ 
@@ -128,31 +128,33 @@ class BasicBlock {
  */
 class CFG {
  public:
-	CFG(DefFonction* ast);
+	CFG(Program* program);
 
-	DefFonction* ast; /**< The AST this CFG comes from */
+	Program* program; /**< The AST this CFG comes from */
 	
 	void add_bb(BasicBlock* bb); 
 
 	// x86 code generation: could be encapsulated in a processor class in a retargetable compiler
 	void gen_asm(ostream& o);
-	string IR_reg_to_asm(string reg); /**< helper method: inputs a IR reg or input variable, returns e.g. "-24(%rbp)" for the proper value of 24 */
+	// string IR_reg_to_asm(string reg); /**< helper method: inputs a IR reg or input variable, returns e.g. "-24(%rbp)" for the proper value of 24 */
 	void gen_asm_prologue(ostream& o);
-	void gen_asm_epilogue(ostream& o);
+	void gen_asm_epilogue(ostream& o, int offsetReturn);
 
 	// symbol table methods
-	void add_to_symbol_table(string name/*, Type t*/);
-	string create_new_tempvar(/*Type t*/);
-	int get_var_index(string name);
+	void add_to_symbol_table(string & name, int & index);
+	//string create_new_tempvar(/*Type t*/);
+	int get_var_index(string & name);
 	//Type get_var_type(string name);
 
 	// basic block management
-	string new_BB_name();
+
+	BasicBlock* get_bb_by_index(int index);
+	// string new_BB_name();
 	BasicBlock* current_bb;
 
  protected:
 	//map <string, Type> SymbolType; /**< part of the symbol table  */
-	map <string, int> SymbolIndex; /**< part of the symbol table  */
+	map <string, int> symbolTable; /**< part of the symbol table  */
 	int nextFreeSymbolIndex; /**< to allocate new symbols in the symbol table */
 	int nextBBnumber; /**< just for naming */
 	
@@ -161,31 +163,12 @@ class CFG {
 
 class Program{
 	public:
-		Program(){
-			this->listInstr = list<IRInstr*>();
-		}
-		void gen_asm(ostream& o, int offsetReturn){
-			// Generation of the prolog
-			cout << ".globl	main\n"
-        	<< " main: \n"
-        	<< "\tpushq %rbp\n"
-            << "\tmovq %rsp, %rbp\n";
-			// End of generation of the prolog
-			while(this->listInstr.size() > 0){
-				this->listInstr.front()->gen_asm(cout);
-				this->listInstr.pop_front();
-			}
-			// Generation of the epilog
-			std::cout << "\tmovl	-"
-              << offsetReturn
-              << "(%rbp), %eax\n"
-              << "\tpopq %rbp\n"
-              << "\tret\n";
-		}
-		void push_back_in_list(IRInstr** irinstr){
-			this->listInstr.push_back(*irinstr);
-		}
-		list<IRInstr*> listInstr; // First implementation, after it will be a list of control flow containing a list of bb containing a list of ir.
+		Program();
+		void gen_asm(ostream& o, int offsetReturn);
+		void add_cfg(CFG* cfg);
+		vector<CFG*> cfgs;
+
+		CFG* get_cfg_by_index(int index);
 
 	protected:
 		
