@@ -10,8 +10,8 @@ declarationvar : VARIABLE #DeclarationSeule
             
 affectation : VARIABLE '=' expr ';';
 
-expr : '(' expr ')' #parExprexpr
-      | '*' expr #multExpr
+expr : '(' expr ')' #parExpr
+      | expr '*' expr #multExpr
       | expr ('+'|'-') expr #minusAddExpr
       | CONST #constExpr
       | VARIABLE #varExpr
