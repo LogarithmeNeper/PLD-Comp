@@ -47,6 +47,24 @@ public:
     return 0;
   }
 
+  virtual antlrcpp::Any visitDeclarationInt(ifccParser::DeclarationIntContext *context) override
+  {
+    visitChildren(context);
+    return 0;
+  }
+
+  virtual antlrcpp::Any visitDeclarationChar(ifccParser::DeclarationCharContext *context) override
+  {
+    visitChildren(context);
+    return 0;
+  }
+
+  virtual antlrcpp::Any visitDeclaration64(ifccParser::Declaration64Context *context) override
+  {
+    visitChildren(context);
+    return 0;
+  }
+
   virtual antlrcpp::Any visitDeclarationSeuleInt(ifccParser::DeclarationSeuleIntContext *context) override
   {
     this->maxOffset -=4;
