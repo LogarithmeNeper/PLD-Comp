@@ -105,7 +105,7 @@ public:
     symbolTable.insert({context->VARIABLE(0)->getText(), maxOffset});
     std::string leftVarName = context->VARIABLE(0)->getText();
     std::string rightVarName = context->VARIABLE(1)->getText();
-    std::cout << "\tmovl -" << this->symbolTable[rightVarName] << "(%rbp), " << "%eax" << std::endl;
+    std::cout << "\tmovl -" << this->symbolTable[rightVarName] << "(%rbp), " << "%al" << std::endl;
     std::cout << "\tmovl %eax, -" << this->symbolTable[leftVarName] << "(%rbp)" << std::endl;
     return 0;
   }
@@ -132,7 +132,7 @@ public:
     symbolTable.insert({context->VARIABLE(0)->getText(), maxOffset});
     std::string leftVarName = context->VARIABLE(0)->getText();
     std::string rightVarName = context->VARIABLE(1)->getText();
-    std::cout << "\tmovl -" << this->symbolTable[rightVarName] << "(%rbp), " << "%eax" << std::endl;
+    std::cout << "\tmovl -" << this->symbolTable[rightVarName] << "(%rbp), " << "%rax" << std::endl;
     std::cout << "\tmovl %eax, -" << this->symbolTable[leftVarName] << "(%rbp)" << std::endl;
     return 0;
   }
