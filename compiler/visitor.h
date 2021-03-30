@@ -47,34 +47,16 @@ public:
     return 0;
   }
 
-  virtual antlrcpp::Any visitDeclarationInt(ifccParser::DeclarationintContext *context) override
-  {
-    visitChildren(context);
-    return 0;
-  }
-
-  virtual antlrcpp::Any visitDeclarationChar(ifccParser::DeclarationcharContext *context) override
-  {
-    visitChildren(context);
-    return 0;
-  }
-
-  virtual antlrcpp::Any visitDeclaration64(ifccParser::Declaration64Context *context) override
-  {
-    visitChildren(context);
-    return 0;
-  }
-
   virtual antlrcpp::Any visitDeclarationSeuleInt(ifccParser::DeclarationSeuleIntContext *context) override
   {
-    this->maxOffset -=4;
+    this->maxOffset +=4;
     symbolTable.insert({context->VARIABLE()->getText(), maxOffset});
     return 0;
   }
 
   virtual antlrcpp::Any visitDeclarationInitialiseeConstInt(ifccParser::DeclarationInitialiseeConstIntContext *context) override
   {
-    this->maxOffset -=4;
+    this->maxOffset +=4;
     symbolTable.insert({context->VARIABLE()->getText(), maxOffset});
     int varValue = stoi(context->CONST()->getText());
     std::cout << "\tmovl $" << varValue << ", -" << this->symbolTable[context->VARIABLE()->getText()] << "(%rbp)" << std::endl;
@@ -83,7 +65,7 @@ public:
   
   virtual antlrcpp::Any visitDeclarationInitialiseeVarInt(ifccParser::DeclarationInitialiseeVarIntContext *context) override
   {
-    this->maxOffset -=4;
+    this->maxOffset +=4;
     symbolTable.insert({context->VARIABLE(0)->getText(), maxOffset});
     std::string leftVarName = context->VARIABLE(0)->getText();
     std::string rightVarName = context->VARIABLE(1)->getText();
@@ -94,14 +76,14 @@ public:
 
   virtual antlrcpp::Any visitDeclarationSeuleChar(ifccParser::DeclarationSeuleCharContext *context) override
   {
-    this->maxOffset -=1;
+    this->maxOffset +=1;
     symbolTable.insert({context->VARIABLE()->getText(), maxOffset});
     return 0;
   }
 
   virtual antlrcpp::Any visitDeclarationInitialiseeConstChar(ifccParser::DeclarationInitialiseeConstCharContext *context) override
   {
-    this->maxOffset -=1;
+    this->maxOffset +=1;
     symbolTable.insert({context->VARIABLE()->getText(), maxOffset});
     int varValue = stoi(context->CONSTCHAR()->getText());
     std::cout << "\tmovl $" << varValue << ", -" << this->symbolTable[context->VARIABLE()->getText()] << "(%rbp)" << std::endl;
@@ -110,7 +92,7 @@ public:
 
   virtual antlrcpp::Any visitDeclarationInitialiseeConstCharNum(ifccParser::DeclarationInitialiseeConstCharNumContext *context) override
   {
-    this->maxOffset -=1;
+    this->maxOffset +=1;
     symbolTable.insert({context->VARIABLE()->getText(), maxOffset});
     int varValue = stoi(context->CONST()->getText());
     std::cout << "\tmovl $" << varValue << ", -" << this->symbolTable[context->VARIABLE()->getText()] << "(%rbp)" << std::endl;
@@ -119,7 +101,7 @@ public:
   
   virtual antlrcpp::Any visitDeclarationInitialiseeVarChar(ifccParser::DeclarationInitialiseeVarCharContext *context) override
   {
-    this->maxOffset -=1;
+    this->maxOffset +=1;
     symbolTable.insert({context->VARIABLE(0)->getText(), maxOffset});
     std::string leftVarName = context->VARIABLE(0)->getText();
     std::string rightVarName = context->VARIABLE(1)->getText();
@@ -130,14 +112,14 @@ public:
 
     virtual antlrcpp::Any visitDeclarationSeule64(ifccParser::DeclarationSeule64Context *context) override
   {
-    this->maxOffset -=8;
+    this->maxOffset +=8;
     symbolTable.insert({context->VARIABLE()->getText(), maxOffset});
     return 0;
   }
 
   virtual antlrcpp::Any visitDeclarationInitialiseeConst64(ifccParser::DeclarationInitialiseeConst64Context *context) override
   {
-    this->maxOffset -=8;
+    this->maxOffset +=8;
     symbolTable.insert({context->VARIABLE()->getText(), maxOffset});
     int varValue = stoi(context->CONST()->getText());
     std::cout << "\tmovl $" << varValue << ", -" << this->symbolTable[context->VARIABLE()->getText()] << "(%rbp)" << std::endl;
@@ -146,7 +128,7 @@ public:
   
   virtual antlrcpp::Any visitDeclarationInitialiseeVar64(ifccParser::DeclarationInitialiseeVar64Context *context) override
   {
-    this->maxOffset -=8;
+    this->maxOffset +=8;
     symbolTable.insert({context->VARIABLE(0)->getText(), maxOffset});
     std::string leftVarName = context->VARIABLE(0)->getText();
     std::string rightVarName = context->VARIABLE(1)->getText();
