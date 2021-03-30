@@ -47,13 +47,13 @@ public:
     return 0;
   }
 
-  virtual antlrcpp::Any visitDeclarationInt(ifccParser::DeclarationIntContext *context) override
+  virtual antlrcpp::Any visitDeclarationInt(ifccParser::DeclarationintContext *context) override
   {
     visitChildren(context);
     return 0;
   }
 
-  virtual antlrcpp::Any visitDeclarationChar(ifccParser::DeclarationCharContext *context) override
+  virtual antlrcpp::Any visitDeclarationChar(ifccParser::DeclarationcharContext *context) override
   {
     visitChildren(context);
     return 0;
