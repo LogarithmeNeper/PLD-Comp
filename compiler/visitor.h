@@ -89,6 +89,15 @@ public:
     std::cout << "\tmovl $" << varValue << ", -" << this->symbolTable[context->VARIABLE()->getText()] << "(%rbp)" << std::endl;
     return 0;
   }
+
+  virtual antlrcpp::Any visitDeclarationInitialiseeConstCharNum(ifccParser::DeclarationInitialiseeConstCharNumContext *context) override
+  {
+    this->maxOffset -=1;
+    symbolTable.insert({context->VARIABLE()->getText(), maxOffset});
+    int varValue = stoi(context->CONST()->getText());
+    std::cout << "\tmovl $" << varValue << ", -" << this->symbolTable[context->VARIABLE()->getText()] << "(%rbp)" << std::endl;
+    return 0;
+  }
   
   virtual antlrcpp::Any visitDeclarationInitialiseeVarChar(ifccParser::DeclarationInitialiseeVarCharContext *context) override
   {

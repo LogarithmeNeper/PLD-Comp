@@ -15,6 +15,7 @@ declarationvarint : VARIABLE #DeclarationSeuleInt
               ;
 
 declarationvarchar : VARIABLE #DeclarationSeuleChar
+            | VARIABLE '=' CONST #DeclarationInitialiseeConstCharNum
             | VARIABLE '=' '\'' CONSTCHAR '\'' #DeclarationInitialiseeConstChar
             | VARIABLE '=' VARIABLE #DeclarationInitialiseeVarChar
               ;
