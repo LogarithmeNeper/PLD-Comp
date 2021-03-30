@@ -187,6 +187,7 @@ public:
   {
     this->maxOffset += 4;
     this->symbolTable.insert({"tmp"+std::to_string(this->maxOffset), this->maxOffset});
+    this->affectedOffsets.insert(this->maxOffset);
     return this->maxOffset;
   }
 
@@ -195,6 +196,7 @@ public:
 
     this->maxOffset += 4;
     this->symbolTable.insert({"tmp" + std::to_string(this->maxOffset), this->maxOffset});
+    this->affectedOffsets.insert(this->maxOffset);
     return this->maxOffset;
   }
 
