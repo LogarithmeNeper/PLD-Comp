@@ -38,7 +38,7 @@ ret : RETURN expr;
 
 RETURN : 'return' ;
 CONST : [0-9]+ ;
-CONSTCHAR : '\'' [^\\s-~] '\'' ;
+CONSTCHAR : '\'' [a-z] '\'' ;
 VARIABLE : [a-z][a-zA-Z0-9_]* ;
 COMMENT : '/*' .*? '*/' -> skip ;
 DIRECTIVE : '#' .*? '\n' -> skip ;
