@@ -5,6 +5,7 @@
 
 #include <map>
 #include <algorithm>
+#include <string>
 
 #include "antlr4-runtime.h"
 #include "antlr4-generated/ifccBaseVisitor.h"
@@ -85,7 +86,9 @@ public:
   {
     this->maxOffset +=1;
     symbolTable.insert({context->VARIABLE()->getText(), maxOffset});
-    int varValue = stoi(context->CONSTCHAR()->getText());
+    string recup = context->CONSTCHAR()->getText();
+    std::cout << recup << std::endl;
+    int varValue = stoi();
     std::cout << "\tmovb $" << varValue << ", -" << this->symbolTable[context->VARIABLE()->getText()] << "(%rbp)" << std::endl;
     return 0;
   }

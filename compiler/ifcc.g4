@@ -16,7 +16,7 @@ declarationvarint : VARIABLE #DeclarationSeuleInt
 
 declarationvarchar : VARIABLE #DeclarationSeuleChar
             | VARIABLE '=' CONST #DeclarationInitialiseeConstCharNum
-            | VARIABLE '=' '\'' CONSTCHAR '\'' #DeclarationInitialiseeConstChar
+            | VARIABLE '=' CONSTCHAR #DeclarationInitialiseeConstChar
             | VARIABLE '=' VARIABLE #DeclarationInitialiseeVarChar
               ;
 
@@ -38,7 +38,7 @@ ret : RETURN expr;
 
 RETURN : 'return' ;
 CONST : [0-9]+ ;
-CONSTCHAR : [!-~] ;
+CONSTCHAR : '\'' [!-~] '\'' ;
 VARIABLE : [a-z][a-zA-Z0-9_]* ;
 COMMENT : '/*' .*? '*/' -> skip ;
 DIRECTIVE : '#' .*? '\n' -> skip ;
