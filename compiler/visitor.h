@@ -106,7 +106,7 @@ public:
     std::string leftVarName = context->VARIABLE(0)->getText();
     std::string rightVarName = context->VARIABLE(1)->getText();
     std::cout << "\tmovl -" << this->symbolTable[rightVarName] << "(%rbp), " << "%al" << std::endl;
-    std::cout << "\tmovl %eax, -" << this->symbolTable[leftVarName] << "(%rbp)" << std::endl;
+    std::cout << "\tmovl %al, -" << this->symbolTable[leftVarName] << "(%rbp)" << std::endl;
     return 0;
   }
 
@@ -133,7 +133,7 @@ public:
     std::string leftVarName = context->VARIABLE(0)->getText();
     std::string rightVarName = context->VARIABLE(1)->getText();
     std::cout << "\tmovl -" << this->symbolTable[rightVarName] << "(%rbp), " << "%rax" << std::endl;
-    std::cout << "\tmovl %eax, -" << this->symbolTable[leftVarName] << "(%rbp)" << std::endl;
+    std::cout << "\tmovl %rax, -" << this->symbolTable[leftVarName] << "(%rbp)" << std::endl;
     return 0;
   }
 
