@@ -9,7 +9,13 @@ CFG::CFG(Program* program)
     this->symbolTable = new map<string,int>();
 
 }
-
+CFG::~CFG() {
+    delete symbolTable;
+    for(int i=0; i < bbs.size(); i++){
+        delete bbs[i];
+    }
+    delete current_bb;
+}
 void CFG::add_bb(BasicBlock* bb)
 {
     this->bbs.push_back(bb);

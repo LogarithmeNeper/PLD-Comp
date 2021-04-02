@@ -15,6 +15,7 @@ using namespace std;
 class Program{
 	public:
 		Program();
+		~Program();
 		void gen_asm(ostream& o, int offsetReturn);
 		void add_cfg(CFG* cfg);
 		

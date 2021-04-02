@@ -32,6 +32,5 @@ int main(int argn, const char **argv) {
 
   Visitor visitor;
   visitor.visit(tree);
-
   return 0;
 }

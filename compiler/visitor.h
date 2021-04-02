@@ -28,6 +28,10 @@
 class Visitor : public ifccBaseVisitor
 {
 public:
+  ~Visitor() {
+    delete this->program;
+  }
+
   virtual antlrcpp::Any visitProg(ifccParser::ProgContext *ctx) override
   {
     this->program = new Program(); // We initialise the Program one we visit the axiom of the grammar

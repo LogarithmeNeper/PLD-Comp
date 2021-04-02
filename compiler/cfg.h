@@ -27,7 +27,7 @@ using namespace std;
 class CFG {
  public:
 	CFG(Program* program);
-
+	~CFG();
 	Program* program; /**< The AST this CFG comes from */
 	
 	void add_bb(BasicBlock* bb); 
