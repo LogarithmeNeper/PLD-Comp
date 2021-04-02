@@ -62,7 +62,7 @@ public:
     symbolTable.insert({context->VARIABLE()->getText(), maxOffset});
     int varValue = stoi(context->CONST()->getText());
     
-    ldsconst* constInstr = new ldconst(varValue, this->symbolTable[context->VARIABLE()->getText()];
+    ldconst* constInstr = new ldconst(varValue, this->symbolTable[context->VARIABLE()->getText()], this->program->get_cfg_by_index(0)->get_bb_by_index(0));
     IRInstr* instr = dynamic_cast<IRInstr*> (constInstr);
     this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr);
     return 0;
@@ -97,7 +97,7 @@ public:
     char charRecup = recup.at(1);
     int varValue = (int) (charRecup);
     
-    ldsconst* constInstr = new ldconst(varValue, this->symbolTable[context->VARIABLE()->getText()];
+    ldconst* constInstr = new ldconst(varValue, this->symbolTable[context->VARIABLE()->getText()], this->program->get_cfg_by_index(0)->get_bb_by_index(0));
     IRInstr* instr = dynamic_cast<IRInstr*> (constInstr);
     this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr);
     return 0;
@@ -109,7 +109,7 @@ public:
     symbolTable.insert({context->VARIABLE()->getText(), maxOffset});
     int varValue = stoi(context->CONST()->getText());
     
-    ldsconst* constInstr = new ldconst(varValue, this->symbolTable[context->VARIABLE()->getText()];
+    ldconst* constInstr = new ldconst(varValue, this->symbolTable[context->VARIABLE()->getText()], this->program->get_cfg_by_index(0)->get_bb_by_index(0));
     IRInstr* instr = dynamic_cast<IRInstr*> (constInstr);
     this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr);
     return 0;
@@ -141,7 +141,7 @@ public:
     symbolTable.insert({context->VARIABLE()->getText(), maxOffset});
     int varValue = stoi(context->CONST()->getText());
     
-    ldsconst* constInstr = new ldconst(varValue, this->symbolTable[context->VARIABLE()->getText()];
+    ldconst* constInstr = new ldconst(varValue, this->symbolTable[context->VARIABLE()->getText()],  this->program->get_cfg_by_index(0)->get_bb_by_index(0));
     IRInstr* instr = dynamic_cast<IRInstr*> (constInstr);
     this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr);
     return 0;
@@ -154,7 +154,7 @@ public:
     std::string leftVarName = context->VARIABLE(0)->getText();
     std::string rightVarName = context->VARIABLE(1)->getText();
     
-    Copy* copyInstr = new Copy(exprOffset, this->symbolTable[leftVarName], this->program->get_cfg_by_index(0)->get_bb_by_index(0));
+    Copy* copyInstr = new Copy(this->symbolTable[rightVarName], this->symbolTable[leftVarName], this->program->get_cfg_by_index(0)->get_bb_by_index(0));
     IRInstr* instr = dynamic_cast<IRInstr*> (copyInstr);
     this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr);
     return 0;
