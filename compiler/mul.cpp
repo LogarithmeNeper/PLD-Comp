@@ -1,6 +1,6 @@
 #include "mul.h"
 
-Mul::Mul(const int & _offsetLeft, const int & _offsetRight, const int & _offsetDest) : IRInstr("sub")
+Mul::Mul(const int & _offsetLeft, const int & _offsetRight, const int & _offsetDest, BasicBlock* bb) : IRInstr("sub",bb)
 {
     this->offsetLeft = _offsetLeft;
     this->offsetRight = _offsetRight;
@@ -10,17 +10,17 @@ Mul::Mul(const int & _offsetLeft, const int & _offsetRight, const int & _offsetD
 
 void Mul::gen_asm(ostream & o) // x86 asm for now
 {
-    std::cout 
+    o 
       << "\tmovl -"
       << this->offsetRight
       << "(%rbp), %eax"
       << std::endl;
-    std::cout
+    o
       << "\timull -"
       << this->offsetLeft
       << "(%rbp), %eax"
       << std::endl;
-    std::cout
+    o
         << "\tmovl %eax, -" 
         << this->offsetDest
         << "(%rbp)" 

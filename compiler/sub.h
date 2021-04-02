@@ -6,7 +6,7 @@
 class Sub : public IRInstr{ // Used to make an addition
     public:
         Sub();
-        Sub(const int & _offsetLeft, const int & _offsetRight, const int & _offsetDest);
+        Sub(const int & _offsetLeft, const int & _offsetRight, const int & _offsetDest, BasicBlock* bb);
         void gen_asm(ostream & o = cout);
         ~Sub();
         int offsetLeft; // the offset of the left var

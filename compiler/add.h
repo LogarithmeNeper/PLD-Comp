@@ -6,7 +6,7 @@
 class Add : public IRInstr{ // Used to make an addition
     public:
         Add();
-        Add(const int & _offsetLeft, const int & _offsetRight, const int & _offsetDest);
+        Add(const int & _offsetLeft, const int & _offsetRight, const int & _offsetDest, BasicBlock* bb);
         void gen_asm(ostream & o = cout);
         ~Add();
         int offsetLeft; // the offset of the left var

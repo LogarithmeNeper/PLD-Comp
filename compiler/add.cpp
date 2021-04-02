@@ -1,6 +1,6 @@
 #include "add.h"
 
-Add::Add(const int & _offsetLeft, const int & _offsetRight, const int & _offsetDest) : IRInstr("add")
+Add::Add(const int & _offsetLeft, const int & _offsetRight, const int & _offsetDest, BasicBlock* bb) : IRInstr("add",bb)
 {
     this->offsetLeft = _offsetLeft;
     this->offsetRight = _offsetRight;
@@ -10,17 +10,17 @@ Add::Add(const int & _offsetLeft, const int & _offsetRight, const int & _offsetD
 
 void Add::gen_asm(ostream & o) // x86 asm for now
 {
-    std::cout 
+    o 
       << "\tmovl -"
       << this->offsetLeft
       << "(%rbp), %eax"
       << std::endl;
-    std::cout
+    o
       << "\taddl -"
       << this->offsetRight 
       << "(%rbp), %eax"
       << std::endl;
-    std::cout
+    o
         << "\tmovl %eax, -" 
         << this->offsetDest
         << "(%rbp)" 

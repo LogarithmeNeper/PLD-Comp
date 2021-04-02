@@ -6,7 +6,7 @@
 class Copy : public IRInstr{ // Used to load a constant into a temporary var
     public:
         Copy();
-        Copy(const int & _offsetSource, const int & _offsetDest);
+        Copy(const int & _offsetSource, const int & _offsetDest, BasicBlock* bb);
         void gen_asm(ostream & o = cout);
         ~Copy();
         int offsetSource; // The offset of the source var

@@ -65,7 +65,7 @@ public:
     std::string leftVarName = context->VARIABLE()->getText();
     int exprOffset = visit(context->expr());
 
-    Copy* copyInstr = new Copy(exprOffset, this->symbolTable[leftVarName]);
+    Copy* copyInstr = new Copy(exprOffset, this->symbolTable[leftVarName], this->program->get_cfg_by_index(0)->get_bb_by_index(0));
     IRInstr* instr = dynamic_cast<IRInstr*> (copyInstr);
     this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr);
     
@@ -76,7 +76,7 @@ public:
   {
     std::string leftVarName = context->VARIABLE()->getText();
     int exprOffset = visit(context->expr());
-    Copy* copyInstr = new Copy(exprOffset, this->symbolTable[leftVarName]);
+    Copy* copyInstr = new Copy(exprOffset, this->symbolTable[leftVarName], this->program->get_cfg_by_index(0)->get_bb_by_index(0));
     IRInstr* instr = dynamic_cast<IRInstr*> (copyInstr);
     this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr);
     return 0;
@@ -107,13 +107,13 @@ public:
 
     if(ctx->children[1]->getText() == "+")
     {
-      Add* addInstr = new Add(offsetLeft, offsetRight, maxOffset);
+      Add* addInstr = new Add(offsetLeft, offsetRight, maxOffset, this->program->get_cfg_by_index(0)->get_bb_by_index(0));
       IRInstr* instr = dynamic_cast<IRInstr*> (addInstr);
       this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr);
     }
     else if(ctx->children[1]->getText() == "-")
     {
-      Sub* subInstr = new Sub(offsetLeft, offsetRight, maxOffset);
+      Sub* subInstr = new Sub(offsetLeft, offsetRight, maxOffset, this->program->get_cfg_by_index(0)->get_bb_by_index(0));
       IRInstr* instr = dynamic_cast<IRInstr*> (subInstr);
       this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr);
     }
@@ -129,7 +129,7 @@ public:
     this->maxOffset += 4;
     this->symbolTable.insert({"tmp" + std::to_string(this->maxOffset), this->maxOffset});
 
-    Mul* mulInstr = new Mul(offsetLeft, offsetRight, maxOffset);
+    Mul* mulInstr = new Mul(offsetLeft, offsetRight, maxOffset, this->program->get_cfg_by_index(0)->get_bb_by_index(0));
     IRInstr* instr = dynamic_cast<IRInstr*> (mulInstr);
     this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr);
 
@@ -146,23 +146,10 @@ public:
     this->maxOffset += 4;
     this->symbolTable.insert({"tmp"+std::to_string(this->maxOffset), this->maxOffset});
 
-    ldconst* ldconstInstr = new ldconst(val, this->maxOffset);
+    ldconst* ldconstInstr = new ldconst(val, this->maxOffset, this->program->get_cfg_by_index(0)->get_bb_by_index(0));
     IRInstr* instr = dynamic_cast<IRInstr*> (ldconstInstr);
     this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr);
 
-    return this->maxOffset;
-  }
-
-  int createTemporaryVariable() 
-  {
-
-    this->maxOffset += 4;
-    this->symbolTable.insert({"tmp" + std::to_string(this->maxOffset), this->maxOffset});
-    std::cout
-        << "\tmovl %eax, -" 
-        << this->maxOffset 
-        << "(%rbp)" 
-        << std::endl;
     return this->maxOffset;
   }
 

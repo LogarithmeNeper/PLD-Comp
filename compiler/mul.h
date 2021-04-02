@@ -6,7 +6,7 @@
 class Mul : public IRInstr{ // Used to make an addition
     public:
         Mul();
-        Mul(const int & _offsetLeft, const int & _offsetRight, const int & _offsetDest);
+        Mul(const int & _offsetLeft, const int & _offsetRight, const int & _offsetDest, BasicBlock* bb);
         void gen_asm(ostream & o = cout);
         ~Mul();
         int offsetLeft; // the offset of the left var

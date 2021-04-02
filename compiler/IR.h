@@ -1,3 +1,4 @@
+// Code adapté de celui fourni ici : https://moodle.insa-lyon.fr/pluginfile.php/98639/mod_resource/content/3/IR.h
 #pragma once
 
 #include <vector>
@@ -40,14 +41,7 @@ class IRInstr {
 	} Operation;
 
 
-	/**  constructor */
-	//IRInstr(/*BasicBlock* bb_,*/ Operation op/*, Type t*/, vector<string> params)
-	//{
-		//this->bb = bb_;
-	//	this->op = op;
-	//	this-> params = params;
-	//}
-	IRInstr(std::string description=""):description(description){}
+	IRInstr(std::string description="", BasicBlock* bb = nullptr):description(description), bb(bb){}
 	string getDescription(){return this->description;}
 	~IRInstr(){}
 	
@@ -55,7 +49,7 @@ class IRInstr {
 	virtual void gen_asm(ostream & o = cout)=0; /**< x86 assembly code generation for this IR instruction */
 	
  private:
-	//BasicBlock* bb; /**< The BB this instruction belongs to, which provides a pointer to the CFG this instruction belong to */
+	BasicBlock* bb; /**< The BB this instruction belongs to, which provides a pointer to the CFG this instruction belong to */
 	Operation op;
 	//Type t;
 	vector<string> params; /**< For 3-op instrs: d, x, y; for ldconst: d, c;  For call: label, d, params;  for wmem and rmem: choose yourself */
@@ -166,6 +160,7 @@ class Program{
 		Program();
 		void gen_asm(ostream& o, int offsetReturn);
 		void add_cfg(CFG* cfg);
+		
 		vector<CFG*> cfgs;
 
 		CFG* get_cfg_by_index(int index);

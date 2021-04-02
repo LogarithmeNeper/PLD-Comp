@@ -6,7 +6,7 @@
 class ldconst : public IRInstr{ // Used to load a constant into a temporary var
     public:
         ldconst();
-        ldconst(const int & _constValue, const int & _offset);
+        ldconst(const int & _constValue, const int & _offset, BasicBlock* bb);
         void gen_asm(ostream & o = cout);
         ~ldconst();
         int constValue;

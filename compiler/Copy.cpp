@@ -1,6 +1,6 @@
 #include "Copy.h"
 
-Copy::Copy(const int & _offsetSource, const int & _offsetDest) : IRInstr("copy")
+Copy::Copy(const int & _offsetSource, const int & _offsetDest, BasicBlock* bb) : IRInstr("copy",bb)
 {
     this->offsetSource = _offsetSource;
     this->offsetDest = _offsetDest;
@@ -9,11 +9,11 @@ Copy::Copy(const int & _offsetSource, const int & _offsetDest) : IRInstr("copy")
 
 void Copy::gen_asm(ostream & o) // x86 asm for now
 {
-    std::cout << "\tmovl -"
+    o << "\tmovl -"
               << this->offsetSource
               << "(%rbp), %eax"
               << std::endl;
-    std::cout << "\tmovl %eax, -"
+    o << "\tmovl %eax, -"
               << this->offsetDest
               << "(%rbp)"
               << std::endl;

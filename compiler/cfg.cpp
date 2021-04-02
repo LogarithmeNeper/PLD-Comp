@@ -22,7 +22,7 @@ void CFG::gen_asm(ostream & o)
 
 void CFG::gen_asm_prologue(ostream & o)
 {
-    cout 
+    o 
         << ".globl main\n"
         << " main: \n"
         << "\tpushq %rbp\n"
@@ -32,11 +32,12 @@ void CFG::gen_asm_prologue(ostream & o)
 
 void CFG::gen_asm_epilogue(ostream & o, int offsetReturn)
 {
-    std::cout << "\tmovl	-"
-              << offsetReturn
-              << "(%rbp), %eax\n"
-              << "\tpopq %rbp\n"
-              << "\tret\n";
+    o 
+            << "\tmovl	-"
+            << offsetReturn
+            << "(%rbp), %eax\n"
+            << "\tpopq %rbp\n"
+            << "\tret\n";
 
 }
 
