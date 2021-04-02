@@ -5,24 +5,24 @@ axiom : prog
 
 prog : 'int' 'main' '(' ')' '{' declaration* affectation* ret ';' '}' ;
 declaration : (declarationint | declarationchar | declaration64) ;
-declarationint : 'int' (declarationvarint ',')* declarationvarint ';' ;
-declarationchar : 'char' (declarationvarchar ',')* declarationvarchar ';';
-declaration64 : 'int64_t' (declarationvar64 ',')* declarationvar64 ';' ;
+declarationint : 'int' declarationvarint* declarationvarint ';' ;
+declarationchar : 'char' declarationvarchar* declarationvarchar ';';
+declaration64 : 'int64_t' declarationvar64* declarationvar64 ';' ;
 
-declarationvarint : VARIABLE #DeclarationSeuleInt
-            | VARIABLE '=' CONST #DeclarationInitialiseeConstInt
-            | VARIABLE '=' VARIABLE #DeclarationInitialiseeVarInt
+declarationvarint : VARIABLE COMMA? #DeclarationSeuleInt
+            | VARIABLE '=' CONST COMMA? #DeclarationInitialiseeConstInt
+            | VARIABLE '=' VARIABLE COMMA? #DeclarationInitialiseeVarInt
               ;
 
-declarationvarchar : VARIABLE #DeclarationSeuleChar
-            | VARIABLE '=' CONST #DeclarationInitialiseeConstCharNum
-            | VARIABLE '=' '\'' CONSTCHAR '\'' #DeclarationInitialiseeConstChar
-            | VARIABLE '=' VARIABLE #DeclarationInitialiseeVarChar
+declarationvarchar : VARIABLE COMMA? #DeclarationSeuleChar
+            | VARIABLE '=' CONST COMMA? #DeclarationInitialiseeConstCharNum
+            | VARIABLE '=' '\'' CONSTCHAR '\'' COMMA? #DeclarationInitialiseeConstChar
+            | VARIABLE '=' VARIABLE COMMA? #DeclarationInitialiseeVarChar
               ;
 
-declarationvar64 : VARIABLE #DeclarationSeule64
-            | VARIABLE '=' CONST #DeclarationInitialiseeConst64
-            | VARIABLE '=' VARIABLE #DeclarationInitialiseeVar64
+declarationvar64 : VARIABLE COMMA? #DeclarationSeule64
+            | VARIABLE '=' CONST COMMA? #DeclarationInitialiseeConst64
+            | VARIABLE '=' VARIABLE COMMA? #DeclarationInitialiseeVar64
               ;
 
 affectation : VARIABLE '=' expr ';';
@@ -36,9 +36,10 @@ expr : expr '*' expr #multExpr
 
 ret : RETURN expr;
 
+COMMA : ',';
 RETURN : 'return' ;
 CONST : [0-9]+ ;
-CONSTCHAR : [ -~] ;
+CONSTCHAR : [^\\s-~] ;
 VARIABLE : [a-z][a-zA-Z0-9_]* ;
 COMMENT : '/*' .*? '*/' -> skip ;
 DIRECTIVE : '#' .*? '\n' -> skip ;
