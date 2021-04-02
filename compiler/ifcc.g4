@@ -20,9 +20,9 @@ declarationvarchar : VARIABLE #DeclarationSeuleChar
             | VARIABLE '=' VARIABLE #DeclarationInitialiseeVarChar
               ;
 
-declarationvar64 : VARIABLE COMMA? #DeclarationSeule64
-            | VARIABLE '=' CONST COMMA? #DeclarationInitialiseeConst64
-            | VARIABLE '=' VARIABLE COMMA? #DeclarationInitialiseeVar64
+declarationvar64 : VARIABLE #DeclarationSeule64
+            | VARIABLE '=' CONST #DeclarationInitialiseeConst64
+            | VARIABLE '=' VARIABLE #DeclarationInitialiseeVar64
               ;
 
 affectation : VARIABLE '=' expr ';';
@@ -36,7 +36,6 @@ expr : expr '*' expr #multExpr
 
 ret : RETURN expr;
 
-COMMA : ',';
 RETURN : 'return' ;
 CONST : [0-9]+ ;
 CONSTCHAR : [^\\s-~] ;
