@@ -50,11 +50,11 @@ class CFG {
 	// string new_BB_name();
 	BasicBlock* current_bb;
 
-    map<string,int> getSymbolTable();
+    map<string,int>* getSymbolTable();
 
  protected:
 	//map <string, Type> SymbolType; /**< part of the symbol table  */
-	map <string, int> symbolTable; /**< part of the symbol table  */
+	map <string, int>* symbolTable; /**< part of the symbol table  */
 	int nextFreeSymbolIndex; /**< to allocate new symbols in the symbol table */
 	int nextBBnumber; /**< just for naming */
 	

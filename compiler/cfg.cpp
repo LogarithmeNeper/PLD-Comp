@@ -6,7 +6,7 @@ using namespace std;
 CFG::CFG(Program* program) 
 {
     this->program = program;
-    this->symbolTable = map<string,int>();
+    this->symbolTable = new map<string,int>();
 
 }
 
@@ -45,12 +45,12 @@ void CFG::gen_asm_epilogue(ostream & o, int offsetReturn)
 
 void CFG::add_to_symbol_table(string & name, int & index)
 {
-    this->symbolTable.insert({name, index});
+    this->symbolTable->insert({name, index});
 }
 
 int CFG::get_var_index(string & name)
 {
-    return this->symbolTable[name];
+    return (*(this->symbolTable))[name];
 }
 
 BasicBlock* CFG::get_bb_by_index(int index)
@@ -59,7 +59,7 @@ BasicBlock* CFG::get_bb_by_index(int index)
 
 }
 
-map<string,int> CFG::getSymbolTable()
+map<string,int>* CFG::getSymbolTable()
 {
     return this->symbolTable;
 }
