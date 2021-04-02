@@ -1,4 +1,4 @@
-#include "IR.h"
+#include "program.h"
 
 using namespace std;
 

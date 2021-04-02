@@ -1,4 +1,4 @@
-#include "Copy.h"
+#include "copy.h"
 
 Copy::Copy(const int & _offsetSource, const int & _offsetDest, BasicBlock* bb) : IRInstr("copy",bb)
 {

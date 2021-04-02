@@ -1,10 +1,12 @@
-#include "IR.h"
+#include "cfg.h"
+#include "basic_block.h"
 
 using namespace std;
 
 CFG::CFG(Program* program) 
 {
     this->program = program;
+    this->symbolTable = map<string,int>();
 
 }
 
@@ -55,4 +57,9 @@ BasicBlock* CFG::get_bb_by_index(int index)
 {
     return this->bbs.at(index);
 
+}
+
+map<string,int> CFG::getSymbolTable()
+{
+    return this->symbolTable;
 }
