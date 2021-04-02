@@ -56,26 +56,14 @@ public:
     return 0;
   }
 
-  virtual antlrcpp::Any visitDeclarationInitialiseeConstInt(ifccParser::DeclarationInitialiseeConstIntContext *context) override
+  virtual antlrcpp::Any visitDeclarationInitialiseeInt(ifccParser::DeclarationInitialiseeIntContext *context) override
   {
     this->maxOffset +=4;
     symbolTable.insert({context->VARIABLE()->getText(), maxOffset});
-    int varValue = stoi(context->CONST()->getText());
+    std::string leftVarName = context->VARIABLE()->getText();
+    int exprOffset = visit(context->expr());
     
-    ldconst* constInstr = new ldconst(varValue, this->symbolTable[context->VARIABLE()->getText()], this->program->get_cfg_by_index(0)->get_bb_by_index(0));
-    IRInstr* instr = dynamic_cast<IRInstr*> (constInstr);
-    this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr);
-    return 0;
-  }
-  
-  virtual antlrcpp::Any visitDeclarationInitialiseeVarInt(ifccParser::DeclarationInitialiseeVarIntContext *context) override
-  {
-    this->maxOffset +=4;
-    symbolTable.insert({context->VARIABLE(0)->getText(), maxOffset});
-    std::string leftVarName = context->VARIABLE(0)->getText();
-    std::string rightVarName = context->VARIABLE(1)->getText();
-    
-    Copy* copyInstr = new Copy(symbolTable[rightVarName], this->symbolTable[leftVarName], this->program->get_cfg_by_index(0)->get_bb_by_index(0));
+    Copy* copyInstr = new Copy(exprOffset, this->symbolTable[leftVarName], this->program->get_cfg_by_index(0)->get_bb_by_index(0));
     IRInstr* instr = dynamic_cast<IRInstr*> (copyInstr);
     this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr);
 
@@ -89,40 +77,14 @@ public:
     return 0;
   }
 
-  virtual antlrcpp::Any visitDeclarationInitialiseeConstChar(ifccParser::DeclarationInitialiseeConstCharContext *context) override
+  virtual antlrcpp::Any visitDeclarationInitialiseeChar(ifccParser::DeclarationInitialiseeCharContext *context) override
   {
     this->maxOffset +=1;
     symbolTable.insert({context->VARIABLE()->getText(), maxOffset});
-    std::string recup = context->CONSTCHAR()->getText();
-    char charRecup = recup.at(1);
-    int varValue = (int) (charRecup);
+    std::string leftVarName = context->VARIABLE()->getText();
+    int exprOffset = visit(context->expr());
     
-    ldconst* constInstr = new ldconst(varValue, this->symbolTable[context->VARIABLE()->getText()], this->program->get_cfg_by_index(0)->get_bb_by_index(0));
-    IRInstr* instr = dynamic_cast<IRInstr*> (constInstr);
-    this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr);
-    return 0;
-  }
-
-  virtual antlrcpp::Any visitDeclarationInitialiseeConstCharNum(ifccParser::DeclarationInitialiseeConstCharNumContext *context) override
-  {
-    this->maxOffset +=1;
-    symbolTable.insert({context->VARIABLE()->getText(), maxOffset});
-    int varValue = stoi(context->CONST()->getText());
-    
-    ldconst* constInstr = new ldconst(varValue, this->symbolTable[context->VARIABLE()->getText()], this->program->get_cfg_by_index(0)->get_bb_by_index(0));
-    IRInstr* instr = dynamic_cast<IRInstr*> (constInstr);
-    this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr);
-    return 0;
-  }
-  
-  virtual antlrcpp::Any visitDeclarationInitialiseeVarChar(ifccParser::DeclarationInitialiseeVarCharContext *context) override
-  {
-    this->maxOffset +=1;
-    symbolTable.insert({context->VARIABLE(0)->getText(), maxOffset});
-    std::string leftVarName = context->VARIABLE(0)->getText();
-    std::string rightVarName = context->VARIABLE(1)->getText();
-    
-    Copy* copyInstr = new Copy(symbolTable[rightVarName], this->symbolTable[leftVarName], this->program->get_cfg_by_index(0)->get_bb_by_index(0));
+    Copy* copyInstr = new Copy(exprOffset, this->symbolTable[leftVarName], this->program->get_cfg_by_index(0)->get_bb_by_index(0));
     IRInstr* instr = dynamic_cast<IRInstr*> (copyInstr);
     this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr);
     return 0;
@@ -134,27 +96,15 @@ public:
     symbolTable.insert({context->VARIABLE()->getText(), maxOffset});
     return 0;
   }
-
-  virtual antlrcpp::Any visitDeclarationInitialiseeConst64(ifccParser::DeclarationInitialiseeConst64Context *context) override
+ 
+  virtual antlrcpp::Any visitDeclarationInitialisee64(ifccParser::DeclarationInitialisee64Context *context) override
   {
     this->maxOffset +=8;
     symbolTable.insert({context->VARIABLE()->getText(), maxOffset});
-    int varValue = stoi(context->CONST()->getText());
+    std::string leftVarName = context->VARIABLE()->getText();
+    int exprOffset = visit(context->expr());
     
-    ldconst* constInstr = new ldconst(varValue, this->symbolTable[context->VARIABLE()->getText()],  this->program->get_cfg_by_index(0)->get_bb_by_index(0));
-    IRInstr* instr = dynamic_cast<IRInstr*> (constInstr);
-    this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr);
-    return 0;
-  }
-  
-  virtual antlrcpp::Any visitDeclarationInitialiseeVar64(ifccParser::DeclarationInitialiseeVar64Context *context) override
-  {
-    this->maxOffset +=8;
-    symbolTable.insert({context->VARIABLE(0)->getText(), maxOffset});
-    std::string leftVarName = context->VARIABLE(0)->getText();
-    std::string rightVarName = context->VARIABLE(1)->getText();
-    
-    Copy* copyInstr = new Copy(this->symbolTable[rightVarName], this->symbolTable[leftVarName], this->program->get_cfg_by_index(0)->get_bb_by_index(0));
+    Copy* copyInstr = new Copy(exprOffset, this->symbolTable[leftVarName], this->program->get_cfg_by_index(0)->get_bb_by_index(0));
     IRInstr* instr = dynamic_cast<IRInstr*> (copyInstr);
     this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr);
     return 0;
@@ -184,6 +134,12 @@ public:
   virtual antlrcpp::Any visitParExpr(ifccParser::ParExprContext *ctx) override
   {
     return visit(ctx->expr());
+  }
+
+  virtual antlrcpp::Any visitConstCharExpr(ifccParser::ConstCharExprContext *ctx) override
+  {
+    return 0;
+    // TODO with the correct implementation ldConstChar
   }
 
   virtual antlrcpp::Any visitMinusAddExpr(ifccParser::MinusAddExprContext *ctx) override

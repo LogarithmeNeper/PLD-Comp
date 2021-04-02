@@ -10,19 +10,15 @@ declarationchar : 'char' (declarationvarchar ',')* declarationvarchar ';';
 declaration64 : 'int64_t' (declarationvar64',')* declarationvar64 ';' ;
 
 declarationvarint : VARIABLE #DeclarationSeuleInt
-            | VARIABLE '=' CONST #DeclarationInitialiseeConstInt
-            | VARIABLE '=' VARIABLE #DeclarationInitialiseeVarInt
+            | VARIABLE '=' expr #DeclarationInitialiseeInt
               ;
 
 declarationvarchar : VARIABLE #DeclarationSeuleChar
-            | VARIABLE '=' CONST #DeclarationInitialiseeConstCharNum
-            | VARIABLE '=' CONSTCHAR #DeclarationInitialiseeConstChar
-            | VARIABLE '=' VARIABLE #DeclarationInitialiseeVarChar
+            | VARIABLE '=' expr #DeclarationInitialiseeChar
               ;
 
 declarationvar64 : VARIABLE #DeclarationSeule64
-            | VARIABLE '=' CONST #DeclarationInitialiseeConst64
-            | VARIABLE '=' VARIABLE #DeclarationInitialiseeVar64
+            | VARIABLE '=' expr #DeclarationInitialisee64
               ;
 
 affectation : VARIABLE '=' expr ';';
@@ -32,6 +28,7 @@ expr : '(' expr ')' #parExpr
       | expr ('+'|'-') expr #minusAddExpr
       | CONST #constExpr
       | VARIABLE #varExpr
+      | CONSTCHAR #constCharExpr
       ; 
 
 ret : RETURN expr;
