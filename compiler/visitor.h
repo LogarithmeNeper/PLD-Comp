@@ -50,7 +50,6 @@ public:
   virtual antlrcpp::Any visitDeclarationSeuleInt(ifccParser::DeclarationSeuleIntContext *context) override
   {
     this->maxOffset +=4;
-    std::cout << maxOffset << std::endl;
     symbolTable.insert({context->VARIABLE()->getText(), maxOffset});
     return 0;
   }
@@ -58,7 +57,6 @@ public:
   virtual antlrcpp::Any visitDeclarationInitialiseeConstInt(ifccParser::DeclarationInitialiseeConstIntContext *context) override
   {
     this->maxOffset +=4;
-    std::cout << maxOffset << std::endl;
     symbolTable.insert({context->VARIABLE()->getText(), maxOffset});
     int varValue = stoi(context->CONST()->getText());
     std::cout << "\tmovl $" << varValue << ", -" << this->symbolTable[context->VARIABLE()->getText()] << "(%rbp)" << std::endl;
@@ -68,7 +66,6 @@ public:
   virtual antlrcpp::Any visitDeclarationInitialiseeVarInt(ifccParser::DeclarationInitialiseeVarIntContext *context) override
   {
     this->maxOffset +=4;
-    std::cout << maxOffset << std::endl;
     symbolTable.insert({context->VARIABLE(0)->getText(), maxOffset});
     std::string leftVarName = context->VARIABLE(0)->getText();
     std::string rightVarName = context->VARIABLE(1)->getText();
@@ -80,7 +77,6 @@ public:
   virtual antlrcpp::Any visitDeclarationSeuleChar(ifccParser::DeclarationSeuleCharContext *context) override
   {
     this->maxOffset +=1;
-    std::cout << maxOffset << std::endl;
     symbolTable.insert({context->VARIABLE()->getText(), maxOffset});
     return 0;
   }
@@ -88,7 +84,6 @@ public:
   virtual antlrcpp::Any visitDeclarationInitialiseeConstChar(ifccParser::DeclarationInitialiseeConstCharContext *context) override
   {
     this->maxOffset +=1;
-    std::cout << maxOffset << std::endl;
     symbolTable.insert({context->VARIABLE()->getText(), maxOffset});
     int varValue = stoi(context->CONSTCHAR()->getText());
     std::cout << "\tmovb $" << varValue << ", -" << this->symbolTable[context->VARIABLE()->getText()] << "(%rbp)" << std::endl;
@@ -98,7 +93,6 @@ public:
   virtual antlrcpp::Any visitDeclarationInitialiseeConstCharNum(ifccParser::DeclarationInitialiseeConstCharNumContext *context) override
   {
     this->maxOffset +=1;
-    std::cout << maxOffset << std::endl;
     symbolTable.insert({context->VARIABLE()->getText(), maxOffset});
     int varValue = stoi(context->CONST()->getText());
     std::cout << "\tmovb $" << varValue << ", -" << this->symbolTable[context->VARIABLE()->getText()] << "(%rbp)" << std::endl;
@@ -108,7 +102,6 @@ public:
   virtual antlrcpp::Any visitDeclarationInitialiseeVarChar(ifccParser::DeclarationInitialiseeVarCharContext *context) override
   {
     this->maxOffset +=1;
-    std::cout << maxOffset << std::endl;
     symbolTable.insert({context->VARIABLE(0)->getText(), maxOffset});
     std::string leftVarName = context->VARIABLE(0)->getText();
     std::string rightVarName = context->VARIABLE(1)->getText();
@@ -120,7 +113,6 @@ public:
     virtual antlrcpp::Any visitDeclarationSeule64(ifccParser::DeclarationSeule64Context *context) override
   {
     this->maxOffset +=8;
-    std::cout << maxOffset << std::endl;
     symbolTable.insert({context->VARIABLE()->getText(), maxOffset});
     return 0;
   }
@@ -128,7 +120,6 @@ public:
   virtual antlrcpp::Any visitDeclarationInitialiseeConst64(ifccParser::DeclarationInitialiseeConst64Context *context) override
   {
     this->maxOffset +=8;
-    std::cout << maxOffset << std::endl;
     symbolTable.insert({context->VARIABLE()->getText(), maxOffset});
     int varValue = stoi(context->CONST()->getText());
     std::cout << "\tmovq $" << varValue << ", -" << this->symbolTable[context->VARIABLE()->getText()] << "(%rbp)" << std::endl;
@@ -138,7 +129,6 @@ public:
   virtual antlrcpp::Any visitDeclarationInitialiseeVar64(ifccParser::DeclarationInitialiseeVar64Context *context) override
   {
     this->maxOffset +=8;
-    std::cout << maxOffset << std::endl;
     symbolTable.insert({context->VARIABLE(0)->getText(), maxOffset});
     std::string leftVarName = context->VARIABLE(0)->getText();
     std::string rightVarName = context->VARIABLE(1)->getText();
