@@ -85,7 +85,7 @@ public:
   {
     this->maxOffset +=1;
     symbolTable.insert({context->VARIABLE()->getText(), maxOffset});
-    int varValue = (int) (context->CONSTCHAR()->getText());
+    int varValue = stoi(context->CONSTCHAR()->getText());
     std::cout << "\tmovb $" << varValue << ", -" << this->symbolTable[context->VARIABLE()->getText()] << "(%rbp)" << std::endl;
     return 0;
   }
