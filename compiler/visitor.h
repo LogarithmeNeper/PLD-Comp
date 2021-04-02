@@ -5,7 +5,6 @@
 
 #include <map>
 #include <algorithm>
-#include <string>
 
 #include "antlr4-runtime.h"
 #include "antlr4-generated/ifccBaseVisitor.h"
