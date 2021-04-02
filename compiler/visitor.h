@@ -86,7 +86,7 @@ public:
     this->maxOffset +=1;
     symbolTable.insert({context->VARIABLE()->getText(), maxOffset});
     int varValue = stoi(context->CONSTCHAR()->getText());
-    std::cout << "\tmovl $" << varValue << ", -" << this->symbolTable[context->VARIABLE()->getText()] << "(%rbp)" << std::endl;
+    std::cout << "\tmovb $" << varValue << ", -" << this->symbolTable[context->VARIABLE()->getText()] << "(%rbp)" << std::endl;
     return 0;
   }
 
@@ -95,7 +95,7 @@ public:
     this->maxOffset +=1;
     symbolTable.insert({context->VARIABLE()->getText(), maxOffset});
     int varValue = stoi(context->CONST()->getText());
-    std::cout << "\tmovl $" << varValue << ", -" << this->symbolTable[context->VARIABLE()->getText()] << "(%rbp)" << std::endl;
+    std::cout << "\tmovb $" << varValue << ", -" << this->symbolTable[context->VARIABLE()->getText()] << "(%rbp)" << std::endl;
     return 0;
   }
   
@@ -105,8 +105,8 @@ public:
     symbolTable.insert({context->VARIABLE(0)->getText(), maxOffset});
     std::string leftVarName = context->VARIABLE(0)->getText();
     std::string rightVarName = context->VARIABLE(1)->getText();
-    std::cout << "\tmovl -" << this->symbolTable[rightVarName] << "(%rbp), " << "%al" << std::endl;
-    std::cout << "\tmovl %al, -" << this->symbolTable[leftVarName] << "(%rbp)" << std::endl;
+    std::cout << "\tmovb -" << this->symbolTable[rightVarName] << "(%rbp), " << "%al" << std::endl;
+    std::cout << "\tmovb %al, -" << this->symbolTable[leftVarName] << "(%rbp)" << std::endl;
     return 0;
   }
 
@@ -122,7 +122,7 @@ public:
     this->maxOffset +=8;
     symbolTable.insert({context->VARIABLE()->getText(), maxOffset});
     int varValue = stoi(context->CONST()->getText());
-    std::cout << "\tmovl $" << varValue << ", -" << this->symbolTable[context->VARIABLE()->getText()] << "(%rbp)" << std::endl;
+    std::cout << "\tmovq $" << varValue << ", -" << this->symbolTable[context->VARIABLE()->getText()] << "(%rbp)" << std::endl;
     return 0;
   }
   
@@ -132,8 +132,8 @@ public:
     symbolTable.insert({context->VARIABLE(0)->getText(), maxOffset});
     std::string leftVarName = context->VARIABLE(0)->getText();
     std::string rightVarName = context->VARIABLE(1)->getText();
-    std::cout << "\tmovl -" << this->symbolTable[rightVarName] << "(%rbp), " << "%rax" << std::endl;
-    std::cout << "\tmovl %rax, -" << this->symbolTable[leftVarName] << "(%rbp)" << std::endl;
+    std::cout << "\tmovq -" << this->symbolTable[rightVarName] << "(%rbp), " << "%rax" << std::endl;
+    std::cout << "\tmovq %rax, -" << this->symbolTable[leftVarName] << "(%rbp)" << std::endl;
     return 0;
   }
 
