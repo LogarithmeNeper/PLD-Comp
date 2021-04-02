@@ -138,8 +138,9 @@ public:
 
   virtual antlrcpp::Any visitConstCharExpr(ifccParser::ConstCharExprContext *ctx) override
   {
-    return 0;
-    // TODO with the correct implementation ldConstChar
+    std::string recup = ctx->CONSTCHAR()->getText();
+    char charRecup = recup.at(1);
+    return createTemporaryFromConstant(charRecup);
   }
 
   virtual antlrcpp::Any visitMinusAddExpr(ifccParser::MinusAddExprContext *ctx) override
@@ -189,6 +190,19 @@ public:
   int createTemporaryFromConstant(int val) 
   {
     this->maxOffset += 4;
+    this->symbolTable.insert({"tmp"+std::to_string(this->maxOffset), this->maxOffset});
+
+    ldconst* ldconstInstr = new ldconst(val, this->maxOffset, this->program->get_cfg_by_index(0)->get_bb_by_index(0));
+    IRInstr* instr = dynamic_cast<IRInstr*> (ldconstInstr);
+    this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr);
+
+    return this->maxOffset;
+  }
+
+  int createTemporaryFromConstant(char val) 
+  {
+    val = (int) val;
+    this->maxOffset += 1;
     this->symbolTable.insert({"tmp"+std::to_string(this->maxOffset), this->maxOffset});
 
     ldconst* ldconstInstr = new ldconst(val, this->maxOffset, this->program->get_cfg_by_index(0)->get_bb_by_index(0));
