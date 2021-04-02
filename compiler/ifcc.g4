@@ -5,19 +5,19 @@ axiom : prog
 
 prog : 'int' 'main' '(' ')' '{' declaration* affectation* ret ';' '}' ;
 declaration : (declarationint | declarationchar | declaration64) ;
-declarationint : 'int' declarationvarint* declarationvarint ';' ;
-declarationchar : 'char' declarationvarchar* declarationvarchar ';';
-declaration64 : 'int64_t' declarationvar64* declarationvar64 ';' ;
+declarationint : 'int' (declarationvarint ',')* declarationvarint ';' ;
+declarationchar : 'char' (declarationvarchar ',')* declarationvarchar ';';
+declaration64 : 'int64_t' (declarationvar64',')* declarationvar64 ';' ;
 
-declarationvarint : VARIABLE COMMA? #DeclarationSeuleInt
-            | VARIABLE '=' CONST COMMA? #DeclarationInitialiseeConstInt
-            | VARIABLE '=' VARIABLE COMMA? #DeclarationInitialiseeVarInt
+declarationvarint : VARIABLE #DeclarationSeuleInt
+            | VARIABLE '=' CONST #DeclarationInitialiseeConstInt
+            | VARIABLE '=' VARIABLE #DeclarationInitialiseeVarInt
               ;
 
-declarationvarchar : VARIABLE COMMA? #DeclarationSeuleChar
-            | VARIABLE '=' CONST COMMA? #DeclarationInitialiseeConstCharNum
-            | VARIABLE '=' '\'' CONSTCHAR '\'' COMMA? #DeclarationInitialiseeConstChar
-            | VARIABLE '=' VARIABLE COMMA? #DeclarationInitialiseeVarChar
+declarationvarchar : VARIABLE #DeclarationSeuleChar
+            | VARIABLE '=' CONST #DeclarationInitialiseeConstCharNum
+            | VARIABLE '=' '\'' CONSTCHAR '\'' #DeclarationInitialiseeConstChar
+            | VARIABLE '=' VARIABLE #DeclarationInitialiseeVarChar
               ;
 
 declarationvar64 : VARIABLE COMMA? #DeclarationSeule64
