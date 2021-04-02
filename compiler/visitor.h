@@ -33,7 +33,6 @@ public:
     this->program = new Program(); // We initialise the Program one we visit the axiom of the grammar
     this->program->add_cfg(new CFG(this->program));
     this->program->get_cfg_by_index(0)->add_bb(new BasicBlock(this->program->get_cfg_by_index(0), "main"));
-
     visitChildren(ctx);
     return 0;
   }
