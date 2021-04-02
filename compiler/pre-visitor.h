@@ -31,7 +31,7 @@ public:
 
     antlrcpp::Any visitDeclaration(ifccParser::DeclarationContext *context) 
   {
-    int variablesNumber = context-> declarationvar().size();
+    int variablesNumber = context-> declarationint()->declarationvarint().size();
     int variableOffset = variablesNumber*4; // initializes the highest offset for the first variable
     std::map<std::string, int> symbolTable; // SymbolTable
     this->symbolTable = symbolTable; // Copy the symbolTable for the whole visitor object
@@ -41,7 +41,7 @@ public:
     return 0;
   }
 
-  antlrcpp::Any visitDeclarationSeule(ifccParser::DeclarationSeuleContext *context) 
+  antlrcpp::Any visitDeclarationSeuleInt(ifccParser::DeclarationSeuleIntContext *context) 
   {
     if(this->symbolTable.insert({context->VARIABLE()->getText(), variableOffset}).second == true) {
         this->variableOffset -=4;
@@ -55,7 +55,7 @@ public:
     return 0;
   }
 
-  antlrcpp::Any visitDeclarationInitialisee(ifccParser::DeclarationInitialiseeContext *context) 
+  antlrcpp::Any visitDeclarationInitialiseeInt(ifccParser::DeclarationInitialiseeIntContext *context) 
   {
     int currentOffset = variableOffset;
 
