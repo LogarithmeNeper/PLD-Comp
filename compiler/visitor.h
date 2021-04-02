@@ -88,7 +88,7 @@ public:
     std::string recup = context->CONSTCHAR()->getText();
     std::cout << recup << std::endl;
     std::cout << recup.size() << std::endl;
-    recup.erase(0);
+    recup.erase(0,1);
     std::cout << recup << std::endl;
     int varValue = stoi(recup);
     std::cout << "\tmovb $" << varValue << ", -" << this->symbolTable[context->VARIABLE()->getText()] << "(%rbp)" << std::endl;
