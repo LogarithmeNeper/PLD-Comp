@@ -23,6 +23,10 @@ public:
               << " main: \n"
               << "\tpushq %rbp\n"
               << "\tmovq %rsp, %rbp\n";
+    int variableOffset = 0; // initializes the offset for the first variable
+    std::map<std::string, int> symbolTable; // SymbolTable
+    this->symbolTable = symbolTable; // Copy the symbolTable for the whole visitor object
+    this->maxOffset = variableOffset;
     visitChildren(ctx);
     return 0;
   }
@@ -39,10 +43,6 @@ public:
 
   virtual antlrcpp::Any visitDeclaration(ifccParser::DeclarationContext *context) override
   {
-    int variableOffset = 0; // initializes the offset for the first variable
-    std::map<std::string, int> symbolTable; // SymbolTable
-    this->symbolTable = symbolTable; // Copy the symbolTable for the whole visitor object
-    this->maxOffset = variableOffset;
     visitChildren(context);
     return 0;
   }
