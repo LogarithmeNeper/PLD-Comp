@@ -87,6 +87,7 @@ public:
     symbolTable.insert({context->VARIABLE()->getText(), maxOffset});
     std::string recup = context->CONSTCHAR()->getText();
     std::cout << recup << std::endl;
+    std::cout << recup.size() << std::endl;
     recup.erase(0);
     std::cout << recup << std::endl;
     int varValue = stoi(recup);
