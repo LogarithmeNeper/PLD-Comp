@@ -137,7 +137,7 @@ public:
     return 0;
   }
 
-  antlrcpp::Any visitDeclarationSeule64(ifccParser::DeclarationSeuleIntContext *context) 
+  antlrcpp::Any visitDeclarationSeule64(ifccParser::DeclarationSeule64Context *context) 
   {
     if(this->symbolTable.insert({context->VARIABLE()->getText(), maxOffset}).second == true) {
         this->maxOffset +=8;
@@ -151,7 +151,7 @@ public:
     return 0;
   }
 
-  antlrcpp::Any visitDeclarationInitialisee64(ifccParser::DeclarationInitialiseeIntContext *context) 
+  antlrcpp::Any visitDeclarationInitialisee64(ifccParser::DeclarationInitialisee64Context *context) 
   {
     int currentOffset = maxOffset;
 
