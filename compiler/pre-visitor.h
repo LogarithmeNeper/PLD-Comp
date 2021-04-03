@@ -240,6 +240,20 @@ public:
 
   antlrcpp::Any visitParExpr(ifccParser::ParExprContext *ctx) 
   {
+    int closingParCounter = 0, openingParCounter = 0;
+    for(int i=0; i<ctx->children.size(); i++) {
+      if(ctx->children[i]->getText() == "(") {
+        openingParCounter++;
+      }
+      if(ctx->children[i]->getText() == ")") {
+        closingParCounter++;
+      }    
+    }
+    if(openingParCounter != closingParCounter) {
+      std::cerr << "ERROR : Missing parenthesis" 
+                << std::endl;
+      this->correctCode = false;
+    }
     return visit(ctx->expr());
   }
 
