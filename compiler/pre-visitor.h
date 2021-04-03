@@ -20,6 +20,10 @@ class PreVisitor : public ifccBaseVisitor
 public:
    antlrcpp::Any visitProg(ifccParser::ProgContext *ctx) 
   {
+    int variableOffset = 0; // initializes the offset for the first variable
+    std::map<std::string, int> symbolTable; // SymbolTable
+    this->symbolTable = symbolTable; // Copy the symbolTable for the whole visitor object
+    this->maxOffset = variableOffset;
     visitChildren(ctx);
     return 0;
   }
@@ -31,20 +35,14 @@ public:
 
     antlrcpp::Any visitDeclaration(ifccParser::DeclarationContext *context) 
   {
-    int variablesNumber = context-> declarationint()->declarationvarint().size();
-    int variableOffset = variablesNumber*4; // initializes the highest offset for the first variable
-    std::map<std::string, int> symbolTable; // SymbolTable
-    this->symbolTable = symbolTable; // Copy the symbolTable for the whole visitor object
-    this->variableOffset = variableOffset;
-    this->maxOffset = variableOffset;
     visitChildren(context);
     return 0;
   }
 
   antlrcpp::Any visitDeclarationSeuleInt(ifccParser::DeclarationSeuleIntContext *context) 
   {
-    if(this->symbolTable.insert({context->VARIABLE()->getText(), variableOffset}).second == true) {
-        this->variableOffset -=4;
+    if(this->symbolTable.insert({context->VARIABLE()->getText(), maxOffset}).second == true) {
+        this->maxOffset +=4;
     } else {
         std::cerr << "The variable "
                   << context->VARIABLE()->getText()
@@ -57,12 +55,110 @@ public:
 
   antlrcpp::Any visitDeclarationInitialiseeInt(ifccParser::DeclarationInitialiseeIntContext *context) 
   {
-    int currentOffset = variableOffset;
+    int currentOffset = maxOffset;
 
     // Checks if the variable has indeed been added to the symbolTable.
     // If not, it means that that variable name is already declared.
-    if(symbolTable.insert({context->VARIABLE()->getText(), variableOffset}).second == true) {
-        this->variableOffset -=4;
+    if(symbolTable.insert({context->VARIABLE()->getText(), maxOffset}).second == true) {
+        this->maxOffset +=4;
+    } else {
+        std::cerr << "The variable "
+                  << context->VARIABLE()->getText()
+                  << " is already declared."
+                  << std::endl;
+        this->correctCode=false;
+    };
+
+    int exprOffset = visit(context->expr());
+
+    // Checks if the expr is effectively in the symbolTable (see visitVarExpr)
+    // Then, checks if the expr is affected, if not, prints a warning in the error output.
+    if(exprOffset != -1) {
+      if(affectedOffsets.count(exprOffset) == 1) {
+        this->affectedOffsets.insert(currentOffset);
+      } else {
+        std::cerr << "WARNING : "
+                  << "The variable "
+                  << findVariableNameFromOffset(exprOffset)
+                  << " is not yet initialized."
+                  << std::endl;
+      }
+        
+    }
+    return 0;
+  }
+
+  antlrcpp::Any visitDeclarationSeuleChar(ifccParser::DeclarationSeuleCharContext *context) 
+  {
+    if(this->symbolTable.insert({context->VARIABLE()->getText(), maxOffset}).second == true) {
+        this->maxOffset +=1;
+    } else {
+        std::cerr << "The variable "
+                  << context->VARIABLE()->getText()
+                  << " is already declared."
+                  << std::endl;
+        this->correctCode=false;
+    };
+    return 0;
+  }
+
+  antlrcpp::Any visitDeclarationInitialiseeChar(ifccParser::DeclarationInitialiseeCharContext *context) 
+  {
+    int currentOffset = maxOffset;
+
+    // Checks if the variable has indeed been added to the symbolTable.
+    // If not, it means that that variable name is already declared.
+    if(symbolTable.insert({context->VARIABLE()->getText(), maxOffset}).second == true) {
+        this->maxOffset +=1;
+    } else {
+        std::cerr << "The variable "
+                  << context->VARIABLE()->getText()
+                  << " is already declared."
+                  << std::endl;
+        this->correctCode=false;
+    };
+
+    int exprOffset = visit(context->expr());
+
+    // Checks if the expr is effectively in the symbolTable (see visitVarExpr)
+    // Then, checks if the expr is affected, if not, prints a warning in the error output.
+    if(exprOffset != -1) {
+      if(affectedOffsets.count(exprOffset) == 1) {
+        this->affectedOffsets.insert(currentOffset);
+      } else {
+        std::cerr << "WARNING : "
+                  << "The variable "
+                  << findVariableNameFromOffset(exprOffset)
+                  << " is not yet initialized."
+                  << std::endl;
+      }
+        
+    }
+    return 0;
+  }
+
+  antlrcpp::Any visitDeclarationSeule64(ifccParser::DeclarationSeuleIntContext *context) 
+  {
+    if(this->symbolTable.insert({context->VARIABLE()->getText(), maxOffset}).second == true) {
+        this->maxOffset +=8;
+    } else {
+        std::cerr << "The variable "
+                  << context->VARIABLE()->getText()
+                  << " is already declared."
+                  << std::endl;
+        this->correctCode=false;
+    };
+    return 0;
+  }
+
+  antlrcpp::Any visitDeclarationInitialisee64(ifccParser::DeclarationInitialiseeIntContext *context) 
+  {
+    int currentOffset = maxOffset;
+
+    // Checks if the variable has indeed been added to the symbolTable.
+    // If not, it means that that variable name is already declared.
+    if(symbolTable.insert({context->VARIABLE()->getText(), maxOffset}).second == true) {
+        this->maxOffset +=8;
     } else {
         std::cerr << "The variable "
                   << context->VARIABLE()->getText()
@@ -147,6 +243,13 @@ public:
     return visit(ctx->expr());
   }
 
+  antlrcpp::Any visitConstCharExpr(ifccParser::ConstCharExprContext *ctx)
+  {
+    std::string recup = ctx->CONSTCHAR()->getText();
+    char charRecup = recup.at(1);
+    return createTemporaryFromConstant(charRecup);
+  }
+
   // Checks if both variables are initialized.
   // If not, sends one or two warnings to the error output.
   antlrcpp::Any visitMinusAddExpr(ifccParser::MinusAddExprContext *ctx) 
@@ -210,6 +313,15 @@ public:
     return this->maxOffset;
   }
 
+  int createTemporaryFromConstant(char val) 
+  {
+    val = (int) val;
+    this->maxOffset += 1;
+    this->symbolTable.insert({"tmp"+std::to_string(this->maxOffset), this->maxOffset});
+    this->affectedOffsets.insert(this->maxOffset);
+    return this->maxOffset;
+  }
+
   int createTemporaryVariable() 
   {
 
@@ -247,6 +359,5 @@ protected:
   std::map<std::string, int> symbolTable;
   std::set<int> affectedOffsets;
   int maxOffset;
-  int variableOffset;
   bool correctCode = true;
 };
