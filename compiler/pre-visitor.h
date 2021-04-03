@@ -18,19 +18,19 @@
 class PreVisitor : public ifccBaseVisitor
 {
 public:
-   antlrcpp::Any visitProg(ifccParser::ProgContext *ctx) 
+   antlrcpp::Any visitProg(ifccParser::ProgContext *context) 
   {
     int variableOffset = 0; // initializes the offset for the first variable
     std::map<std::string, int> symbolTable; // SymbolTable
     this->symbolTable = symbolTable; // Copy the symbolTable for the whole visitor object
     this->maxOffset = variableOffset;
-    visitChildren(ctx);
+    visitChildren(context);
     return 0;
   }
 
-   antlrcpp::Any visitRet(ifccParser::RetContext *ctx)  {
-    int offsetExpr = visit(ctx->expr());
-    return visitChildren(ctx);
+   antlrcpp::Any visitRet(ifccParser::RetContext *context)  {
+    int offsetExpr = visit(context->expr());
+    return visitChildren(context);
   }
 
     antlrcpp::Any visitDeclaration(ifccParser::DeclarationContext *context) 
@@ -46,7 +46,8 @@ public:
     } else {
         std::cerr << "The variable "
                   << context->VARIABLE()->getText()
-                  << " is already declared."
+                  << " is already declared. Line : "
+                  << context->start->getLine()
                   << std::endl;
         this->correctCode=false;
     };
@@ -64,7 +65,8 @@ public:
     } else {
         std::cerr << "The variable "
                   << context->VARIABLE()->getText()
-                  << " is already declared."
+                  << " is already declared. Line : "
+                  << context->start->getLine()
                   << std::endl;
         this->correctCode=false;
     };
@@ -80,7 +82,8 @@ public:
         std::cerr << "WARNING : "
                   << "The variable "
                   << findVariableNameFromOffset(exprOffset)
-                  << " is not yet initialized."
+                  << " is not yet initialized. Line : "
+                  << context->start->getLine()
                   << std::endl;
       }
         
@@ -95,7 +98,8 @@ public:
     } else {
         std::cerr << "The variable "
                   << context->VARIABLE()->getText()
-                  << " is already declared."
+                  << " is already declared. Line : "
+                  << context->start->getLine()
                   << std::endl;
         this->correctCode=false;
     };
@@ -113,7 +117,8 @@ public:
     } else {
         std::cerr << "The variable "
                   << context->VARIABLE()->getText()
-                  << " is already declared."
+                  << " is already declared. Line : "
+                  << context->start->getLine()
                   << std::endl;
         this->correctCode=false;
     };
@@ -129,7 +134,8 @@ public:
         std::cerr << "WARNING : "
                   << "The variable "
                   << findVariableNameFromOffset(exprOffset)
-                  << " is not yet initialized."
+                  << " is not yet initialized. Line : "
+                  << context->start->getLine()
                   << std::endl;
       }
         
@@ -144,7 +150,8 @@ public:
     } else {
         std::cerr << "The variable "
                   << context->VARIABLE()->getText()
-                  << " is already declared."
+                  << " is already declared. Line : "
+                  << context->start->getLine()
                   << std::endl;
         this->correctCode=false;
     };
@@ -162,7 +169,8 @@ public:
     } else {
         std::cerr << "The variable "
                   << context->VARIABLE()->getText()
-                  << " is already declared."
+                  << " is already declared. Line : "
+                  << context->start->getLine()
                   << std::endl;
         this->correctCode=false;
     };
@@ -178,7 +186,8 @@ public:
         std::cerr << "WARNING : "
                   << "The variable "
                   << findVariableNameFromOffset(exprOffset)
-                  << " is not yet initialized."
+                  << " is not yet initialized. Line : "
+                  << context->start->getLine()
                   << std::endl;
       }
         
@@ -200,7 +209,8 @@ public:
             std::cerr << "WARNING : "
                       << "The variable "
                       << findVariableNameFromOffset(exprOffset)
-                      << " is not yet initialized."
+                      << " is not yet initialized. Line : "
+                      << context->start->getLine()
                       << std::endl;
           }
         }
@@ -208,81 +218,86 @@ public:
         std::cerr << "ERROR : "
                   << "The variable " 
                   << leftVarName
-                  << " is not declared."
+                  << " is not declared. Line : "
+                  << context->start->getLine()
                   << std::endl;
         this->correctCode=false;
     }
     return 0;
   }
 
-  antlrcpp::Any visitVarExpr(ifccParser::VarExprContext *ctx) 
+  antlrcpp::Any visitVarExpr(ifccParser::VarExprContext *context) 
   {
     // Checks if the Var is declared in the symbolTable.
     // If not, prints an error to the error output.
-    if(this->symbolTable.count(ctx->VARIABLE()->getText()) == 1){
-        return symbolTable[ctx->VARIABLE()->getText()];
+    if(this->symbolTable.count(context->VARIABLE()->getText()) == 1){
+        return symbolTable[context->VARIABLE()->getText()];
     } else {
         std::cerr << "ERROR : "
                   << "The variable " 
-                  << ctx->VARIABLE()->getText()
-                  << " is not declared."
+                  << context->VARIABLE()->getText()
+                  << " is not declared. Line : "
+                  << context->start->getLine()
                   << std::endl;
         this->correctCode=false;
         return -1;
     }
-    return symbolTable[ctx->VARIABLE()->getText()]; // returns an int
+    return symbolTable[context->VARIABLE()->getText()]; // returns an int
   }
 
-  antlrcpp::Any visitConstExpr(ifccParser::ConstExprContext *ctx) 
+  antlrcpp::Any visitConstExpr(ifccParser::ConstExprContext *context) 
   {
-    return createTemporaryFromConstant(stoi(ctx->CONST()->getText())); // returns an int
+    return createTemporaryFromConstant(stoi(context->CONST()->getText())); // returns an int
   }
 
-  antlrcpp::Any visitParExpr(ifccParser::ParExprContext *ctx) 
+  antlrcpp::Any visitParExpr(ifccParser::ParExprContext *context) 
   {
     int closingParCounter = 0, openingParCounter = 0;
-    for(int i=0; i<ctx->children.size(); i++) {
-      if(ctx->children[i]->getText() == "(") {
+    for(int i=0; i<context->children.size(); i++) {
+      if(context->children[i]->getText() == "(") {
         openingParCounter++;
       }
-      if(ctx->children[i]->getText() == ")") {
+      if(context->children[i]->getText() == ")") {
         closingParCounter++;
       }    
     }
     if(openingParCounter != closingParCounter) {
-      std::cerr << "ERROR : Missing parenthesis" 
+      std::cerr << "ERROR : Missing parenthesis. Line : "
+                << context->start->getLine() 
                 << std::endl;
       this->correctCode = false;
     }
-    return visit(ctx->expr());
+    return visit(context->expr());
   }
 
-  antlrcpp::Any visitConstCharExpr(ifccParser::ConstCharExprContext *ctx)
+  antlrcpp::Any visitConstCharExpr(ifccParser::ConstCharExprContext *context)
   {
-    std::string recup = ctx->CONSTCHAR()->getText();
+    std::string recup = context->CONSTCHAR()->getText();
     char charRecup = recup.at(1);
     return createTemporaryFromConstant(charRecup);
   }
 
   // Checks if both variables are initialized.
   // If not, sends one or two warnings to the error output.
-  antlrcpp::Any visitMinusAddExpr(ifccParser::MinusAddExprContext *ctx) 
+  antlrcpp::Any visitMinusAddExpr(ifccParser::MinusAddExprContext *context) 
   {
-    int offsetLeft = visit(ctx->expr(0));
+    int offsetLeft = visit(context->expr(0));
     if(offsetLeft != -1) {
       if(affectedOffsets.count(offsetLeft) != 1) {
         std::cerr << "The variable "
               << findVariableNameFromOffset(offsetLeft)
-              << " is not yet initialized."
+              << " is not yet initialized. Line : "
+              << context->start->getLine()
               << std::endl;
       }
     }
-    int offsetRight = visit(ctx->expr(1));
+    int offsetRight = visit(context->expr(1));
     if(offsetRight != -1) {
       if(affectedOffsets.count(offsetRight) != 1) {
         std::cerr << "The variable "
               << findVariableNameFromOffset(offsetRight)
-              << " is not yet initialized."
+              << " is not yet initialized. Line : "
+              << context->start->getLine()
               << std::endl;
       }
     }
@@ -291,23 +306,25 @@ public:
 
   // Checks if both variables are initialized.
   // If not, sends one or two warnings to the error output.
-  antlrcpp::Any visitMultExpr(ifccParser::MultExprContext *ctx) 
+  antlrcpp::Any visitMultExpr(ifccParser::MultExprContext *context) 
   {
-    int offsetLeft = visit(ctx->expr(0));
+    int offsetLeft = visit(context->expr(0));
     if(offsetLeft != -1) {
       if(affectedOffsets.count(offsetLeft) != 1) {
         std::cerr << "The variable "
               << findVariableNameFromOffset(offsetLeft)
-              << " is not yet initialized."
+              << " is not yet initialized. Line : "
+              << context->start->getLine()
               << std::endl;
       }
     }
-    int offsetRight = visit(ctx->expr(1));
+    int offsetRight = visit(context->expr(1));
     if(offsetRight != -1) {
       if(affectedOffsets.count(offsetRight) != 1) {
         std::cerr << "The variable "
               << findVariableNameFromOffset(offsetRight)
-              << " is not yet initialized."
+              << " is not yet initialized. Line : "
+              << context->start->getLine()
               << std::endl;
       }
     }
@@ -353,17 +370,6 @@ public:
     }
     return "";
   }
-
-  /* print a map for debug
-  void print_map(std::string comment, const std::map<std::string, int>& m)
-  {
-      std::cout << comment;
-      for (const auto& [key, value] : m) {
-          std::cout << key << " = " << value << "; ";
-      }
-      std::cout << "\n";
-  }
-*/
 
   bool getCorrectCode() {
       return this->correctCode;
