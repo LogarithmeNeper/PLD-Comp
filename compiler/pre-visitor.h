@@ -48,11 +48,7 @@ public:
     }
     else
     {
-      std::cerr << "The variable "
-                << context->VARIABLE()->getText()
-                << " is already declared. Line : "
-                << context->start->getLine()
-                << std::endl;
+      printAlreadyDeclaredError(context->VARIABLE()->getText(), context->start->getLine());
       this->correctCode = false;
     };
     return 0;
@@ -70,11 +66,7 @@ public:
     }
     else
     {
-      std::cerr << "The variable "
-                << context->VARIABLE()->getText()
-                << " is already declared. Line : "
-                << context->start->getLine()
-                << std::endl;
+      printAlreadyDeclaredError(context->VARIABLE()->getText(), context->start->getLine());
       this->correctCode = false;
     };
 
@@ -90,12 +82,7 @@ public:
       }
       else
       {
-        std::cerr << "WARNING : "
-                  << "The variable "
-                  << findVariableNameFromOffset(exprOffset)
-                  << " is not yet initialized. Line : "
-                  << context->start->getLine()
-                  << std::endl;
+        printUnitializedWarning(findVariableNameFromOffset(exprOffset), context->start->getLine());
       }
     }
     return 0;
@@ -109,11 +96,7 @@ public:
     }
     else
     {
-      std::cerr << "The variable "
-                << context->VARIABLE()->getText()
-                << " is already declared. Line : "
-                << context->start->getLine()
-                << std::endl;
+      printAlreadyDeclaredError(context->VARIABLE()->getText(), context->start->getLine());
       this->correctCode = false;
     };
     return 0;
@@ -131,11 +114,7 @@ public:
     }
     else
     {
-      std::cerr << "The variable "
-                << context->VARIABLE()->getText()
-                << " is already declared. Line : "
-                << context->start->getLine()
-                << std::endl;
+      printAlreadyDeclaredError(context->VARIABLE()->getText(), context->start->getLine());
       this->correctCode = false;
     };
 
@@ -151,12 +130,7 @@ public:
       }
       else
       {
-        std::cerr << "WARNING : "
-                  << "The variable "
-                  << findVariableNameFromOffset(exprOffset)
-                  << " is not yet initialized. Line : "
-                  << context->start->getLine()
-                  << std::endl;
+        printUnitializedWarning(findVariableNameFromOffset(exprOffset), context->start->getLine());
       }
     }
     return 0;
@@ -170,11 +144,7 @@ public:
     }
     else
     {
-      std::cerr << "The variable "
-                << context->VARIABLE()->getText()
-                << " is already declared. Line : "
-                << context->start->getLine()
-                << std::endl;
+      printAlreadyDeclaredError(context->VARIABLE()->getText(), context->start->getLine());
       this->correctCode = false;
     };
     return 0;
@@ -192,11 +162,7 @@ public:
     }
     else
     {
-      std::cerr << "The variable "
-                << context->VARIABLE()->getText()
-                << " is already declared. Line : "
-                << context->start->getLine()
-                << std::endl;
+      printAlreadyDeclaredError(context->VARIABLE()->getText(), context->start->getLine());
       this->correctCode = false;
     };
 
@@ -212,12 +178,7 @@ public:
       }
       else
       {
-        std::cerr << "WARNING : "
-                  << "The variable "
-                  << findVariableNameFromOffset(exprOffset)
-                  << " is not yet initialized. Line : "
-                  << context->start->getLine()
-                  << std::endl;
+        printUnitializedWarning(findVariableNameFromOffset(exprOffset), context->start->getLine());
       }
     }
     return 0;
@@ -239,23 +200,13 @@ public:
         }
         else
         {
-          std::cerr << "WARNING : "
-                    << "The variable "
-                    << findVariableNameFromOffset(exprOffset)
-                    << " is not yet initialized. Line : "
-                    << context->start->getLine()
-                    << std::endl;
+          printUnitializedWarning(findVariableNameFromOffset(exprOffset), context->start->getLine());
         }
       }
     }
     else
     {
-      std::cerr << "ERROR : "
-                << "The variable "
-                << leftVarName
-                << " is not declared. Line : "
-                << context->start->getLine()
-                << std::endl;
+      printNotDeclaredError(leftVarName, context->start->getLine());
       this->correctCode = false;
     }
     return 0;
@@ -271,12 +222,7 @@ public:
     }
     else
     {
-      std::cerr << "ERROR : "
-                << "The variable "
-                << context->VARIABLE()->getText()
-                << " is not declared. Line : "
-                << context->start->getLine()
-                << std::endl;
+      printNotDeclaredError(context->VARIABLE()->getText(), context->start->getLine());
       this->correctCode = false;
       return -1;
     }
@@ -304,9 +250,7 @@ public:
     }
     if (openingParCounter != closingParCounter)
     {
-      std::cerr << "ERROR : Missing parenthesis. Line : "
-                << context->start->getLine()
-                << std::endl;
+      printMissingParenthesis(context->start->getLine());
       this->correctCode = false;
     }
     return visit(context->expr());
@@ -328,11 +272,7 @@ public:
     {
       if (affectedOffsets.count(offsetLeft) != 1)
       {
-        std::cerr << "The variable "
-                  << findVariableNameFromOffset(offsetLeft)
-                  << " is not yet initialized. Line : "
-                  << context->start->getLine()
-                  << std::endl;
+        printUnitializedWarning(findVariableNameFromOffset(offsetLeft), context->start->getLine());
       }
     }
     int offsetRight = visit(context->expr(1));
@@ -340,11 +280,7 @@ public:
     {
       if (affectedOffsets.count(offsetRight) != 1)
       {
-        std::cerr << "The variable "
-                  << findVariableNameFromOffset(offsetRight)
-                  << " is not yet initialized. Line : "
-                  << context->start->getLine()
-                  << std::endl;
+        printUnitializedWarning(findVariableNameFromOffset(offsetRight), context->start->getLine());
       }
     }
     return createTemporaryVariable();
@@ -359,11 +295,7 @@ public:
     {
       if (affectedOffsets.count(offsetLeft) != 1)
       {
-        std::cerr << "The variable "
-                  << findVariableNameFromOffset(offsetLeft)
-                  << " is not yet initialized. Line : "
-                  << context->start->getLine()
-                  << std::endl;
+        printUnitializedWarning(findVariableNameFromOffset(offsetLeft), context->start->getLine());
       }
     }
     int offsetRight = visit(context->expr(1));
@@ -371,11 +303,7 @@ public:
     {
       if (affectedOffsets.count(offsetRight) != 1)
       {
-        std::cerr << "The variable "
-                  << findVariableNameFromOffset(offsetRight)
-                  << " is not yet initialized. Line : "
-                  << context->start->getLine()
-                  << std::endl;
+        printUnitializedWarning(findVariableNameFromOffset(offsetRight), context->start->getLine());
       }
     }
     return createTemporaryVariable();
@@ -428,6 +356,37 @@ public:
   {
     return this->correctCode;
   }
+
+void printUnitializedWarning(std::string variableName, int line){
+  std::cerr << "The variable "
+            << variableName
+            << " is not yet initialized. Line : "
+            << line
+            << std::endl;
+}
+
+void printAlreadyDeclaredError(std::string variableName, int line){
+  std::cerr << "The variable "
+            << variableName
+            << " is already declared. Line : "
+            << line
+            << std::endl;
+}
+
+void printMissingParenthesis(int line){
+  std::cerr << "ERROR : Missing parenthesis. Line : "
+                << line
+                << std::endl;
+}
+
+void printNotDeclaredError(std::string variableName, int line){
+  std::cerr << "ERROR : "
+                << "The variable "
+                << variableName
+                << " is not declared. Line : "
+                << line
+                << std::endl;
+}
 
 protected:
   std::map<std::string, int> symbolTable;
