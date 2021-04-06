@@ -3,11 +3,15 @@ grammar ifcc;
 axiom : prog       
       ;
 
-prog : 'int' ID '(' ')' '{' declaration* (affectation | functionCall)* ret ';' '}' ;
+prog : 'int' 'main' '(' ')' bloc ;
+bloc : '{' instruction* '}' ;
+instruction : (declaration ';' | expr ';'| ret ';') ;
+
+
 declaration : (declarationint | declarationchar | declaration64) ;
-declarationint : 'int' (declarationvarint ',')* declarationvarint ';' ;
-declarationchar : 'char' (declarationvarchar ',')* declarationvarchar ';';
-declaration64 : 'int64_t' (declarationvar64',')* declarationvar64 ';' ;
+declarationint : 'int' (declarationvarint ',')* declarationvarint ;
+declarationchar : 'char' (declarationvarchar ',')* declarationvarchar;
+declaration64 : 'int64_t' (declarationvar64',')* declarationvar64;
 
 declarationvarint : ID #DeclarationSeuleInt
             | ID '=' expr #DeclarationInitialiseeInt
@@ -21,19 +25,15 @@ declarationvar64 : ID #DeclarationSeule64
             | ID '=' expr #DeclarationInitialisee64
               ;
 
-affectation : ID '=' expr ';';
-
 expr : '(' expr ')' #parExpr
       | expr '*' expr #multExpr
       | expr ('+'|'-') expr #minusAddExpr
+      | ID '=' expr #affectation
       | CONST #constExpr
       | ID #varExpr
       | CONSTCHAR #constCharExpr
+      | ID '(' expr* ')' #FunctionCallSeul
       ; 
-
-functionCall : ID '(' expr* ')' ';' #FunctionCallSeul ;
-
-
 
 ret : RETURN expr;
 

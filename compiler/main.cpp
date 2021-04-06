@@ -30,15 +30,19 @@ int main(int argn, const char **argv) {
 
   ifccParser parser(&tokens);
   tree::ParseTree* tree = parser.axiom();
-
-  Visitor visitor;
-  PreVisitor preVisitor;
-  preVisitor.visit(tree);
-  if(preVisitor.getCorrectCode()) {
-    visitor.visit(tree);
+  if(parser.getNumberOfSyntaxErrors() == 0) {
+    Visitor visitor;
+    PreVisitor preVisitor;
+    preVisitor.visit(tree);
+    if(preVisitor.getCorrectCode()) {
+      visitor.visit(tree);
+    } else {
+      exit(1);
+    }
   } else {
     exit(1);
   }
+  
   
 
   return 0;
