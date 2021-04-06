@@ -3,7 +3,7 @@ grammar ifcc;
 axiom : prog       
       ;
 
-prog : 'int' ID '(' ')' '{' declaration* (affectation | functionCall)* ret ';' '}' ;
+prog : 'int' 'main' '(' ')' '{' declaration* (affectation | functionCall)* ret ';' '}' ;
 declaration : (declarationint | declarationchar | declaration64) ;
 declarationint : 'int' (declarationvarint ',')* declarationvarint ';' ;
 declarationchar : 'char' (declarationvarchar ',')* declarationvarchar ';';
