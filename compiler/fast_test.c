@@ -1,8 +1,7 @@
-int main(){
+int main() {
     int a,b,c;
-    a = 2*2;
-    b = 4+4;
-    c = a + b*2;
-
+    a = 17;
+    b = 42;
+    c = a*a + b*b +1;
     return c;
 }

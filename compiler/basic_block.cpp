@@ -24,3 +24,7 @@ void BasicBlock::add_IRInstr(IRInstr* instr)
 
 
 }
+
+BasicBlock::~BasicBlock()
+{
+}

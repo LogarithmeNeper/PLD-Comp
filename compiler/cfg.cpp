@@ -14,11 +14,11 @@ CFG::~CFG() {
     for(int i=0; i < bbs.size(); i++){
         delete bbs[i];
     }
-    delete current_bb;
 }
 void CFG::add_bb(BasicBlock* bb)
 {
     this->bbs.push_back(bb);
+    this->current_bb = bb;
 }
 
 void CFG::gen_asm(ostream & o)
