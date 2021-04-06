@@ -3,15 +3,11 @@ grammar ifcc;
 axiom : prog       
       ;
 
-<<<<<<< HEAD
 prog : 'int' 'main' '(' ')' bloc ;
 bloc : '{' instruction* '}' ;
 instruction : (declaration ';' | expr ';'| ret ';') ;
 
 
-=======
-prog : 'int' 'main' '(' ')' '{' declaration* (affectation | functionCall)* ret ';' '}' ;
->>>>>>> main
 declaration : (declarationint | declarationchar | declaration64) ;
 declarationint : 'int' (declarationvarint ',')* declarationvarint ;
 declarationchar : 'char' (declarationvarchar ',')* declarationvarchar;
