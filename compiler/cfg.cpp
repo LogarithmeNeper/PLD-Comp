@@ -59,6 +59,11 @@ int CFG::get_var_index(string & name)
     return (*(this->symbolTable))[name];
 }
 
+string CFG::get_var_type(string & name)
+{
+    return (*(this->typeTable))[name];
+}
+
 BasicBlock* CFG::get_bb_by_index(int index)
 {
     return this->bbs.at(index);
@@ -68,4 +73,9 @@ BasicBlock* CFG::get_bb_by_index(int index)
 map<string,int>* CFG::getSymbolTable()
 {
     return this->symbolTable;
+}
+
+map<string,string>* CFG::getTypeTable()
+{
+    return this->typeTable;
 }

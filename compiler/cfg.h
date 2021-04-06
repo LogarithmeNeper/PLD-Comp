@@ -42,7 +42,8 @@ class CFG {
 	void add_to_symbol_table(string & name, int & index);
 	//string create_new_tempvar(/*Type t*/);
 	int get_var_index(string & name);
-	//Type get_var_type(string name);
+	string get_var_type(string & name);
+	map<string,string>* CFG::getTypeTable();
 
 	// basic block management
 
@@ -55,6 +56,7 @@ class CFG {
  protected:
 	//map <string, Type> SymbolType; /**< part of the symbol table  */
 	map <string, int>* symbolTable; /**< part of the symbol table  */
+	map <string, string>* typeTable;
 	int nextFreeSymbolIndex; /**< to allocate new symbols in the symbol table */
 	int nextBBnumber; /**< just for naming */
 	
