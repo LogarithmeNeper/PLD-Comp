@@ -7,6 +7,7 @@ CFG::CFG(Program* program)
 {
     this->program = program;
     this->symbolTable = new map<string,int>();
+    this->typeTable = new map<string,string>();
 
 }
 CFG::~CFG() {

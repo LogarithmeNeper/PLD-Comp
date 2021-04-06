@@ -217,9 +217,10 @@ public:
   int createTemporaryFromConstant(int val) 
   {
     this->maxOffset += 4;
+    std::string temporaryName = "tmp"+std::to_string(this->maxOffset);
     this->program->get_cfg_by_index(0)->getSymbolTable()->insert({"tmp"+std::to_string(this->maxOffset), this->maxOffset});
-
-    ldconst* ldconstInstr = new ldconst(val, this->maxOffset, this->program->get_cfg_by_index(0)->get_bb_by_index(0));
+    this->program->get_cfg_by_index(0)->getTypeTable()->insert({"tmp"+std::to_string(this->maxOffset), "int"});
+    ldconst* ldconstInstr = new ldconst(val, this->maxOffset, temporaryName, this->program->get_cfg_by_index(0)->get_bb_by_index(0));
     IRInstr* instr = dynamic_cast<IRInstr*> (ldconstInstr);
     this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr);
 
@@ -230,9 +231,10 @@ public:
   {
     val = (int) val;
     this->maxOffset += 1;
+    std::string temporaryName = "tmp"+std::to_string(this->maxOffset);
     this->program->get_cfg_by_index(0)->getSymbolTable()->insert({"tmp"+std::to_string(this->maxOffset), this->maxOffset});
-
-    ldconst* ldconstInstr = new ldconst(val, this->maxOffset, this->program->get_cfg_by_index(0)->get_bb_by_index(0));
+    this->program->get_cfg_by_index(0)->getTypeTable()->insert({"tmp"+std::to_string(this->maxOffset), "char"});
+    ldconst* ldconstInstr = new ldconst(val, this->maxOffset, temporaryName, this->program->get_cfg_by_index(0)->get_bb_by_index(0));
     IRInstr* instr = dynamic_cast<IRInstr*> (ldconstInstr);
     this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr);
 

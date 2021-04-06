@@ -43,7 +43,7 @@ class CFG {
 	//string create_new_tempvar(/*Type t*/);
 	int get_var_index(string & name);
 	string get_var_type(string & name);
-	map<string,string>* CFG::getTypeTable();
+	map<string,string>* getTypeTable();
 
 	// basic block management
 
