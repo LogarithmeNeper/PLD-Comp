@@ -1,4 +1,4 @@
-#include "IR.h"
+#include "program.h"
 
 using namespace std;
 
@@ -7,6 +7,11 @@ Program::Program()
 	this->cfgs = vector<CFG*>();
 }
 
+Program::~Program() {
+for(int i=0; i < cfgs.size(); i++){
+   delete cfgs[i];
+    }
+}
 void Program::add_cfg(CFG* cfg)
 {
     this->cfgs.push_back(cfg);

@@ -1,4 +1,4 @@
-#include "IR.h"
+#include "basic_block.h"
 
 using namespace std;
 
@@ -23,4 +23,8 @@ void BasicBlock::add_IRInstr(IRInstr* instr)
     this->instrs.push_back(instr);
 
 
+}
+
+BasicBlock::~BasicBlock()
+{
 }

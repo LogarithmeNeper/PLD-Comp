@@ -13,7 +13,7 @@ LDARGS=-g
 
 all: ifcc
 
-ifcc: dirs antlr  main.cpp visitor.cpp visitor.h IR.h ldconst.cpp ldconst.h Copy.cpp Copy.h add.cpp add.h sub.cpp sub.h mul.cpp mul.h basic_block.cpp cfg.cpp Program.cpp
+ifcc: dirs antlr  main.cpp visitor.cpp visitor.h IR.h ldconst.cpp ldconst.h copy.cpp copy.h add.cpp add.h sub.cpp sub.h mul.cpp mul.h basic_block.cpp cfg.cpp program.cpp call.cpp call.h
 	$(CC) $(CCARGS) main.cpp  -o $(OUTPUT)/main.o 
 	$(CC) $(CCARGS) $(GENERATED)/ifccBaseVisitor.cpp -o $(OUTPUT)/ifccBaseVisitor.o 
 	$(CC) $(CCARGS) $(GENERATED)/ifccLexer.cpp -o $(OUTPUT)/ifccLexer.o 
@@ -22,14 +22,15 @@ ifcc: dirs antlr  main.cpp visitor.cpp visitor.h IR.h ldconst.cpp ldconst.h Copy
 	$(CC) $(CCARGS) visitor.cpp -o $(OUTPUT)/visitor.o 
 	$(CC) $(CCARGS) pre-visitor.cpp -o $(OUTPUT)/pre-visitor.o
 	$(CC) $(CCARGS) ldconst.cpp -o $(OUTPUT)/ldconst.o
-	$(CC) $(CCARGS) Copy.cpp -o $(OUTPUT)/copy.o
+	$(CC) $(CCARGS) copy.cpp -o $(OUTPUT)/copy.o
 	$(CC) $(CCARGS) add.cpp -o $(OUTPUT)/add.o
 	$(CC) $(CCARGS) sub.cpp -o $(OUTPUT)/sub.o
 	$(CC) $(CCARGS) mul.cpp -o $(OUTPUT)/mul.o
 	$(CC) $(CCARGS) basic_block.cpp -o $(OUTPUT)/basic_block.o
 	$(CC) $(CCARGS) cfg.cpp -o $(OUTPUT)/cfg.o
-	$(CC) $(CCARGS) Program.cpp -o $(OUTPUT)/program.o
-	$(CC) $(LDARGS) $(OUTPUT)/main.o $(OUTPUT)/ifccBaseVisitor.o $(OUTPUT)/ifccLexer.o $(OUTPUT)/ifccVisitor.o $(OUTPUT)/ifccParser.o $(OUTPUT)/visitor.o $(OUTPUT)/ldconst.o $(OUTPUT)/copy.o $(OUTPUT)/add.o $(OUTPUT)/sub.o $(OUTPUT)/mul.o $(OUTPUT)/basic_block.o $(OUTPUT)/cfg.o $(OUTPUT)/program.o $(ANTLR4_LIBDIR)/libantlr4-runtime.a -o ifcc
+	$(CC) $(CCARGS) program.cpp -o $(OUTPUT)/program.o
+	$(CC) $(CCARGS) call.cpp -o $(OUTPUT)/call.o
+	$(CC) $(LDARGS) $(OUTPUT)/main.o $(OUTPUT)/ifccBaseVisitor.o $(OUTPUT)/ifccLexer.o $(OUTPUT)/ifccVisitor.o $(OUTPUT)/ifccParser.o $(OUTPUT)/visitor.o $(OUTPUT)/ldconst.o $(OUTPUT)/copy.o $(OUTPUT)/add.o $(OUTPUT)/sub.o $(OUTPUT)/mul.o $(OUTPUT)/basic_block.o $(OUTPUT)/cfg.o $(OUTPUT)/program.o $(OUTPUT)/call.o $(ANTLR4_LIBDIR)/libantlr4-runtime.a -o ifcc
 
 antlr: $(GRAMMAR)
 	$(ANTLR4_BINDIR)/antlr4 -visitor -no-listener -Dlanguage=Cpp -o $(GENERATED) $(GRAMMAR)

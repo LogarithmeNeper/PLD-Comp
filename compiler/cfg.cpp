@@ -1,16 +1,24 @@
-#include "IR.h"
+#include "cfg.h"
+#include "basic_block.h"
 
 using namespace std;
 
 CFG::CFG(Program* program) 
 {
     this->program = program;
+    this->symbolTable = new map<string,int>();
 
 }
-
+CFG::~CFG() {
+    delete symbolTable;
+    for(int i=0; i < bbs.size(); i++){
+        delete bbs[i];
+    }
+}
 void CFG::add_bb(BasicBlock* bb)
 {
     this->bbs.push_back(bb);
+    this->current_bb = bb;
 }
 
 void CFG::gen_asm(ostream & o)
@@ -43,16 +51,21 @@ void CFG::gen_asm_epilogue(ostream & o, int offsetReturn)
 
 void CFG::add_to_symbol_table(string & name, int & index)
 {
-    this->symbolTable.insert({name, index});
+    this->symbolTable->insert({name, index});
 }
 
 int CFG::get_var_index(string & name)
 {
-    return this->symbolTable[name];
+    return (*(this->symbolTable))[name];
 }
 
 BasicBlock* CFG::get_bb_by_index(int index)
 {
     return this->bbs.at(index);
 
+}
+
+map<string,int>* CFG::getSymbolTable()
+{
+    return this->symbolTable;
 }
