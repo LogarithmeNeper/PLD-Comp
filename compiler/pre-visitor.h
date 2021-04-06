@@ -42,13 +42,13 @@ public:
 
   antlrcpp::Any visitDeclarationSeuleInt(ifccParser::DeclarationSeuleIntContext *context)
   {
-    if (this->symbolTable.insert({context->VARIABLE()->getText(), maxOffset}).second == true)
+    if (this->symbolTable.insert({context->ID()->getText(), maxOffset}).second == true)
     {
       this->maxOffset += 4;
     }
     else
     {
-      printAlreadyDeclaredError(context->VARIABLE()->getText(), context->start->getLine());
+      printAlreadyDeclaredError(context->ID()->getText(), context->start->getLine());
       this->correctCode = false;
     };
     return 0;
@@ -60,13 +60,13 @@ public:
 
     // Checks if the variable has indeed been added to the symbolTable.
     // If not, it means that that variable name is already declared.
-    if (symbolTable.insert({context->VARIABLE()->getText(), maxOffset}).second == true)
+    if (symbolTable.insert({context->ID()->getText(), maxOffset}).second == true)
     {
       this->maxOffset += 4;
     }
     else
     {
-      printAlreadyDeclaredError(context->VARIABLE()->getText(), context->start->getLine());
+      printAlreadyDeclaredError(context->ID()->getText(), context->start->getLine());
       this->correctCode = false;
     };
 
@@ -90,13 +90,13 @@ public:
 
   antlrcpp::Any visitDeclarationSeuleChar(ifccParser::DeclarationSeuleCharContext *context)
   {
-    if (this->symbolTable.insert({context->VARIABLE()->getText(), maxOffset}).second == true)
+    if (this->symbolTable.insert({context->ID()->getText(), maxOffset}).second == true)
     {
       this->maxOffset += 1;
     }
     else
     {
-      printAlreadyDeclaredError(context->VARIABLE()->getText(), context->start->getLine());
+      printAlreadyDeclaredError(context->ID()->getText(), context->start->getLine());
       this->correctCode = false;
     };
     return 0;
@@ -108,13 +108,13 @@ public:
 
     // Checks if the variable has indeed been added to the symbolTable.
     // If not, it means that that variable name is already declared.
-    if (symbolTable.insert({context->VARIABLE()->getText(), maxOffset}).second == true)
+    if (symbolTable.insert({context->ID()->getText(), maxOffset}).second == true)
     {
       this->maxOffset += 1;
     }
     else
     {
-      printAlreadyDeclaredError(context->VARIABLE()->getText(), context->start->getLine());
+      printAlreadyDeclaredError(context->ID()->getText(), context->start->getLine());
       this->correctCode = false;
     };
 
@@ -138,13 +138,13 @@ public:
 
   antlrcpp::Any visitDeclarationSeule64(ifccParser::DeclarationSeule64Context *context)
   {
-    if (this->symbolTable.insert({context->VARIABLE()->getText(), maxOffset}).second == true)
+    if (this->symbolTable.insert({context->ID()->getText(), maxOffset}).second == true)
     {
       this->maxOffset += 8;
     }
     else
     {
-      printAlreadyDeclaredError(context->VARIABLE()->getText(), context->start->getLine());
+      printAlreadyDeclaredError(context->ID()->getText(), context->start->getLine());
       this->correctCode = false;
     };
     return 0;
@@ -156,13 +156,13 @@ public:
 
     // Checks if the variable has indeed been added to the symbolTable.
     // If not, it means that that variable name is already declared.
-    if (symbolTable.insert({context->VARIABLE()->getText(), maxOffset}).second == true)
+    if (symbolTable.insert({context->ID()->getText(), maxOffset}).second == true)
     {
       this->maxOffset += 8;
     }
     else
     {
-      printAlreadyDeclaredError(context->VARIABLE()->getText(), context->start->getLine());
+      printAlreadyDeclaredError(context->ID()->getText(), context->start->getLine());
       this->correctCode = false;
     };
 
@@ -188,7 +188,7 @@ public:
   {
     // Checks if the variable is declared in the symbolTable, if not prints an error to the output error.
     // Then, checks if the expr is affected, if not, prints a warning in the error output.
-    std::string leftVarName = context->VARIABLE()->getText();
+    std::string leftVarName = context->ID()->getText();
     if (this->symbolTable.count(leftVarName) == 1)
     {
       int exprOffset = visit(context->expr());
@@ -216,17 +216,17 @@ public:
   {
     // Checks if the Var is declared in the symbolTable.
     // If not, prints an error to the error output.
-    if (this->symbolTable.count(context->VARIABLE()->getText()) == 1)
+    if (this->symbolTable.count(context->ID()->getText()) == 1)
     {
-      return symbolTable[context->VARIABLE()->getText()];
+      return symbolTable[context->ID()->getText()];
     }
     else
     {
-      printNotDeclaredError(context->VARIABLE()->getText(), context->start->getLine());
+      printNotDeclaredError(context->ID()->getText(), context->start->getLine());
       this->correctCode = false;
       return -1;
     }
-    return symbolTable[context->VARIABLE()->getText()]; // returns an int
+    return symbolTable[context->ID()->getText()]; // returns an int
   }
 
   antlrcpp::Any visitConstExpr(ifccParser::ConstExprContext *context)

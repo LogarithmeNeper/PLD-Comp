@@ -59,15 +59,15 @@ public:
   virtual antlrcpp::Any visitDeclarationSeuleInt(ifccParser::DeclarationSeuleIntContext *context) override
   {
     this->maxOffset +=4;
-    this->program->get_cfg_by_index(0)->getSymbolTable()->insert({context->VARIABLE()->getText(), maxOffset});
+    this->program->get_cfg_by_index(0)->getSymbolTable()->insert({context->ID()->getText(), maxOffset});
     return 0;
   }
 
   virtual antlrcpp::Any visitDeclarationInitialiseeInt(ifccParser::DeclarationInitialiseeIntContext *context) override
   {
     this->maxOffset +=4;
-    this->program->get_cfg_by_index(0)->getSymbolTable()->insert({context->VARIABLE()->getText(), maxOffset});
-    std::string leftVarName = context->VARIABLE()->getText();
+    this->program->get_cfg_by_index(0)->getSymbolTable()->insert({context->ID()->getText(), maxOffset});
+    std::string leftVarName = context->ID()->getText();
     int exprOffset = visit(context->expr());
     
     Copy* copyInstr = new Copy(exprOffset, (*this->program->get_cfg_by_index(0)->getSymbolTable())[leftVarName], this->program->get_cfg_by_index(0)->get_bb_by_index(0));
@@ -80,15 +80,15 @@ public:
   virtual antlrcpp::Any visitDeclarationSeuleChar(ifccParser::DeclarationSeuleCharContext *context) override
   {
     this->maxOffset +=1;
-    this->program->get_cfg_by_index(0)->getSymbolTable()->insert({context->VARIABLE()->getText(), maxOffset});
+    this->program->get_cfg_by_index(0)->getSymbolTable()->insert({context->ID()->getText(), maxOffset});
     return 0;
   }
 
   virtual antlrcpp::Any visitDeclarationInitialiseeChar(ifccParser::DeclarationInitialiseeCharContext *context) override
   {
     this->maxOffset +=1;
-    this->program->get_cfg_by_index(0)->getSymbolTable()->insert({context->VARIABLE()->getText(), maxOffset});
-    std::string leftVarName = context->VARIABLE()->getText();
+    this->program->get_cfg_by_index(0)->getSymbolTable()->insert({context->ID()->getText(), maxOffset});
+    std::string leftVarName = context->ID()->getText();
     int exprOffset = visit(context->expr());
     
     Copy* copyInstr = new Copy(exprOffset, (*this->program->get_cfg_by_index(0)->getSymbolTable())[leftVarName], this->program->get_cfg_by_index(0)->get_bb_by_index(0));
@@ -100,15 +100,15 @@ public:
     virtual antlrcpp::Any visitDeclarationSeule64(ifccParser::DeclarationSeule64Context *context) override
   {
     this->maxOffset +=8;
-    this->program->get_cfg_by_index(0)->getSymbolTable()->insert({context->VARIABLE()->getText(), maxOffset});
+    this->program->get_cfg_by_index(0)->getSymbolTable()->insert({context->ID()->getText(), maxOffset});
     return 0;
   }
  
   virtual antlrcpp::Any visitDeclarationInitialisee64(ifccParser::DeclarationInitialisee64Context *context) override
   {
     this->maxOffset +=8;
-    this->program->get_cfg_by_index(0)->getSymbolTable()->insert({context->VARIABLE()->getText(), maxOffset});
-    std::string leftVarName = context->VARIABLE()->getText();
+    this->program->get_cfg_by_index(0)->getSymbolTable()->insert({context->ID()->getText(), maxOffset});
+    std::string leftVarName = context->ID()->getText();
     int exprOffset = visit(context->expr());
     
     Copy* copyInstr = new Copy(exprOffset, (*this->program->get_cfg_by_index(0)->getSymbolTable())[leftVarName], this->program->get_cfg_by_index(0)->get_bb_by_index(0));
@@ -119,7 +119,7 @@ public:
 
   virtual antlrcpp::Any visitAffectation(ifccParser::AffectationContext *context) override
   {
-    std::string leftVarName = context->VARIABLE()->getText();
+    std::string leftVarName = context->ID()->getText();
     int exprOffset = visit(context->expr());
     Copy* copyInstr = new Copy(exprOffset, (*this->program->get_cfg_by_index(0)->getSymbolTable())[leftVarName], this->program->get_cfg_by_index(0)->get_bb_by_index(0));
     IRInstr* instr = dynamic_cast<IRInstr*> (copyInstr);
@@ -129,7 +129,7 @@ public:
 
   virtual antlrcpp::Any visitVarExpr(ifccParser::VarExprContext *ctx) override
   {
-    return (*(this->program->get_cfg_by_index(0)->getSymbolTable()))[ctx->VARIABLE()->getText()]; // returns an int
+    return (*(this->program->get_cfg_by_index(0)->getSymbolTable()))[ctx->ID()->getText()]; // returns an int
   }
 
   virtual antlrcpp::Any visitConstExpr(ifccParser::ConstExprContext *ctx) override
@@ -190,8 +190,9 @@ public:
 
   virtual antlrcpp::Any visitFunctionCallSeul(ifccParser::FunctionCallSeulContext *ctx) override
   {
-    int offsetArg = visit(ctx->expr());
-    std::string functionName = ctx->FUNCTION_NAME()->getText();
+    // if(ctx->expr()->size() == 1){
+    int offsetArg = visit(ctx->expr(0));
+    std::string functionName = ctx->ID()->getText();
     if(functionName == "putchar")
     {
       functionName = "putchar@PLT";
