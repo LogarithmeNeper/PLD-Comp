@@ -8,6 +8,7 @@
 #include "antlr4-generated/ifccParser.h"
 #include "antlr4-generated/ifccBaseVisitor.h"
 #include "visitor.h"
+#include "pre-visitor.h"
 
 using namespace antlr4;
 using namespace std;
@@ -31,6 +32,14 @@ int main(int argn, const char **argv) {
   tree::ParseTree* tree = parser.axiom();
 
   Visitor visitor;
-  visitor.visit(tree);
+  PreVisitor preVisitor;
+  preVisitor.visit(tree);
+  if(preVisitor.getCorrectCode()) {
+    visitor.visit(tree);
+  } else {
+    exit(1);
+  }
+  
+
   return 0;
 }
