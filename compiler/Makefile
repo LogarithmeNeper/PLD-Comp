@@ -20,6 +20,7 @@ ifcc: dirs antlr  main.cpp visitor.cpp visitor.h IR.h ldconst.cpp ldconst.h copy
 	$(CC) $(CCARGS) $(GENERATED)/ifccVisitor.cpp -o $(OUTPUT)/ifccVisitor.o 
 	$(CC) $(CCARGS) $(GENERATED)/ifccParser.cpp -o $(OUTPUT)/ifccParser.o 
 	$(CC) $(CCARGS) visitor.cpp -o $(OUTPUT)/visitor.o 
+	$(CC) $(CCARGS) pre-visitor.cpp -o $(OUTPUT)/pre-visitor.o
 	$(CC) $(CCARGS) ldconst.cpp -o $(OUTPUT)/ldconst.o
 	$(CC) $(CCARGS) copy.cpp -o $(OUTPUT)/copy.o
 	$(CC) $(CCARGS) add.cpp -o $(OUTPUT)/add.o
