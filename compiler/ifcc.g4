@@ -17,6 +17,7 @@ expr : '(' expr ')' #parExpr
       | VARIABLE #varExpr
       ; 
 
+functionCall : FUNCTION_NAME '(' expr ')' ';' #FunctionCallSeul ;
 
 
 
@@ -28,3 +29,4 @@ VARIABLE : [a-z][a-zA-Z0-9_]* ;
 COMMENT : '/*' .*? '*/' -> skip ;
 DIRECTIVE : '#' .*? '\n' -> skip ;
 WS    : [ \t\r\n] -> channel(HIDDEN);
+FUNCTION_NAME : [a-z][a-zA-Z0-9_]* ;

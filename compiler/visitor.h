@@ -142,6 +142,20 @@ public:
     return maxOffset;
   }
 
+  virtual antlrcpp::Any visitFunctionCallSeul(ifccParser::FunctionCallSeulContext *ctx) override
+  {
+    int offsetArg = visit(ctx->expr());
+    std::string functionName = visit(ctx->FUNCTION_NAME->getText());
+    if(functionName == "putchar")
+    {
+      functionName = "putchar@PLT";
+    }
+    Call* callInstr = new Call(offsetArg, functionName, this->program->get_cfg_by_index(0)->get_bb_by_index(0));
+    IRInstr* instr = dynamic_cast<IRInstr*> (callInstr);
+    this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr);
+
+  }
+
   std::string removeLastCharFromString(std::string str)
   {
     return str.substr(0, str.size() - 1);

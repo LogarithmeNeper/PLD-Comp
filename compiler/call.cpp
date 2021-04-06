@@ -25,12 +25,12 @@ void Call::gen_asm(ostream & o) // x86 asm for now
 
 }
 
-Add::~Add()
+Call::~Call()
 {
 
 }
 
-Add::Add()
+Call::Call()
 {
 
 }
