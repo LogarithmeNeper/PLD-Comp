@@ -5,8 +5,6 @@ Copy::Copy(const int & _offsetSource, const int & _offsetDest, const string & de
     this->offsetSource = _offsetSource;
     this->offsetDest = _offsetDest;
     this->destName = destName;
-    this->bb = bb;
-
 }
 
 // The asm generation can be optimized for a char : we use movl to allow char to be initialized with int value

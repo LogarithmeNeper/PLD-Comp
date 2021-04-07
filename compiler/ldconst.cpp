@@ -5,7 +5,6 @@ ldconst::ldconst(const int & _constValue, const int & _offset,const string & var
     this->constValue = _constValue;
     this->offset = _offset;
     this->variableName = variableName;
-    this->bb = bb;
 }
 
 void ldconst::gen_asm(ostream & o) // x86 asm for now
