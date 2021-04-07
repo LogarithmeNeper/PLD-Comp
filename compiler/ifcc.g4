@@ -7,6 +7,11 @@ prog : 'int' 'main' '(' ')' bloc ;
 bloc : '{' instruction* '}' ;
 instruction : (declaration ';' | expr ';'| ret ';') ;
 
+ifStatement : IF '(' condition ')' bloc ;
+condition : expr EQUALCOMP expr #equalComparison
+            | expr LOWERCOMP expr #lowerComparison
+            | expr GREATERCOMP expr #greaterComparison
+            ;
 
 declaration : (declarationint | declarationchar | declaration64) ;
 declarationint : 'int' (declarationvarint ',')* declarationvarint ;
@@ -37,6 +42,10 @@ expr : '(' expr ')' #parExpr
 
 ret : RETURN expr;
 
+IF : 'if' ;
+EQUALCOMP : '==' ;
+LOWERCOMP : '<' ;
+GREATERCOMP : '>' ;
 RETURN : 'return' ;
 CONST : [0-9]+ ;
 CONSTCHAR : '\'' [!-~] '\'' ; //matche tous les caractères ASCII de 0x20 (!) à 0x7E (~), ne prend pas en compte l'espace car cause des erreurs
