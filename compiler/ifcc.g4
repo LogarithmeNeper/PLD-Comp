@@ -5,7 +5,7 @@ axiom : prog
 
 prog : 'int' 'main' '(' ')' bloc ;
 bloc : '{' instruction* '}' ;
-instruction : (declaration ';' | expr ';'| ret ';') ;
+instruction : (declaration ';' | expr ';'| ret ';' | ifStatement) ;
 
 ifStatement : IF '(' condition ')' bloc ;
 condition : expr EQUALCOMP expr #equalComparison
