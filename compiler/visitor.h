@@ -33,6 +33,10 @@ public:
     delete this->program;
   }
 
+  /**
+   * VISITORS METHODS
+   */
+
   virtual antlrcpp::Any visitProg(ifccParser::ProgContext *ctx) override
   {
     int variableOffset = 0; // initializes the offset for the first variable
@@ -214,6 +218,11 @@ public:
     return 0;
 
   }
+
+
+  /**
+   * UTIL METHODS
+   */
 
   std::string removeLastCharFromString(std::string str)
   {
