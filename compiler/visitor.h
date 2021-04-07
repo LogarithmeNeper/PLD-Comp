@@ -65,6 +65,7 @@ public:
   {
     this->maxOffset +=4;
     this->program->get_cfg_by_index(0)->getSymbolTable()->insert({context->ID()->getText(), maxOffset});
+    this->program->get_cfg_by_index(0)->getTypeTable()->insert({context->ID()->getText(), "int"});
     return 0;
   }
 
@@ -72,10 +73,11 @@ public:
   {
     this->maxOffset +=4;
     this->program->get_cfg_by_index(0)->getSymbolTable()->insert({context->ID()->getText(), maxOffset});
+    this->program->get_cfg_by_index(0)->getTypeTable()->insert({context->ID()->getText(), "int"});
     std::string leftVarName = context->ID()->getText();
     int exprOffset = visit(context->expr());
     
-    Copy* copyInstr = new Copy(exprOffset, (*this->program->get_cfg_by_index(0)->getSymbolTable())[leftVarName], this->program->get_cfg_by_index(0)->get_bb_by_index(0));
+    Copy* copyInstr = new Copy(exprOffset, (*this->program->get_cfg_by_index(0)->getSymbolTable())[leftVarName], leftVarName, this->program->get_cfg_by_index(0)->get_bb_by_index(0));
     IRInstr* instr = dynamic_cast<IRInstr*> (copyInstr);
     this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr);
 
@@ -86,6 +88,7 @@ public:
   {
     this->maxOffset +=1;
     this->program->get_cfg_by_index(0)->getSymbolTable()->insert({context->ID()->getText(), maxOffset});
+    this->program->get_cfg_by_index(0)->getTypeTable()->insert({context->ID()->getText(), "char"});
     return 0;
   }
 
@@ -93,10 +96,11 @@ public:
   {
     this->maxOffset +=1;
     this->program->get_cfg_by_index(0)->getSymbolTable()->insert({context->ID()->getText(), maxOffset});
+    this->program->get_cfg_by_index(0)->getTypeTable()->insert({context->ID()->getText(), "char"});
     std::string leftVarName = context->ID()->getText();
     int exprOffset = visit(context->expr());
     
-    Copy* copyInstr = new Copy(exprOffset, (*this->program->get_cfg_by_index(0)->getSymbolTable())[leftVarName], this->program->get_cfg_by_index(0)->get_bb_by_index(0));
+    Copy* copyInstr = new Copy(exprOffset, (*this->program->get_cfg_by_index(0)->getSymbolTable())[leftVarName], leftVarName, this->program->get_cfg_by_index(0)->get_bb_by_index(0));
     IRInstr* instr = dynamic_cast<IRInstr*> (copyInstr);
     this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr);
     return 0;
@@ -106,6 +110,7 @@ public:
   {
     this->maxOffset +=8;
     this->program->get_cfg_by_index(0)->getSymbolTable()->insert({context->ID()->getText(), maxOffset});
+    this->program->get_cfg_by_index(0)->getTypeTable()->insert({context->ID()->getText(), "int64"});
     return 0;
   }
  
@@ -113,10 +118,11 @@ public:
   {
     this->maxOffset +=8;
     this->program->get_cfg_by_index(0)->getSymbolTable()->insert({context->ID()->getText(), maxOffset});
+    this->program->get_cfg_by_index(0)->getTypeTable()->insert({context->ID()->getText(), "int64"});
     std::string leftVarName = context->ID()->getText();
     int exprOffset = visit(context->expr());
     
-    Copy* copyInstr = new Copy(exprOffset, (*this->program->get_cfg_by_index(0)->getSymbolTable())[leftVarName], this->program->get_cfg_by_index(0)->get_bb_by_index(0));
+    Copy* copyInstr = new Copy(exprOffset, (*this->program->get_cfg_by_index(0)->getSymbolTable())[leftVarName], leftVarName, this->program->get_cfg_by_index(0)->get_bb_by_index(0));
     IRInstr* instr = dynamic_cast<IRInstr*> (copyInstr);
     this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr);
     return 0;
@@ -126,7 +132,7 @@ public:
   {
     std::string leftVarName = context->ID()->getText();
     int exprOffset = visit(context->expr());
-    Copy* copyInstr = new Copy(exprOffset, (*this->program->get_cfg_by_index(0)->getSymbolTable())[leftVarName], this->program->get_cfg_by_index(0)->get_bb_by_index(0));
+    Copy* copyInstr = new Copy(exprOffset, (*this->program->get_cfg_by_index(0)->getSymbolTable())[leftVarName], leftVarName, this->program->get_cfg_by_index(0)->get_bb_by_index(0));
     IRInstr* instr = dynamic_cast<IRInstr*> (copyInstr);
     this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr);
     return 0;
@@ -229,7 +235,7 @@ public:
 
   int createTemporaryFromConstant(char val) 
   {
-    val = (int) val;
+    //val = (int) val;
     this->maxOffset += 1;
     std::string temporaryName = "tmp"+std::to_string(this->maxOffset);
     this->program->get_cfg_by_index(0)->getSymbolTable()->insert({"tmp"+std::to_string(this->maxOffset), this->maxOffset});
