@@ -215,6 +215,23 @@ public:
 
   }
 
+  virtual antlrcpp::Any visitIfStatement(ifccParser::IfStatementContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual antlrcpp::Any visitEqualComparison(ifccParser::EqualComparisonContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual antlrcpp::Any visitLowerComparison(ifccParser::LowerComparisonContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual antlrcpp::Any visitGreaterComparison(ifccParser::GreaterComparisonContext *ctx) override {
+    return visitChildren(ctx);
+  }
+  
+
   std::string removeLastCharFromString(std::string str)
   {
     return str.substr(0, str.size() - 1);
