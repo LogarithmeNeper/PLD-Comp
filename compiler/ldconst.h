@@ -10,7 +10,6 @@ class ldconst : public IRInstr{ // Used to load a constant into a temporary var
         ldconst(const int & _constValue, const int & _offset, const string & variableName, BasicBlock* bb);
         void gen_asm(ostream & o = cout);
         ~ldconst();
-        BasicBlock* bb;
         string variableName;
         int constValue;
         int offset; // The offset of the temporary var in the register

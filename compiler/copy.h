@@ -13,7 +13,6 @@ class Copy : public IRInstr{ // Used to load a constant into a temporary var
         int offsetSource; // The offset of the source var
         int offsetDest; // The offset of the destination var
         string destName; // The name of the destination variable
-        BasicBlock* bb;
 
     protected:
         
