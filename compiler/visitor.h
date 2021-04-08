@@ -325,16 +325,16 @@ public:
     IRInstr* instr = dynamic_cast<IRInstr*> (jmpInstr);
     this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr);
 
-    Write_label* write_labelInstr = new Write_label(".L"+to_string(this->ifCounter-1), this->program->get_cfg_by_index(0)->get_bb_by_index(0));
-    IRInstr* instr2 = dynamic_cast<IRInstr*> (write_labelInstr);
-    this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr2);
+    Write_label* write_labelInstrElse = new Write_label(".L"+to_string(this->ifCounter-1), this->program->get_cfg_by_index(0)->get_bb_by_index(0));
+    IRInstr* instrElse = dynamic_cast<IRInstr*> (write_labelInstrElse);
+    this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instrElse);
     return 0;
 
     visit(ctx->bloc());
 
-    Write_label* write_labelInstr = new Write_label(".L"+to_string(this->ifCounter), this->program->get_cfg_by_index(0)->get_bb_by_index(0));
-    IRInstr* instr3 = dynamic_cast<IRInstr*> (write_labelInstr);
-    this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr3);
+    Write_label* write_labelInstrThen = new Write_label(".L"+to_string(this->ifCounter), this->program->get_cfg_by_index(0)->get_bb_by_index(0));
+    IRInstr* instrThen = dynamic_cast<IRInstr*> (write_labelInstrThen);
+    this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instrThen);
     this->ifCounter++;
     return 0;
   }
