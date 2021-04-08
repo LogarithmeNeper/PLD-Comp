@@ -328,7 +328,6 @@ public:
     Write_label* write_labelInstrElse = new Write_label(".L"+to_string(this->ifCounter-1), this->program->get_cfg_by_index(0)->get_bb_by_index(0));
     IRInstr* instrElse = dynamic_cast<IRInstr*> (write_labelInstrElse);
     this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instrElse);
-    return 0;
 
     visit(ctx->bloc());
 
