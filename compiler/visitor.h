@@ -338,6 +338,9 @@ public:
     return 0;
   }  
 
+  virtual antlrcpp::Any visitNoElse(ifccParser::NoElseContext *ctx) override {
+    return 0;
+  }
 
   /**
    * UTIL METHODS
