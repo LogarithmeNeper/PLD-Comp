@@ -232,18 +232,32 @@ public:
     int offsetRight = visit(ctx->expr(1));
     std::string labelDestination = ".L2";
 
-    Cmp_eq* cmp_eqInstr = new Cmp_eq(offsetLeft, offsetRight, ".L2", this->program->get_cfg_by_index(0)->get_bb_by_index(0));
+    Cmp_eq* cmp_eqInstr = new Cmp_eq(offsetLeft, offsetRight, ".L2", "==", this->program->get_cfg_by_index(0)->get_bb_by_index(0));
     IRInstr* instr = dynamic_cast<IRInstr*> (cmp_eqInstr);
     this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr);
     return 0;
   }
 
   virtual antlrcpp::Any visitLowerComparison(ifccParser::LowerComparisonContext *ctx) override {
-    return visitChildren(ctx);
+    int offsetLeft = visit(ctx->expr(0));
+    int offsetRight = visit(ctx->expr(1));
+    std::string labelDestination = ".L2";
+
+    Cmp_eq* cmp_eqInstr = new Cmp_eq(offsetLeft, offsetRight, ".L2", "<", this->program->get_cfg_by_index(0)->get_bb_by_index(0));
+    IRInstr* instr = dynamic_cast<IRInstr*> (cmp_eqInstr);
+    this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr);
+    return 0;
   }
 
   virtual antlrcpp::Any visitGreaterComparison(ifccParser::GreaterComparisonContext *ctx) override {
-    return visitChildren(ctx);
+    int offsetLeft = visit(ctx->expr(0));
+    int offsetRight = visit(ctx->expr(1));
+    std::string labelDestination = ".L2";
+
+    Cmp_eq* cmp_eqInstr = new Cmp_eq(offsetLeft, offsetRight, ".L2", ">", this->program->get_cfg_by_index(0)->get_bb_by_index(0));
+    IRInstr* instr = dynamic_cast<IRInstr*> (cmp_eqInstr);
+    this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr);
+    return 0;
   }
   
 
