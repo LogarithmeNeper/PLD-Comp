@@ -1,4 +1,4 @@
-int function(int a)
+/*int function(int a)
 {
     return a;
 }
@@ -16,11 +16,10 @@ int main()
     b = function(a);
     c = 3; 
     return c;
-}
-
-/*int main()
-{
-    int a = 5;
-    return a;
-
 }*/
+
+int main()
+{
+    putchar(102);
+    return 0;
+}
