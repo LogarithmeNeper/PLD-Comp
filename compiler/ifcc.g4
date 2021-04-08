@@ -9,6 +9,7 @@ instruction : (declaration ';' | expr ';'| ret ';' | ifStatement) ;
 
 ifStatement : IF '(' condition ')' bloc ;
 condition : expr EQUALCOMP expr #equalComparison
+            | expr NOTEQUALCOMP expr #notEqualComparison
             | expr LOWERCOMP expr #lowerComparison
             | expr GREATERCOMP expr #greaterComparison
             ;
@@ -46,6 +47,7 @@ IF : 'if' ;
 EQUALCOMP : '==' ;
 LOWERCOMP : '<' ;
 GREATERCOMP : '>' ;
+NOTEQUALCOMP : '!=';
 RETURN : 'return' ;
 CONST : [0-9]+ ;
 CONSTCHAR : '\'' [!-~] '\'' ; //matche tous les caractères ASCII de 0x20 (!) à 0x7E (~), ne prend pas en compte l'espace car cause des erreurs

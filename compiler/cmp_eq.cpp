@@ -32,6 +32,10 @@ void Cmp_eq::gen_asm(ostream & o) // x86 asm for now
           o << "\tjle "
             << this->destinationLabel
             << std::endl;
+        } else if (comparativeSign == "!=") {
+          o << "\tje "
+            << this->destinationLabel
+            << std::endl;
         }
         
 }
