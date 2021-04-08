@@ -3,7 +3,8 @@ int incr(int a) {
 }
 
 int twoincr(int a) {
-    return incr(a+1);
+    int f = incr(a+1);
+    return f;
 }
 
 int main() {
