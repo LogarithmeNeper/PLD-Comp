@@ -20,6 +20,7 @@
 #include "cfg.h"
 #include "IR.h"
 #include "call.h"
+#include "cmp_eq.h"
 
 /**
  * This class provides an empty implementation of ifccVisitor, which can be
@@ -216,10 +217,19 @@ public:
   }
 
   virtual antlrcpp::Any visitIfStatement(ifccParser::IfStatementContext *ctx) override {
-    return visitChildren(ctx);
+    visit(ctx->condition());
+    visit(ctx->bloc());
+    return 0;
   }
 
   virtual antlrcpp::Any visitEqualComparison(ifccParser::EqualComparisonContext *ctx) override {
+    int offsetLeft = visit(ctx->expr(0));
+    int offsetRight = visit(ctx->expr(1));
+    std::string labelDestination = ".L2";
+
+    Cmp_eq* cmp_eqInstr = new Cmp_eq(offsetLeft, offsetRight, ".L2", this->program->get_cfg_by_index(0)->get_bb_by_index(0));
+    IRInstr* instr = dynamic_cast<IRInstr*> (cmp_eqInstr);
+    this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr);
     return visitChildren(ctx);
   }
 
