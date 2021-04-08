@@ -7,7 +7,7 @@ prog : 'int' 'main' '(' ')' bloc ;
 bloc : '{' instruction* '}' ;
 instruction : (declaration ';' | expr ';'| ret ';' | ifStatement) ;
 
-ifStatement : IF '(' condition ')' bloc /*(elseBloc)?*/;
+ifStatement : IF '(' condition ')' bloc (elseBloc)?;
 condition : expr EQUALCOMP expr #equalComparison
             | expr NOTEQUALCOMP expr #notEqualComparison
             | expr LOWERCOMP expr #lowerComparison
