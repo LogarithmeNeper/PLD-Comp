@@ -7,12 +7,14 @@ prog : 'int' 'main' '(' ')' bloc ;
 bloc : '{' instruction* '}' ;
 instruction : (declaration ';' | expr ';'| ret ';' | ifStatement) ;
 
-ifStatement : IF '(' condition ')' bloc ;
+ifStatement : IF '(' condition ')' bloc (elseBloc)?;
 condition : expr EQUALCOMP expr #equalComparison
             | expr NOTEQUALCOMP expr #notEqualComparison
             | expr LOWERCOMP expr #lowerComparison
             | expr GREATERCOMP expr #greaterComparison
             ;
+
+elseBloc : 'else' bloc;
 
 declaration : (declarationint | declarationchar | declaration64) ;
 declarationint : 'int' (declarationvarint ',')* declarationvarint ;
@@ -47,6 +49,7 @@ expr : '(' expr ')' #parExpr
 ret : RETURN expr;
 
 IF : 'if' ;
+ELSE : 'else' ;
 EQUALCOMP : '==' ;
 LOWERCOMP : '<' ;
 GREATERCOMP : '>' ;
