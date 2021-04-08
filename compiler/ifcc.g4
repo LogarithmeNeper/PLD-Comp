@@ -7,14 +7,15 @@ prog : 'int' 'main' '(' ')' bloc ;
 bloc : '{' instruction* '}' ;
 instruction : (declaration ';' | expr ';'| ret ';' | ifStatement) ;
 
-ifStatement : IF '(' condition ')' bloc (elseBloc)?;
+ifStatement : IF '(' condition ')' bloc elseBloc;
 condition : expr EQUALCOMP expr #equalComparison
             | expr NOTEQUALCOMP expr #notEqualComparison
             | expr LOWERCOMP expr #lowerComparison
             | expr GREATERCOMP expr #greaterComparison
             ;
 
-elseBloc : 'else' bloc;
+elseBloc : 'else' bloc #else
+            |#noElse;
 
 declaration : (declarationint | declarationchar | declaration64) ;
 declarationint : 'int' (declarationvarint ',')* declarationvarint ;

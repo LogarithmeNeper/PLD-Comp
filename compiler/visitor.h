@@ -25,6 +25,7 @@
 #include "call.h"
 #include "cmp_eq.h"
 #include "write_label.h"
+#include "jmp.h"
 
 /**
  * This class provides an empty implementation of ifccVisitor, which can be
@@ -268,14 +269,8 @@ public:
   }
 
   virtual antlrcpp::Any visitIfStatement(ifccParser::IfStatementContext *ctx) override {
-    visit(ctx->condition());
-    visit(ctx->bloc());
-    visit(ctx->elseBloc());
+    visitChildren(ctx);
 
-    Write_label* write_labelInstr = new Write_label(".L"+to_string(this->ifCounter), this->program->get_cfg_by_index(0)->get_bb_by_index(0));
-    IRInstr* instr = dynamic_cast<IRInstr*> (write_labelInstr);
-    this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr);
-    this->ifCounter++;
     return 0;
   }
 
@@ -323,14 +318,34 @@ public:
     return 0;
   }
   
-  virtual antlrcpp::Any visitElseBloc(ifccParser::ElseBlocContext *ctx) override {
+  virtual antlrcpp::Any visitElse(ifccParser::ElseContext *ctx) override {
+    this->ifCounter++;
+
+    Jmp* jmpInstr = new Jmp(".L"+to_string(this->ifCounter), this->program->get_cfg_by_index(0)->get_bb_by_index(0));
+    IRInstr* instr = dynamic_cast<IRInstr*> (jmpInstr);
+    this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr);
+
+    Write_label* write_labelInstr = new Write_label(".L"+to_string(this->ifCounter-1), this->program->get_cfg_by_index(0)->get_bb_by_index(0));
+    IRInstr* instr = dynamic_cast<IRInstr*> (write_labelInstr);
+    this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr);
+    return 0;
+
     visit(ctx->bloc());
 
-    Write_label* write_labelInstr = new Write_label(".L2", this->program->get_cfg_by_index(0)->get_bb_by_index(0));
+    Write_label* write_labelInstr = new Write_label(".L"+to_string(this->ifCounter), this->program->get_cfg_by_index(0)->get_bb_by_index(0));
     IRInstr* instr = dynamic_cast<IRInstr*> (write_labelInstr);
     this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr);
     return 0;
   }
+
+  virtual antlrcpp::Any visitNoElse(ifccParser::NoElseContext *ctx) override {
+    Write_label* write_labelInstr = new Write_label(".L"+to_string(this->ifCounter), this->program->get_cfg_by_index(0)->get_bb_by_index(0));
+    IRInstr* instr = dynamic_cast<IRInstr*> (write_labelInstr);
+    this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr);
+    this->ifCounter++;
+    return 0;
+  }
+  
 
 
   /**
