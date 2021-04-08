@@ -230,7 +230,7 @@ public:
     Cmp_eq* cmp_eqInstr = new Cmp_eq(offsetLeft, offsetRight, ".L2", this->program->get_cfg_by_index(0)->get_bb_by_index(0));
     IRInstr* instr = dynamic_cast<IRInstr*> (cmp_eqInstr);
     this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr);
-    return visitChildren(ctx);
+    return 0;
   }
 
   virtual antlrcpp::Any visitLowerComparison(ifccParser::LowerComparisonContext *ctx) override {
