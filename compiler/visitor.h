@@ -335,6 +335,7 @@ public:
     Write_label* write_labelInstr = new Write_label(".L"+to_string(this->ifCounter), this->program->get_cfg_by_index(0)->get_bb_by_index(0));
     IRInstr* instr3 = dynamic_cast<IRInstr*> (write_labelInstr);
     this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr3);
+    this->ifCounter++;
     return 0;
   }
 
