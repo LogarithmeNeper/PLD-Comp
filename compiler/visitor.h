@@ -44,6 +44,12 @@ public:
     return 0;
   }
 
+  virtual antlrcpp::Any visitDefinitionFunction(ifccParser::DefinitionFunctionContext *ctx) override 
+  {
+    
+    return visitChildren(ctx);
+  }
+
   virtual antlrcpp::Any visitBloc(ifccParser::BlocContext *ctx) override {
     this->program->get_cfg_by_index(0)->add_bb(new BasicBlock(this->program->get_cfg_by_index(0), "main"));
     return visitChildren(ctx);
