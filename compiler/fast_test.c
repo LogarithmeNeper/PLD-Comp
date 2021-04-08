@@ -9,7 +9,18 @@ int function3()
 }
 int main() 
 {
-    function(1);
-    function3();
-    return 0;
+    int a;
+    int b;
+    int c;
+    a = 6;
+    b = function(a);
+    c = 3; 
+    return c;
 }
+
+/*int main()
+{
+    int a = 5;
+    return a;
+
+}*/

@@ -47,15 +47,12 @@ void CFG::gen_asm_prologue(ostream & o)
         break;
 
         case 1:
-        this->maxOffset += 4;
-        o << "\tmovl	%edi, -" << this->maxOffset << "(%rbp) \n";
+        o << "\tmovl	%edi, -4(%rbp) \n";
         break;
 
         case 2:
-        this->maxOffset += 4;
-        o << "\tmovl %edi -" << this->maxOffset << "(%rbp) \n";
-        this->maxOffset += 4;
-        o << "\tmovel %esi -" << this->maxOffset << "(%rbp) \n";
+        o << "\tmovl %edi, -4(%rbp) \n";
+        o << "\tmovel %esi, -8(%rbp) \n";
         break;
 
         default:

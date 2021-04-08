@@ -1,9 +1,10 @@
 #include "call.h"
 
-Call::Call(const int & _argumentOffset, std::string _functionName, BasicBlock* bb) : IRInstr("add",bb)
+Call::Call(const int & _argumentOffset, std::string _functionName, const int & _offset, BasicBlock* bb) : IRInstr("call",bb)
 {
     this->argumentOffset = _argumentOffset;
     this->functionName = _functionName;
+    this->offset = _offset;
 
 }
 
@@ -20,7 +21,9 @@ void Call::gen_asm(ostream & o) // x86 asm for now
       << std::endl;
     o
       << "\tmovl "
-      << "$0, %eax"
+      << "%eax, -"
+      << this->offset
+      << "(%rbp)"
       << std::endl;
 
 }

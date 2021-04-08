@@ -55,10 +55,10 @@ class CFG {
 	int maxOffset;
 	string name;
 	int nbArguments;
+	map <string, int>* symbolTable; /**< part of the symbol table  */
 
  protected:
 	//map <string, Type> SymbolType; /**< part of the symbol table  */
-	map <string, int>* symbolTable; /**< part of the symbol table  */
 	int nextFreeSymbolIndex; /**< to allocate new symbols in the symbol table */
 	int nextBBnumber; /**< just for naming */
 	
