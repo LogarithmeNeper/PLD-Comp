@@ -2,8 +2,14 @@ int function(int a)
 {
     return a;
 }
-int main() {
-    putchar('a');
-    putchar('b');
+
+int function3()
+{
+    return 0;
+}
+int main() 
+{
+    function(1);
+    function3();
     return 0;
 }

@@ -36,8 +36,6 @@ public:
   virtual antlrcpp::Any visitProg(ifccParser::ProgContext *ctx) override
   {
     this->program = new Program(); // We initialise the Program one we visit the axiom of the grammar
-    this->program->add_cfg(new CFG(this->program));
-    //this->program->get_cfg_by_index(0)->add_bb(new BasicBlock(this->program->get_cfg_by_index(0), "main"));
     visitChildren(ctx);
     return 0;
   }
@@ -45,14 +43,18 @@ public:
   virtual antlrcpp::Any visitDefinitionFunction(ifccParser::DefinitionFunctionContext *ctx) override 
   {
     std::string functionName = ctx->ID(0)->getText();
-    this->program->get_cfg_by_index(0)->add_bb(new BasicBlock(this->program->get_cfg_by_index(0), functionName));
-    this->program->get_cfg_by_index(0)->current_bb = this->program->get_cfg_by_index(0)->bbs.back();
-    
+    int nbArguments = ctx->ID().size()-1;
+    // TODO ajouter à la table de symbole les fonctions 
+    /*for(int i = 1; i <= nbArguments; i++)
+    {
+      
+    }*/
+    this->program->add_cfg(new CFG(this->program, functionName, nbArguments));
     return visitChildren(ctx);
   }
 
   virtual antlrcpp::Any visitBloc(ifccParser::BlocContext *ctx) override {
-    this->program->get_cfg_by_index(0)->add_bb(new BasicBlock(this->program->get_cfg_by_index(0), "main"));
+    this->program->cfgs.back()->add_bb(new BasicBlock(this->program->cfgs.back()));
     return visitChildren(ctx);
   }
 
@@ -71,20 +73,20 @@ public:
   virtual antlrcpp::Any visitDeclarationSeuleInt(ifccParser::DeclarationSeuleIntContext *context) override
   {
     this->program->cfgs.back()->maxOffset +=4;
-    this->program->get_cfg_by_index(0)->getSymbolTable()->insert({context->ID()->getText(), maxOffset});
+    this->program->cfgs.back()->getSymbolTable()->insert({context->ID()->getText(), maxOffset});
     return 0;
   }
 
   virtual antlrcpp::Any visitDeclarationInitialiseeInt(ifccParser::DeclarationInitialiseeIntContext *context) override
   {
     this->program->cfgs.back()->maxOffset +=4;
-    this->program->get_cfg_by_index(0)->getSymbolTable()->insert({context->ID()->getText(), maxOffset});
+    this->program->cfgs.back()->getSymbolTable()->insert({context->ID()->getText(), maxOffset});
     std::string leftVarName = context->ID()->getText();
     int exprOffset = visit(context->expr());
     
-    Copy* copyInstr = new Copy(exprOffset, (*this->program->get_cfg_by_index(0)->getSymbolTable())[leftVarName], this->program->get_cfg_by_index(0)->get_bb_by_index(0));
+    Copy* copyInstr = new Copy(exprOffset, (*this->program->cfgs.back()->getSymbolTable())[leftVarName], this->program->cfgs.back()->get_bb_by_index(0));
     IRInstr* instr = dynamic_cast<IRInstr*> (copyInstr);
-    this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr);
+    this->program->cfgs.back()->get_bb_by_index(0)->add_IRInstr(instr);
 
     return 0;
   }
@@ -92,40 +94,40 @@ public:
   virtual antlrcpp::Any visitDeclarationSeuleChar(ifccParser::DeclarationSeuleCharContext *context) override
   {
     this->program->cfgs.back()->maxOffset +=1;
-    this->program->get_cfg_by_index(0)->getSymbolTable()->insert({context->ID()->getText(), maxOffset});
+    this->program->cfgs.back()->getSymbolTable()->insert({context->ID()->getText(), maxOffset});
     return 0;
   }
 
   virtual antlrcpp::Any visitDeclarationInitialiseeChar(ifccParser::DeclarationInitialiseeCharContext *context) override
   {
     this->program->cfgs.back()->maxOffset +=1;
-    this->program->get_cfg_by_index(0)->getSymbolTable()->insert({context->ID()->getText(), maxOffset});
+    this->program->cfgs.back()->getSymbolTable()->insert({context->ID()->getText(), maxOffset});
     std::string leftVarName = context->ID()->getText();
     int exprOffset = visit(context->expr());
     
-    Copy* copyInstr = new Copy(exprOffset, (*this->program->get_cfg_by_index(0)->getSymbolTable())[leftVarName], this->program->get_cfg_by_index(0)->get_bb_by_index(0));
+    Copy* copyInstr = new Copy(exprOffset, (*this->program->cfgs.back()->getSymbolTable())[leftVarName], this->program->cfgs.back()->get_bb_by_index(0));
     IRInstr* instr = dynamic_cast<IRInstr*> (copyInstr);
-    this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr);
+    this->program->cfgs.back()->get_bb_by_index(0)->add_IRInstr(instr);
     return 0;
   }
 
     virtual antlrcpp::Any visitDeclarationSeule64(ifccParser::DeclarationSeule64Context *context) override
   {
     this->program->cfgs.back()->maxOffset +=8;
-    this->program->get_cfg_by_index(0)->getSymbolTable()->insert({context->ID()->getText(), maxOffset});
+    this->program->cfgs.back()->getSymbolTable()->insert({context->ID()->getText(), maxOffset});
     return 0;
   }
  
   virtual antlrcpp::Any visitDeclarationInitialisee64(ifccParser::DeclarationInitialisee64Context *context) override
   {
     this->program->cfgs.back()->maxOffset +=8;
-    this->program->get_cfg_by_index(0)->getSymbolTable()->insert({context->ID()->getText(), maxOffset});
+    this->program->cfgs.back()->getSymbolTable()->insert({context->ID()->getText(), maxOffset});
     std::string leftVarName = context->ID()->getText();
     int exprOffset = visit(context->expr());
     
-    Copy* copyInstr = new Copy(exprOffset, (*this->program->get_cfg_by_index(0)->getSymbolTable())[leftVarName], this->program->get_cfg_by_index(0)->get_bb_by_index(0));
+    Copy* copyInstr = new Copy(exprOffset, (*this->program->cfgs.back()->getSymbolTable())[leftVarName], this->program->cfgs.back()->get_bb_by_index(0));
     IRInstr* instr = dynamic_cast<IRInstr*> (copyInstr);
-    this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr);
+    this->program->cfgs.back()->get_bb_by_index(0)->add_IRInstr(instr);
     return 0;
   }
 
@@ -133,15 +135,15 @@ public:
   {
     std::string leftVarName = context->ID()->getText();
     int exprOffset = visit(context->expr());
-    Copy* copyInstr = new Copy(exprOffset, (*this->program->get_cfg_by_index(0)->getSymbolTable())[leftVarName], this->program->get_cfg_by_index(0)->get_bb_by_index(0));
+    Copy* copyInstr = new Copy(exprOffset, (*this->program->cfgs.back()->getSymbolTable())[leftVarName], this->program->cfgs.back()->get_bb_by_index(0));
     IRInstr* instr = dynamic_cast<IRInstr*> (copyInstr);
-    this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr);
+    this->program->cfgs.back()->get_bb_by_index(0)->add_IRInstr(instr);
     return 0;
   }
 
   virtual antlrcpp::Any visitVarExpr(ifccParser::VarExprContext *ctx) override
   {
-    return (*(this->program->get_cfg_by_index(0)->getSymbolTable()))[ctx->ID()->getText()]; // returns an int
+    return (*(this->program->cfgs.back()->getSymbolTable()))[ctx->ID()->getText()]; // returns an int
   }
 
   virtual antlrcpp::Any visitConstExpr(ifccParser::ConstExprContext *ctx) override
@@ -167,19 +169,19 @@ public:
     int offsetRight = visit(ctx->expr(1));
 
     this->program->cfgs.back()->maxOffset += 4;
-    this->program->get_cfg_by_index(0)->getSymbolTable()->insert({"tmp" + std::to_string(this->program->cfgs.back()->maxOffset), this->program->cfgs.back()->maxOffset});
+    this->program->cfgs.back()->getSymbolTable()->insert({"tmp" + std::to_string(this->program->cfgs.back()->maxOffset), this->program->cfgs.back()->maxOffset});
 
     if(ctx->children[1]->getText() == "+")
     {
-      Add* addInstr = new Add(offsetLeft, offsetRight, maxOffset, this->program->get_cfg_by_index(0)->get_bb_by_index(0));
+      Add* addInstr = new Add(offsetLeft, offsetRight, maxOffset, this->program->cfgs.back()->get_bb_by_index(0));
       IRInstr* instr = dynamic_cast<IRInstr*> (addInstr);
-      this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr);
+      this->program->cfgs.back()->get_bb_by_index(0)->add_IRInstr(instr);
     }
     else if(ctx->children[1]->getText() == "-")
     {
-      Sub* subInstr = new Sub(offsetLeft, offsetRight, maxOffset, this->program->get_cfg_by_index(0)->get_bb_by_index(0));
+      Sub* subInstr = new Sub(offsetLeft, offsetRight, maxOffset, this->program->cfgs.back()->get_bb_by_index(0));
       IRInstr* instr = dynamic_cast<IRInstr*> (subInstr);
-      this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr);
+      this->program->cfgs.back()->get_bb_by_index(0)->add_IRInstr(instr);
     }
 
     return maxOffset;
@@ -191,11 +193,11 @@ public:
     int offsetRight = visit(ctx->expr(1));
 
     this->program->cfgs.back()->maxOffset += 4;
-    this->program->get_cfg_by_index(0)->getSymbolTable()->insert({"tmp" + std::to_string(this->program->cfgs.back()->maxOffset), this->program->cfgs.back()->maxOffset});
+    this->program->cfgs.back()->getSymbolTable()->insert({"tmp" + std::to_string(this->program->cfgs.back()->maxOffset), this->program->cfgs.back()->maxOffset});
 
-    Mul* mulInstr = new Mul(offsetLeft, offsetRight, maxOffset, this->program->get_cfg_by_index(0)->get_bb_by_index(0));
+    Mul* mulInstr = new Mul(offsetLeft, offsetRight, maxOffset, this->program->cfgs.back()->get_bb_by_index(0));
     IRInstr* instr = dynamic_cast<IRInstr*> (mulInstr);
-    this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr);
+    this->program->cfgs.back()->get_bb_by_index(0)->add_IRInstr(instr);
 
     return maxOffset;
   }
@@ -209,9 +211,9 @@ public:
     {
       functionName = "putchar@PLT";
     }
-    Call* callInstr = new Call(offsetArg, functionName, this->program->get_cfg_by_index(0)->get_bb_by_index(0));
+    Call* callInstr = new Call(offsetArg, functionName, this->program->cfgs.back()->get_bb_by_index(0));
     IRInstr* instr = dynamic_cast<IRInstr*> (callInstr);
-    this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr);
+    this->program->cfgs.back()->get_bb_by_index(0)->add_IRInstr(instr);
     return 0;
 
   }
@@ -224,11 +226,11 @@ public:
   int createTemporaryFromConstant(int val) 
   {
     this->program->cfgs.back()->maxOffset += 4;
-    this->program->get_cfg_by_index(0)->getSymbolTable()->insert({"tmp"+std::to_string(this->program->cfgs.back()->maxOffset), this->program->cfgs.back()->maxOffset});
+    this->program->cfgs.back()->getSymbolTable()->insert({"tmp"+std::to_string(this->program->cfgs.back()->maxOffset), this->program->cfgs.back()->maxOffset});
 
-    ldconst* ldconstInstr = new ldconst(val, this->program->cfgs.back()->maxOffset, this->program->get_cfg_by_index(0)->get_bb_by_index(0));
+    ldconst* ldconstInstr = new ldconst(val, this->program->cfgs.back()->maxOffset, this->program->cfgs.back()->get_bb_by_index(0));
     IRInstr* instr = dynamic_cast<IRInstr*> (ldconstInstr);
-    this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr);
+    this->program->cfgs.back()->get_bb_by_index(0)->add_IRInstr(instr);
 
     return this->program->cfgs.back()->maxOffset;
   }
@@ -237,11 +239,11 @@ public:
   {
     val = (int) val;
     this->program->cfgs.back()->maxOffset += 1;
-    this->program->get_cfg_by_index(0)->getSymbolTable()->insert({"tmp"+std::to_string(this->program->cfgs.back()->maxOffset), this->program->cfgs.back()->maxOffset});
+    this->program->cfgs.back()->getSymbolTable()->insert({"tmp"+std::to_string(this->program->cfgs.back()->maxOffset), this->program->cfgs.back()->maxOffset});
 
-    ldconst* ldconstInstr = new ldconst(val, this->program->cfgs.back()->maxOffset, this->program->get_cfg_by_index(0)->get_bb_by_index(0));
+    ldconst* ldconstInstr = new ldconst(val, this->program->cfgs.back()->maxOffset, this->program->cfgs.back()->get_bb_by_index(0));
     IRInstr* instr = dynamic_cast<IRInstr*> (ldconstInstr);
-    this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr);
+    this->program->cfgs.back()->get_bb_by_index(0)->add_IRInstr(instr);
 
     return this->program->cfgs.back()->maxOffset;
   }

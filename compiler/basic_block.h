@@ -41,7 +41,7 @@ Possible optimization:
 
 class BasicBlock {
  public:
-	BasicBlock(CFG* cfg, string entry_label);
+	BasicBlock(CFG* cfg);
 	void gen_asm(ostream &o); /**< x86 assembly code generation for this basic block (very simple) */
 	~BasicBlock();
 

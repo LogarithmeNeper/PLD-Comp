@@ -26,7 +26,7 @@ using namespace std;
  */
 class CFG {
  public:
-	CFG(Program* program);
+	CFG(Program* program, string name, int nbArguments);
 	~CFG();
 	Program* program; /**< The AST this CFG comes from */
 	
@@ -53,6 +53,8 @@ class CFG {
     map<string,int>* getSymbolTable();
 	vector <BasicBlock*> bbs; /**< all the basic blocks of this CFG*/
 	int maxOffset;
+	string name;
+	int nbArguments;
 
  protected:
 	//map <string, Type> SymbolType; /**< part of the symbol table  */

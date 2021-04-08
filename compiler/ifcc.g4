@@ -4,8 +4,7 @@ axiom : prog
       ;
 
 prog : definitionFunction* ;
-definitionFunction : type ID '(' (type ID)* ')' bloc;
-type : (INT | CHAR | INT64 | VOID);
+definitionFunction : 'int' ID '(' ('int' ID ','?)* ')' bloc;
 bloc : '{' instruction* '}' ;
 instruction : (declaration ';' | expr ';'| ret ';') ;
 
@@ -39,10 +38,6 @@ expr : '(' expr ')' #parExpr
 
 ret : RETURN expr;
 
-INT : 'int';
-CHAR : 'char';
-INT64 : 'int64_t';
-VOID : 'void';
 RETURN : 'return' ;
 CONST : [0-9]+ ;
 CONSTCHAR : '\'' [!-~] '\'' ; //matche tous les caractères ASCII de 0x20 (!) à 0x7E (~), ne prend pas en compte l'espace car cause des erreurs

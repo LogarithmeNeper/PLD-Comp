@@ -2,10 +2,9 @@
 
 using namespace std;
 
-BasicBlock::BasicBlock(CFG* cfg, string entry_label) 
+BasicBlock::BasicBlock(CFG* cfg) 
 {
     this->cfg = cfg;
-    this->label = entry_label;
 }
 
 void BasicBlock::gen_asm(ostream & o)
