@@ -7,8 +7,6 @@ Cmp_eq::Cmp_eq(const int & _offsetLeft, const int & _offsetRight, const string &
     this->destinationLabel = _destinationLabel;
 }
 
-// The asm generation can be optimized for a char : we use movl to allow char to be initialized with int value
-// We would need the type of the Source to be able to use movb.
 void Cmp_eq::gen_asm(ostream & o) // x86 asm for now
 {
         o << "\tmovl -"
