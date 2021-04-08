@@ -23,6 +23,9 @@
 #include "cfg.h"
 #include "IR.h"
 #include "call.h"
+#include "cmp_eq.h"
+#include "write_label.h"
+#include "jmp.h"
 
 /**
  * This class provides an empty implementation of ifccVisitor, which can be
@@ -44,6 +47,7 @@ public:
   {
     int variableOffset = 0; // initializes the offset for the first variable
     this->maxOffset = variableOffset;
+    this->ifCounter = 2;
     this->program = new Program(); // We initialise the Program one we visit the axiom of the grammar
     this->program->add_cfg(new CFG(this->program));
     //this->program->get_cfg_by_index(0)->add_bb(new BasicBlock(this->program->get_cfg_by_index(0), "main"));
@@ -264,6 +268,85 @@ public:
 
   }
 
+  virtual antlrcpp::Any visitIfStatement(ifccParser::IfStatementContext *ctx) override {
+    visitChildren(ctx);
+
+    return 0;
+  }
+
+  virtual antlrcpp::Any visitEqualComparison(ifccParser::EqualComparisonContext *ctx) override {
+    int offsetLeft = visit(ctx->expr(0));
+    int offsetRight = visit(ctx->expr(1));
+    std::string labelDestination = ".L"+to_string(this->ifCounter);
+
+    Cmp_eq* cmp_eqInstr = new Cmp_eq(offsetLeft, offsetRight, ".L"+to_string(this->ifCounter), "==", this->program->get_cfg_by_index(0)->get_bb_by_index(0));
+    IRInstr* instr = dynamic_cast<IRInstr*> (cmp_eqInstr);
+    this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr);
+    return 0;
+  }
+
+  virtual antlrcpp::Any visitNotEqualComparison(ifccParser::NotEqualComparisonContext *ctx) override {
+    int offsetLeft = visit(ctx->expr(0));
+    int offsetRight = visit(ctx->expr(1));
+    std::string labelDestination = ".L"+to_string(this->ifCounter);
+
+    Cmp_eq* cmp_eqInstr = new Cmp_eq(offsetLeft, offsetRight, ".L"+to_string(this->ifCounter), "!=", this->program->get_cfg_by_index(0)->get_bb_by_index(0));
+    IRInstr* instr = dynamic_cast<IRInstr*> (cmp_eqInstr);
+    this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr);
+    return 0;
+  }
+
+  virtual antlrcpp::Any visitLowerComparison(ifccParser::LowerComparisonContext *ctx) override {
+    int offsetLeft = visit(ctx->expr(0));
+    int offsetRight = visit(ctx->expr(1));
+    std::string labelDestination = ".L"+to_string(this->ifCounter);
+
+    Cmp_eq* cmp_eqInstr = new Cmp_eq(offsetLeft, offsetRight, ".L"+to_string(this->ifCounter), "<", this->program->get_cfg_by_index(0)->get_bb_by_index(0));
+    IRInstr* instr = dynamic_cast<IRInstr*> (cmp_eqInstr);
+    this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr);
+    return 0;
+  }
+
+  virtual antlrcpp::Any visitGreaterComparison(ifccParser::GreaterComparisonContext *ctx) override {
+    int offsetLeft = visit(ctx->expr(0));
+    int offsetRight = visit(ctx->expr(1));
+    std::string labelDestination = ".L"+to_string(this->ifCounter);
+
+    Cmp_eq* cmp_eqInstr = new Cmp_eq(offsetLeft, offsetRight, ".L"+to_string(this->ifCounter), ">", this->program->get_cfg_by_index(0)->get_bb_by_index(0));
+    IRInstr* instr = dynamic_cast<IRInstr*> (cmp_eqInstr);
+    this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr);
+    return 0;
+  }
+  
+  virtual antlrcpp::Any visitElse(ifccParser::ElseContext *ctx) override {
+    this->ifCounter++;
+
+    Jmp* jmpInstr = new Jmp(".L"+to_string(this->ifCounter), this->program->get_cfg_by_index(0)->get_bb_by_index(0));
+    IRInstr* instr = dynamic_cast<IRInstr*> (jmpInstr);
+    this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr);
+
+    Write_label* write_labelInstrElse = new Write_label(".L"+to_string(this->ifCounter-1), this->program->get_cfg_by_index(0)->get_bb_by_index(0));
+    IRInstr* instrElse = dynamic_cast<IRInstr*> (write_labelInstrElse);
+    this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instrElse);
+
+    visit(ctx->bloc());
+
+    Write_label* write_labelInstrThen = new Write_label(".L"+to_string(this->ifCounter), this->program->get_cfg_by_index(0)->get_bb_by_index(0));
+    IRInstr* instrThen = dynamic_cast<IRInstr*> (write_labelInstrThen);
+    this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instrThen);
+    this->ifCounter++;
+    return 0;
+  }
+
+  virtual antlrcpp::Any visitNoElse(ifccParser::NoElseContext *ctx) override {
+    Write_label* write_labelInstr = new Write_label(".L"+to_string(this->ifCounter), this->program->get_cfg_by_index(0)->get_bb_by_index(0));
+    IRInstr* instr = dynamic_cast<IRInstr*> (write_labelInstr);
+    this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr);
+    this->ifCounter++;
+    return 0;
+  }
+  
+
 
   /**
    * UTIL METHODS
@@ -303,5 +386,6 @@ public:
 
 protected:
   int maxOffset;
+  int ifCounter;
   Program* program;
 };

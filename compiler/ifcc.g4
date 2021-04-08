@@ -5,8 +5,17 @@ axiom : prog
 
 prog : 'int' 'main' '(' ')' bloc ;
 bloc : '{' instruction* '}' ;
-instruction : (declaration ';' | expr ';'| ret ';') ;
+instruction : (declaration ';' | expr ';'| ret ';' | ifStatement) ;
 
+ifStatement : IF '(' condition ')' bloc elseBloc;
+condition : expr EQUALCOMP expr #equalComparison
+            | expr NOTEQUALCOMP expr #notEqualComparison
+            | expr LOWERCOMP expr #lowerComparison
+            | expr GREATERCOMP expr #greaterComparison
+            ;
+
+elseBloc : 'else' bloc #else
+            |#noElse;
 
 declaration : (declarationint | declarationchar | declaration64) ;
 declarationint : 'int' (declarationvarint ',')* declarationvarint ;
@@ -40,6 +49,12 @@ expr : '(' expr ')' #parExpr
 
 ret : RETURN expr;
 
+IF : 'if' ;
+ELSE : 'else' ;
+EQUALCOMP : '==' ;
+LOWERCOMP : '<' ;
+GREATERCOMP : '>' ;
+NOTEQUALCOMP : '!=';
 RETURN : 'return' ;
 CONST : [0-9]+ ;
 CONSTCHAR : '\'' [!-~] '\'' ; //matche tous les caractères ASCII de 0x20 (!) à 0x7E (~), ne prend pas en compte l'espace car cause des erreurs

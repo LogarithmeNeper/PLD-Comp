@@ -35,7 +35,8 @@ class IRInstr {
 		call, // call to a function
 		cmp_eq, // ==
 		cmp_lt, // <
-		cmp_le // <=
+		cmp_le, // <=
+		write_label // instruction to write a label for if instr
 	} Operation;
 	BasicBlock* bb; /**< The BB this instruction belongs to, which provides a pointer to the CFG this instruction belong to */
 

@@ -33,7 +33,10 @@ ifcc: dirs antlr  main.cpp visitor.cpp visitor.h IR.h ldconst.cpp ldconst.h copy
 	$(CC) $(CCARGS) cfg.cpp -o $(OUTPUT)/cfg.o
 	$(CC) $(CCARGS) program.cpp -o $(OUTPUT)/program.o
 	$(CC) $(CCARGS) call.cpp -o $(OUTPUT)/call.o
-	$(CC) $(LDARGS) $(OUTPUT)/main.o $(OUTPUT)/ifccBaseVisitor.o $(OUTPUT)/ifccLexer.o $(OUTPUT)/ifccVisitor.o $(OUTPUT)/ifccParser.o $(OUTPUT)/visitor.o $(OUTPUT)/ldconst.o $(OUTPUT)/copy.o $(OUTPUT)/add.o $(OUTPUT)/sub.o $(OUTPUT)/mul.o $(OUTPUT)/basic_block.o $(OUTPUT)/cfg.o $(OUTPUT)/program.o $(OUTPUT)/call.o $(OUTPUT)/and.o $(OUTPUT)/or.o $(OUTPUT)/xor.o $(ANTLR4_LIBDIR)/libantlr4-runtime.a -o ifcc
+	$(CC) $(CCARGS) cmp_eq.cpp -o $(OUTPUT)/cmp_eq.o
+	$(CC) $(CCARGS) write_label.cpp -o $(OUTPUT)/write_label.o
+	$(CC) $(CCARGS) jmp.cpp -o $(OUTPUT)/jmp.o
+	$(CC) $(LDARGS) $(OUTPUT)/main.o $(OUTPUT)/ifccBaseVisitor.o $(OUTPUT)/ifccLexer.o $(OUTPUT)/ifccVisitor.o $(OUTPUT)/ifccParser.o $(OUTPUT)/visitor.o $(OUTPUT)/ldconst.o $(OUTPUT)/copy.o $(OUTPUT)/add.o $(OUTPUT)/sub.o $(OUTPUT)/mul.o $(OUTPUT)/basic_block.o $(OUTPUT)/cfg.o $(OUTPUT)/program.o $(OUTPUT)/call.o $(OUTPUT)/cmp_eq.o $(OUTPUT)/write_label.o $(OUTPUT)/jmp.o $(OUTPUT)/or.o $(OUTPUT)/xor.o $(OUTPUT)/and.o $(ANTLR4_LIBDIR)/libantlr4-runtime.a -o ifcc
 
 antlr: $(GRAMMAR)
 	$(ANTLR4_BINDIR)/antlr4 -visitor -no-listener -Dlanguage=Cpp -o $(GENERATED) $(GRAMMAR)
