@@ -3,8 +3,8 @@ grammar ifcc;
 axiom : prog       
       ;
 
-prog : definitionFunction* 'int' 'main' '(' ')' bloc ;
-definitionFunction : type ID '(' type* ')' bloc;
+prog : definitionFunction* ;
+definitionFunction : type ID '(' (type ID)* ')' bloc;
 type : (INT | CHAR | INT64 | VOID);
 bloc : '{' instruction* '}' ;
 instruction : (declaration ';' | expr ';'| ret ';') ;

@@ -51,6 +51,8 @@ class CFG {
 	BasicBlock* current_bb;
 
     map<string,int>* getSymbolTable();
+	vector <BasicBlock*> bbs; /**< all the basic blocks of this CFG*/
+	int maxOffset;
 
  protected:
 	//map <string, Type> SymbolType; /**< part of the symbol table  */
@@ -58,5 +60,5 @@ class CFG {
 	int nextFreeSymbolIndex; /**< to allocate new symbols in the symbol table */
 	int nextBBnumber; /**< just for naming */
 	
-	vector <BasicBlock*> bbs; /**< all the basic blocks of this CFG*/
+	
 };

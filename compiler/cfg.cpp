@@ -7,6 +7,7 @@ CFG::CFG(Program* program)
 {
     this->program = program;
     this->symbolTable = new map<string,int>();
+    this->maxOffset = 0;
 
 }
 CFG::~CFG() {
