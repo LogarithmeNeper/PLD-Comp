@@ -325,14 +325,14 @@ public:
     return 0;
   }
   
-  virtual antlrcpp::Any visitElseBloc(ifccParser::ElseBlocContext *ctx) override {
+ /* virtual antlrcpp::Any visitElseBloc(ifccParser::ElseBlocContext *ctx) override {
     visit(ctx->bloc());
 
     Write_label* write_labelInstr = new Write_label(".L2", this->program->get_cfg_by_index(0)->get_bb_by_index(0));
     IRInstr* instr = dynamic_cast<IRInstr*> (write_labelInstr);
     this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr);
     return 0;
-  }
+  }*/
 
 
   /**
