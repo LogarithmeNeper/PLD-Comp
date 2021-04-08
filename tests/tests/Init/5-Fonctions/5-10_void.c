@@ -3,7 +3,7 @@ void afficher(char c) {
 }
 
 int main() {
-    char a = 'a';
+    char a = 67;
     afficher(a);
     return 0;
 }
