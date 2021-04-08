@@ -34,6 +34,9 @@ declarationvar64 : ID #DeclarationSeule64
 expr : '(' expr ')' #parExpr
       | expr '*' expr #multExpr
       | expr ('+'|'-') expr #minusAddExpr
+      | expr '&' expr #ANDExpr
+      | expr '^' expr #XORExpr
+      | expr '|' expr #ORExpr
       | ID '=' expr #affectation
       | CONST #constExpr
       | ID #varExpr

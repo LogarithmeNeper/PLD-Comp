@@ -15,6 +15,9 @@
 #include "add.h"
 #include "sub.h"
 #include "mul.h"
+#include "or.h"
+#include "xor.h"
+#include "and.h"
 #include "program.h"
 #include "basic_block.h"
 #include "cfg.h"
@@ -200,6 +203,48 @@ public:
 
     Mul* mulInstr = new Mul(offsetLeft, offsetRight, maxOffset, this->program->get_cfg_by_index(0)->get_bb_by_index(0));
     IRInstr* instr = dynamic_cast<IRInstr*> (mulInstr);
+    this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr);
+
+    return maxOffset;
+  }
+
+  virtual antlrcpp::Any visitANDExpr(ifccParser::ANDExprContext *ctx) override {
+    int offsetLeft = visit(ctx->expr(0));
+    int offsetRight = visit(ctx->expr(1));
+
+    this->maxOffset += 4;
+    this->program->get_cfg_by_index(0)->getSymbolTable()->insert({"tmp" + std::to_string(this->maxOffset), this->maxOffset});
+
+    And* andInstr = new And(offsetLeft, offsetRight, maxOffset, this->program->get_cfg_by_index(0)->get_bb_by_index(0));
+    IRInstr* instr = dynamic_cast<IRInstr*> (andInstr);
+    this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr);
+
+    return maxOffset;
+  }
+
+  virtual antlrcpp::Any visitXORExpr(ifccParser::XORExprContext *ctx) override {
+    int offsetLeft = visit(ctx->expr(0));
+    int offsetRight = visit(ctx->expr(1));
+
+    this->maxOffset += 4;
+    this->program->get_cfg_by_index(0)->getSymbolTable()->insert({"tmp" + std::to_string(this->maxOffset), this->maxOffset});
+
+    Xor* xorInstr = new Xor(offsetLeft, offsetRight, maxOffset, this->program->get_cfg_by_index(0)->get_bb_by_index(0));
+    IRInstr* instr = dynamic_cast<IRInstr*> (xorInstr);
+    this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr);
+
+    return maxOffset;
+  }
+
+  virtual antlrcpp::Any visitORExpr(ifccParser::ORExprContext *ctx) override {
+    int offsetLeft = visit(ctx->expr(0));
+    int offsetRight = visit(ctx->expr(1));
+
+    this->maxOffset += 4;
+    this->program->get_cfg_by_index(0)->getSymbolTable()->insert({"tmp" + std::to_string(this->maxOffset), this->maxOffset});
+
+    Or* orInstr = new Or(offsetLeft, offsetRight, maxOffset, this->program->get_cfg_by_index(0)->get_bb_by_index(0));
+    IRInstr* instr = dynamic_cast<IRInstr*> (orInstr);
     this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr);
 
     return maxOffset;
