@@ -269,7 +269,7 @@ public:
 
   virtual antlrcpp::Any visitIfStatement(ifccParser::IfStatementContext *ctx) override {
     visit(ctx->condition());
-    visit(ctx->bloc(0));
+    visit(ctx->bloc());
 
     Write_label* write_labelInstr = new Write_label(".L"+to_string(this->ifCounter), this->program->get_cfg_by_index(0)->get_bb_by_index(0));
     IRInstr* instr = dynamic_cast<IRInstr*> (write_labelInstr);
@@ -326,8 +326,7 @@ public:
   }
   
   virtual antlrcpp::Any visitElseBloc(ifccParser::ElseBlocContext *ctx) override {
-    visit(ctx->condition());
-    visit(ctx->bloc(0));
+    visit(ctx->bloc());
 
     Write_label* write_labelInstr = new Write_label(".L2", this->program->get_cfg_by_index(0)->get_bb_by_index(0));
     IRInstr* instr = dynamic_cast<IRInstr*> (write_labelInstr);
