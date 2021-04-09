@@ -5,16 +5,18 @@ axiom : prog
 
 prog : 'int' 'main' '(' ')' bloc ;
 bloc : '{' instruction* '}' ;
-instruction : (declaration ';' | expr ';'| ret ';' | ifStatement) ;
+instruction : (declaration ';' | expr ';'| ret ';' | ifStatement | whileStatement) ;
 
-ifStatement : IF '(' condition ')' bloc elseBloc;
+whileStatement : WHILE '(' condition ')' bloc ;
+
+ifStatement : IF '(' condition ')' bloc elseBloc ;
 condition : expr EQUALCOMP expr #equalComparison
             | expr NOTEQUALCOMP expr #notEqualComparison
             | expr LOWERCOMP expr #lowerComparison
             | expr GREATERCOMP expr #greaterComparison
             ;
 
-elseBloc : 'else' bloc #else
+elseBloc : ELSE bloc #else
             |#noelse;
 
 declaration : (declarationint | declarationchar | declaration64) ;
@@ -51,6 +53,7 @@ ret : RETURN expr;
 
 IF : 'if' ;
 ELSE : 'else' ;
+WHILE : 'while' ;
 EQUALCOMP : '==' ;
 LOWERCOMP : '<' ;
 GREATERCOMP : '>' ;

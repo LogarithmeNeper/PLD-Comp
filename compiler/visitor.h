@@ -342,6 +342,32 @@ public:
     return 0;
   }
 
+  virtual antlrcpp::Any visitWhileStatement(ifccParser::WhileStatementContext *ctx) override {
+    int sortie = this->ifCOunter;
+    int boucle = this->ifCounter+1;
+
+    Write_label* write_labelInstrLoop = new Write_label(".L"+to_string(boucle), this->program->get_cfg_by_index(0)->get_bb_by_index(0));
+    IRInstr* instrLoop = dynamic_cast<IRInstr*> (write_labelInstrLoop);
+    this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instrLoop); 
+
+    visit(ctx->condition());
+
+    this->ifCounter++;
+    this->ifCounter++;
+
+    visit(ctx->bloc());
+
+    Jmp* jmpInstr = new Jmp(".L"+to_string(boucle), this->program->get_cfg_by_index(0)->get_bb_by_index(0));
+    IRInstr* instr = dynamic_cast<IRInstr*> (jmpInstr);
+    this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr);
+
+    Write_label* write_labelInstrEnd = new Write_label(".L"+to_string(sortie), this->program->get_cfg_by_index(0)->get_bb_by_index(0));
+    IRInstr* instrEnd = dynamic_cast<IRInstr*> (write_labelInstrEnd);
+    this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instrEnd);
+
+    return 0;
+  }
+
   /**
    * UTIL METHODS
    */
