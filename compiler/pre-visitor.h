@@ -31,7 +31,7 @@ public:
     std::string functionName = ctx->ID(0)->getText();
     int nbArguments = ctx->ID().size()-1;
     this->cfgs.push_back(new CFG(nullptr, functionName, nbArguments));
-    for(int i = 1; i < nbArguments; i++ )
+    for(int i = 1; i <= nbArguments; i++ )
     {
       if (this->cfgs.back()->symbolTable->insert({ctx->ID(i)->getText(), this->cfgs.back()->maxOffset}).second == true)
       {
@@ -388,6 +388,21 @@ void printAlreadyDeclaredError(std::string variableName, int line){
             << line
             << std::endl;
 }
+antlrcpp::Any visitFunctionCallSeul(ifccParser::FunctionCallSeulContext *ctx)
+  {
+    std::string functionName = ctx->ID()->getText();
+    for(int i = 0; i < this->cfgs.size(); i++)
+    {
+      if(this->cfgs[i]->name == functionName)
+      {
+        return createTemporaryVariable();
+      }
+      
+    }
+    printNotDeclaredError(functionName,ctx->start->getLine());
+    this->correctCode = false;
+    return -1;
+  }
 
 void printMissingParenthesis(int line){
   std::cerr << "ERROR : Missing parenthesis. Line : "
@@ -397,7 +412,7 @@ void printMissingParenthesis(int line){
 
 void printNotDeclaredError(std::string variableName, int line){
   std::cerr << "ERROR : "
-                << "The variable "
+                << "The variable or function"
                 << variableName
                 << " is not declared. Line : "
                 << line

@@ -15,11 +15,5 @@ int main()
     a = 6;
     b = function(a);
     c = 3; 
-    return c;
+    return b;
 }
-
-/*int main()
-{
-    putchar(102);
-    return 0;
-}*/
