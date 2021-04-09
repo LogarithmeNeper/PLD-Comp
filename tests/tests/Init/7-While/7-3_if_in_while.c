@@ -9,6 +9,7 @@ int main() {
         else{
             b = 4;
         }
+        b = 3;
     }
     return b;
 }
