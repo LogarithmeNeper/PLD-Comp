@@ -17,7 +17,7 @@ condition : expr EQUALCOMP expr #equalComparison
             ;
 
 elseBloc : ELSE bloc #else
-            |#noelse;
+            |#noElse;
 
 declaration : (declarationint | declarationchar | declaration64) ;
 declarationint : 'int' (declarationvarint ',')* declarationvarint ;
