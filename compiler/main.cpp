@@ -33,13 +33,13 @@ int main(int argn, const char **argv) {
   if(parser.getNumberOfSyntaxErrors() == 0) {
     Visitor visitor;
     PreVisitor preVisitor;
-    /*preVisitor.visit(tree);
+    preVisitor.visit(tree);
     if(preVisitor.getCorrectCode()) {
       visitor.visit(tree);
     } else {
       exit(1);
-    }*/
-    visitor.visit(tree);
+    }
+    //visitor.visit(tree);
   } else {
     exit(1);
   }
