@@ -343,7 +343,7 @@ public:
   }
 
   virtual antlrcpp::Any visitWhileStatement(ifccParser::WhileStatementContext *ctx) override {
-    int sortie = this->ifCOunter;
+    int sortie = this->ifCounter;
     int boucle = this->ifCounter+1;
 
     Write_label* write_labelInstrLoop = new Write_label(".L"+to_string(boucle), this->program->get_cfg_by_index(0)->get_bb_by_index(0));
