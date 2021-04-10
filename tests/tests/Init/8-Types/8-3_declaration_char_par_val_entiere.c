@@ -1,6 +1,6 @@
 #include <stdint.h>
 
 int main() {
-    char c = 'c';
+    char c = 97;
     return 0;
 }
