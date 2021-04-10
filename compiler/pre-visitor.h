@@ -54,7 +54,7 @@ public:
     return 0;
   }
 
-  antlrcpp::Any visitDeclarationInitialiseeInt(ifccParser::DeclarationInitialiseeIntContext *context)
+  antlrcpp::Any visitDeclarationInitialiseeIntExpr(ifccParser::DeclarationInitialiseeIntExprContext *context)
   {
     int currentOffset = maxOffset;
 
@@ -102,7 +102,7 @@ public:
     return 0;
   }
 
-  antlrcpp::Any visitDeclarationInitialiseeChar(ifccParser::DeclarationInitialiseeCharContext *context)
+  antlrcpp::Any visitDeclarationInitialiseeCharExpr(ifccParser::DeclarationInitialiseeCharExprContext *context)
   {
     int currentOffset = maxOffset;
 
@@ -150,7 +150,7 @@ public:
     return 0;
   }
 
-  antlrcpp::Any visitDeclarationInitialisee64(ifccParser::DeclarationInitialisee64Context *context)
+  antlrcpp::Any visitDeclarationInitialisee64Expr(ifccParser::DeclarationInitialisee64ExprContext *context)
   {
     int currentOffset = maxOffset;
 
@@ -184,7 +184,7 @@ public:
     return 0;
   }
 
-  antlrcpp::Any visitAffectation(ifccParser::AffectationContext *context)
+  antlrcpp::Any visitAffectationExpr(ifccParser::AffectationExprContext *context)
   {
     // Checks if the variable is declared in the symbolTable, if not prints an error to the output error.
     // Then, checks if the expr is affected, if not, prints a warning in the error output.
@@ -192,6 +192,34 @@ public:
     if (this->symbolTable.count(leftVarName) == 1)
     {
       int exprOffset = visit(context->expr());
+      if (exprOffset != -1)
+      {
+        if (affectedOffsets.count(exprOffset) == 1)
+        {
+          this->affectedOffsets.insert(this->symbolTable[leftVarName]);
+        }
+        else
+        {
+          printUnitializedWarning(findVariableNameFromOffset(exprOffset), context->start->getLine());
+        }
+      }
+    }
+    else
+    {
+      printNotDeclaredError(leftVarName, context->start->getLine());
+      this->correctCode = false;
+    }
+    return 0;
+  }
+
+  antlrcpp::Any visitAffectationChain(ifccParser::AffectationChainContext *context)
+  {
+    // Checks if the variable is declared in the symbolTable, if not prints an error to the output error.
+    // Then, checks if the expr is affected, if not, prints a warning in the error output.
+    std::string leftVarName = context->ID()->getText();
+    if (this->symbolTable.count(leftVarName) == 1)
+    {
+      int exprOffset = visit(context->affectation());
       if (exprOffset != -1)
       {
         if (affectedOffsets.count(exprOffset) == 1)
