@@ -5,7 +5,7 @@ axiom : prog
 
 prog : 'int' 'main' '(' ')' bloc ;
 bloc : '{' instruction* '}' ;
-instruction : (declaration ';' | expr ';'| ret ';' | ifStatement | whileStatement) ;
+instruction : (declaration ';' | affectation ';' | expr ';'| ret ';' | ifStatement | whileStatement) ;
 
 whileStatement : WHILE '(' condition ')' bloc ;
 
@@ -25,15 +25,15 @@ declarationchar : 'char' (declarationvarchar ',')* declarationvarchar;
 declaration64 : 'int64_t' (declarationvar64',')* declarationvar64;
 
 declarationvarint : ID #DeclarationSeuleInt
-            | ID '=' expr #DeclarationInitialiseeInt
+            | <assoc=right> ID '=' (expr | affectation) #DeclarationInitialiseeInt
               ;
 
 declarationvarchar : ID #DeclarationSeuleChar
-            | ID '=' expr #DeclarationInitialiseeChar
+            | <assoc=right> ID '=' (expr | affectation) #DeclarationInitialiseeChar
               ;
 
 declarationvar64 : ID #DeclarationSeule64
-            | ID '=' expr #DeclarationInitialisee64
+            | <assoc=right> ID '=' (expr | affectation) #DeclarationInitialisee64
               ;
 
 expr : '(' expr ')' #parExpr
@@ -42,12 +42,13 @@ expr : '(' expr ')' #parExpr
       | expr '&' expr #ANDExpr
       | expr '^' expr #XORExpr
       | expr '|' expr #ORExpr
-      | <assoc=right> ID '=' expr #affectation
       | CONST #constExpr
       | ID #varExpr
       | CONSTCHAR #constCharExpr
       | ID '(' expr* ')' #FunctionCallSeul
       ; 
+
+affectation : <assoc=right> ID '=' (expr|affectation);
 
 ret : RETURN expr;
 

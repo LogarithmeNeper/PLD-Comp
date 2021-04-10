@@ -86,7 +86,7 @@ public:
     this->program->get_cfg_by_index(0)->getSymbolTable()->insert({context->ID()->getText(), maxOffset});
     this->program->get_cfg_by_index(0)->getTypeTable()->insert({context->ID()->getText(), "int"});
     std::string leftVarName = context->ID()->getText();
-    int exprOffset = visit(context->expr());
+    int exprOffset = visitChildren(context);
     
     Copy* copyInstr = new Copy(exprOffset, (*this->program->get_cfg_by_index(0)->getSymbolTable())[leftVarName], leftVarName, this->program->get_cfg_by_index(0)->get_bb_by_index(0));
     IRInstr* instr = dynamic_cast<IRInstr*> (copyInstr);
@@ -109,7 +109,7 @@ public:
     this->program->get_cfg_by_index(0)->getSymbolTable()->insert({context->ID()->getText(), maxOffset});
     this->program->get_cfg_by_index(0)->getTypeTable()->insert({context->ID()->getText(), "char"});
     std::string leftVarName = context->ID()->getText();
-    int exprOffset = visit(context->expr());
+    int exprOffset = visitChildren(context);
     
     Copy* copyInstr = new Copy(exprOffset, (*this->program->get_cfg_by_index(0)->getSymbolTable())[leftVarName], leftVarName, this->program->get_cfg_by_index(0)->get_bb_by_index(0));
     IRInstr* instr = dynamic_cast<IRInstr*> (copyInstr);
@@ -131,7 +131,7 @@ public:
     this->program->get_cfg_by_index(0)->getSymbolTable()->insert({context->ID()->getText(), maxOffset});
     this->program->get_cfg_by_index(0)->getTypeTable()->insert({context->ID()->getText(), "int64"});
     std::string leftVarName = context->ID()->getText();
-    int exprOffset = visit(context->expr());
+    int exprOffset = visitChildren(context);
     
     Copy* copyInstr = new Copy(exprOffset, (*this->program->get_cfg_by_index(0)->getSymbolTable())[leftVarName], leftVarName, this->program->get_cfg_by_index(0)->get_bb_by_index(0));
     IRInstr* instr = dynamic_cast<IRInstr*> (copyInstr);
@@ -142,11 +142,11 @@ public:
   virtual antlrcpp::Any visitAffectation(ifccParser::AffectationContext *context) override
   {
     std::string leftVarName = context->ID()->getText();
-    int exprOffset = visit(context->expr());
+    int exprOffset = visitChildren(context);
     Copy* copyInstr = new Copy(exprOffset, (*this->program->get_cfg_by_index(0)->getSymbolTable())[leftVarName], leftVarName, this->program->get_cfg_by_index(0)->get_bb_by_index(0));
     IRInstr* instr = dynamic_cast<IRInstr*> (copyInstr);
     this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr);
-    return 0;
+    return exprOffset; //In case of chain affectations
   }
 
   virtual antlrcpp::Any visitVarExpr(ifccParser::VarExprContext *ctx) override
