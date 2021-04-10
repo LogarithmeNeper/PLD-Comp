@@ -42,7 +42,7 @@ expr : '(' expr ')' #parExpr
       | expr '&' expr #ANDExpr
       | expr '^' expr #XORExpr
       | expr '|' expr #ORExpr
-      | ID '=' expr #affectation
+      | <assoc=right> ID '=' expr #affectation
       | CONST #constExpr
       | ID #varExpr
       | CONSTCHAR #constCharExpr
