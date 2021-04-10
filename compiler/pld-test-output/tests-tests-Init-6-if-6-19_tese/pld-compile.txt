@@ -1,0 +1,3 @@
+ERROR : The variable c is not declared. Line : 3
+
+return code: 1
