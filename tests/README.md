@@ -14,6 +14,7 @@ Les tests sont dans le sous-dossier `tests`.
 
 ## Résultats des tests
 
+Ici sont énumérés les tests qui ne correspondent pas au comportement de gcc.
 ### Déclaration et affectation
 
 `2-12_affect_with_non_init_expr.c` : Si une variable non initialisée est appelée, notre compilateur comme gcc ont des comportements particuliers mais différents.   
