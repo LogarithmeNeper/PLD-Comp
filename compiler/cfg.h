@@ -8,6 +8,7 @@
 #include <initializer_list>
 #include <map>
 #include <list>
+#include <set>
 
 // Predeclaration
 class BasicBlock;
@@ -25,10 +26,9 @@ using namespace std;
      (again it could be identified in a more explicit way)
 
  */
-class CFG
-{
-public:
-	CFG(Program *program);
+class CFG {
+ public:
+	CFG(Program* program, string name, int nbArguments);
 	~CFG();
 	Program *program; /**< The AST this CFG comes from */
 
@@ -53,14 +53,17 @@ public:
 	// string new_BB_name();
 	BasicBlock *current_bb;
 
-	map<string, int> *getSymbolTable();
+    map<string,int>* getSymbolTable();
+	set<int>* getAffectedOffsets();
+	vector <BasicBlock*> bbs; /**< all the basic blocks of this CFG*/
+	int maxOffset;
+	string name;
+	int nbArguments;
+	map <string, int>* symbolTable; /**< part of the symbol table  */
+	std::set<int>* affectedOffsets; /** This set is used to track the offset that have been affected once for pre visitor **/
 
-protected:
-	//map <string, Type> SymbolType; /**< part of the symbol table  */
-	map<string, int> *symbolTable; /**< part of the symbol table  */
-	map<string, string> *typeTable;
+ protected:
+	map <string, string>* typeTable;
 	int nextFreeSymbolIndex; /**< to allocate new symbols in the symbol table */
-	int nextBBnumber;		 /**< just for naming */
-
-	vector<BasicBlock *> bbs; /**< all the basic blocks of this CFG*/
+	int nextBBnumber; /**< just for naming */
 };

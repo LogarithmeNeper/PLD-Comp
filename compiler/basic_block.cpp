@@ -3,10 +3,9 @@
 using namespace std;
 
 // Constructor
-BasicBlock::BasicBlock(CFG *cfg, string entry_label)
+BasicBlock::BasicBlock(CFG* cfg) 
 {
     this->cfg = cfg;
-    this->label = entry_label;
 }
 
 // Assembly generator for each instruction (see related methods)

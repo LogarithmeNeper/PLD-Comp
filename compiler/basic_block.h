@@ -41,11 +41,11 @@ Possible optimization:
        followed by a conditional jump to the exit_false branch
 */
 
-class BasicBlock
-{
-	// Public methods and attributes
-public:
-	BasicBlock(CFG *cfg, string entry_label);
+
+class BasicBlock {
+ public:
+ 	// Public methods and attributes
+	BasicBlock(CFG* cfg);
 	void gen_asm(ostream &o); /**< x86 assembly code generation for this basic block (very simple) */
 	~BasicBlock();
 

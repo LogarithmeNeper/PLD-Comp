@@ -6,16 +6,17 @@
 using namespace std;
 
 // Constructor given a program
-CFG::CFG(Program *program)
+CFG::CFG(Program* program, string name, int nbArguments) 
 {
     this->program = program;
-    this->symbolTable = new map<string, int>();
-    this->typeTable = new map<string, string>();
+    this->symbolTable = new map<string,int>();
+    this->name = name;
+    this->nbArguments = nbArguments;
+    this->typeTable = new map<string,string>();
+    this->affectedOffsets = new set<int>();
+    this->maxOffset = 0;
 }
-
-// Destructor
-CFG::~CFG()
-{
+CFG::~CFG() {
     delete symbolTable;
     for (int i = 0; i < bbs.size(); i++)
     { // foreach basic bloc, deleting
@@ -42,11 +43,32 @@ void CFG::gen_asm(ostream &o)
 // Prologue maker
 void CFG::gen_asm_prologue(ostream &o)
 {
-    o
-        << ".globl main\n"
-        << " main: \n"
+    o 
+        << ".globl "<< this->name << "\n"
+        << " " << this->name <<": " << "\n"
         << "\tpushq %rbp\n"
-        << "\tmovq %rsp, %rbp\n"; // declaring main process
+        << "\tmovq %rsp, %rbp\n";
+
+    switch(this->nbArguments)
+    {
+        case 0:
+        break;
+
+        case 1:
+        o << "\tmovl	%edi, -4(%rbp) \n";
+        break;
+
+        case 2:
+        o << "\tmovl %edi, -4(%rbp) \n";
+        o << "\tmovl %esi, -8(%rbp) \n";
+        break;
+
+        default:
+        cerr << "Error, functions containing more than 2 parameters are fobidden ! Wrong fonction : " << this->name << "\n";
+        break;
+
+    }
+
 }
 
 // Epilogue maker
@@ -88,6 +110,11 @@ BasicBlock *CFG::get_bb_by_index(int index)
 map<string, int> *CFG::getSymbolTable()
 {
     return this->symbolTable;
+}
+
+set<int>* CFG::getAffectedOffsets()
+{
+    return this->affectedOffsets;
 }
 
 // Getter of the type table

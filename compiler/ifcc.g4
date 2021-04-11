@@ -3,7 +3,8 @@ grammar ifcc;
 axiom : prog       
       ;
 
-prog : 'int' 'main' '(' ')' bloc ;
+prog : definitionFunction* ;
+definitionFunction : 'int' ID '(' (('int' ID ',')* 'int' ID | )')' bloc;
 bloc : '{' instruction* '}' ;
 instruction : (';' | declaration ';' | assignment ';' | expr ';'| ret ';' | ifStatement | whileStatement) ;
 
@@ -48,7 +49,7 @@ expr : '(' expr ')' #parExpr
       | CONST #constExpr
       | ID #varExpr
       | CONSTCHAR #constCharExpr
-      | ID '(' expr* ')' #FunctionCallSeul
+      | ID '(' expr ')' #FunctionCallSeul
       ; 
 
 assignment : ID '=' expr #assignmentExpr

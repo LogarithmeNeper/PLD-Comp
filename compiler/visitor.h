@@ -53,20 +53,29 @@ public:
   // Method to visit the program
   virtual antlrcpp::Any visitProg(ifccParser::ProgContext *ctx) override
   {
-    int variableOffset = 0; // initializes the offset for the first variable
-    this->maxOffset = variableOffset;
     this->ifCounter = 2;
     this->program = new Program(); // We initialise the Program one we visit the axiom of the grammar
-    this->program->add_cfg(new CFG(this->program));
-    //this->program->get_cfg_by_index(0)->add_bb(new BasicBlock(this->program->get_cfg_by_index(0), "main"));
     visitChildren(ctx);
     return 0;
   }
 
-  // Method associated with the block visit by creating a new basic bloc
-  virtual antlrcpp::Any visitBloc(ifccParser::BlocContext *ctx) override
+  virtual antlrcpp::Any visitDefinitionFunction(ifccParser::DefinitionFunctionContext *ctx) override 
   {
-    this->program->get_cfg_by_index(0)->add_bb(new BasicBlock(this->program->get_cfg_by_index(0), "main"));
+    std::string functionName = ctx->ID(0)->getText();
+    int nbArguments = ctx->ID().size()-1;
+    this->program->add_cfg(new CFG(this->program, functionName, nbArguments));
+    for(int i = 1; i <= nbArguments; i++)
+    {
+      this->program->cfgs.back()->maxOffset += 4;
+      this->program->cfgs.back()->symbolTable->insert({ctx->ID(i)->getText(), this->program->cfgs.back()->maxOffset});
+      
+    }
+    return visitChildren(ctx);
+  }
+
+  virtual antlrcpp::Any visitBloc(ifccParser::BlocContext *ctx) override {
+    // Method associated with the block visit by creating a new basic bloc
+    this->program->cfgs.back()->add_bb(new BasicBlock(this->program->cfgs.back()));
     return visitChildren(ctx);
   }
 
@@ -75,10 +84,13 @@ public:
   {
     int offsetExpr = visit(ctx->expr());
 
-    /**
+     /**
      *  IT IS AT THIS POINT THAT ASSEMBLY IS GENERATED !
      */
-    this->program->gen_asm(cout, offsetExpr);
+    this->program->cfgs.back()->gen_asm_prologue(cout);
+    this->program->cfgs.back()->gen_asm(cout);
+    this->program->cfgs.back()->gen_asm_epilogue(cout, offsetExpr);
+
     return visitChildren(ctx);
   }
 
@@ -101,11 +113,12 @@ public:
   virtual antlrcpp::Any visitDeclarationSeuleInt(ifccParser::DeclarationSeuleIntContext *context) override
   {
     // Updates the current max offset with the size
-    this->maxOffset += 4;
-
+    this->program->cfgs.back()->maxOffset +=4;
+    
     // Inserts in both tables (symbol/type)
-    this->program->get_cfg_by_index(0)->getSymbolTable()->insert({context->ID()->getText(), maxOffset});
-    this->program->get_cfg_by_index(0)->getTypeTable()->insert({context->ID()->getText(), "int"});
+    this->program->cfgs.back()->getSymbolTable()->insert({context->ID()->getText(), this->program->cfgs.back()->maxOffset});
+    this->program->cfgs.back()->getTypeTable()->insert({context->ID()->getText(), "int"});
+    
     return 0;
   }
 
@@ -113,20 +126,20 @@ public:
   virtual antlrcpp::Any visitDeclarationInitialiseeIntExpr(ifccParser::DeclarationInitialiseeIntExprContext *context) override
   {
     // Updates the current max offset with the size
-    this->maxOffset += 4;
-
+    this->program->cfgs.back()->maxOffset +=4;
+    
     // Inserts in both tables (symbol/type)
-    this->program->get_cfg_by_index(0)->getSymbolTable()->insert({context->ID()->getText(), maxOffset});
-    this->program->get_cfg_by_index(0)->getTypeTable()->insert({context->ID()->getText(), "int"});
-
+    this->program->cfgs.back()->getSymbolTable()->insert({context->ID()->getText(), this->program->cfgs.back()->maxOffset});
+    this->program->cfgs.back()->getTypeTable()->insert({context->ID()->getText(), "int"});
+    
     // Gets name and offset
     std::string leftVarName = context->ID()->getText();
     int exprOffset = visit(context->expr());
-
+    
     // Creates the instruction in the current BB
-    Copy *copyInstr = new Copy(exprOffset, (*this->program->get_cfg_by_index(0)->getSymbolTable())[leftVarName], leftVarName, this->program->get_cfg_by_index(0)->get_bb_by_index(0));
-    IRInstr *instr = dynamic_cast<IRInstr *>(copyInstr);
-    this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr);
+    Copy* copyInstr = new Copy(exprOffset, (*this->program->cfgs.back()->getSymbolTable())[leftVarName], leftVarName, this->program->cfgs.back()->get_bb_by_index(0));
+    IRInstr* instr = dynamic_cast<IRInstr*> (copyInstr);
+    this->program->cfgs.back()->get_bb_by_index(0)->add_IRInstr(instr);
 
     return 0;
   }
@@ -135,20 +148,20 @@ public:
   virtual antlrcpp::Any visitDeclarationInitialiseeIntAssign(ifccParser::DeclarationInitialiseeIntAssignContext *context) override
   {
     // Updates the current max offset with the size
-    this->maxOffset += 4;
-
+    this->program->cfgs.back()->maxOffset +=4;
+    
     // Inserts in both tables (symbol/type)
-    this->program->get_cfg_by_index(0)->getSymbolTable()->insert({context->ID()->getText(), maxOffset});
-    this->program->get_cfg_by_index(0)->getTypeTable()->insert({context->ID()->getText(), "int"});
-
+    this->program->cfgs.back()->getSymbolTable()->insert({context->ID()->getText(), this->program->cfgs.back()->maxOffset});
+    this->program->cfgs.back()->getTypeTable()->insert({context->ID()->getText(), "int"});
+    
     // Gets name and offset
     std::string leftVarName = context->ID()->getText();
     int exprOffset = visit(context->assignment());
-
+    
     // Creates the instruction in the current BB
-    Copy *copyInstr = new Copy(exprOffset, (*this->program->get_cfg_by_index(0)->getSymbolTable())[leftVarName], leftVarName, this->program->get_cfg_by_index(0)->get_bb_by_index(0));
-    IRInstr *instr = dynamic_cast<IRInstr *>(copyInstr);
-    this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr);
+    Copy* copyInstr = new Copy(exprOffset, (*this->program->cfgs.back()->getSymbolTable())[leftVarName], leftVarName, this->program->cfgs.back()->get_bb_by_index(0));
+    IRInstr* instr = dynamic_cast<IRInstr*> (copyInstr);
+    this->program->cfgs.back()->get_bb_by_index(0)->add_IRInstr(instr);
 
     return 0;
   }
@@ -160,12 +173,14 @@ public:
   // Method for an declaration for a character
   virtual antlrcpp::Any visitDeclarationSeuleChar(ifccParser::DeclarationSeuleCharContext *context) override
   {
-    // Updates the current max offset with the size
-    this->maxOffset += 1;
 
+    // Updates the current max offset with the size
+    this->program->cfgs.back()->maxOffset +=1;
+    
     // Inserts in both tables (symbol/type)
-    this->program->get_cfg_by_index(0)->getSymbolTable()->insert({context->ID()->getText(), maxOffset});
-    this->program->get_cfg_by_index(0)->getTypeTable()->insert({context->ID()->getText(), "char"});
+    this->program->cfgs.back()->getSymbolTable()->insert({context->ID()->getText(), this->program->cfgs.back()->maxOffset});
+    this->program->cfgs.back()->getTypeTable()->insert({context->ID()->getText(), "char"});
+    
     return 0;
   }
 
@@ -173,20 +188,21 @@ public:
   virtual antlrcpp::Any visitDeclarationInitialiseeCharExpr(ifccParser::DeclarationInitialiseeCharExprContext *context) override
   {
     // Updates the current max offset with the size
-    this->maxOffset += 1;
-
+    this->program->cfgs.back()->maxOffset +=1;
+    
     // Inserts in both tables (symbol/type)
-    this->program->get_cfg_by_index(0)->getSymbolTable()->insert({context->ID()->getText(), maxOffset});
-    this->program->get_cfg_by_index(0)->getTypeTable()->insert({context->ID()->getText(), "char"});
-
+    this->program->cfgs.back()->getSymbolTable()->insert({context->ID()->getText(), this->program->cfgs.back()->maxOffset});
+    this->program->cfgs.back()->getTypeTable()->insert({context->ID()->getText(), "char"});
+    
     // Gets name and offset
     std::string leftVarName = context->ID()->getText();
     int exprOffset = visit(context->expr());
-
+    
     // Creates the instruction in the current BB
-    Copy *copyInstr = new Copy(exprOffset, (*this->program->get_cfg_by_index(0)->getSymbolTable())[leftVarName], leftVarName, this->program->get_cfg_by_index(0)->get_bb_by_index(0));
-    IRInstr *instr = dynamic_cast<IRInstr *>(copyInstr);
-    this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr);
+    Copy* copyInstr = new Copy(exprOffset, (*this->program->cfgs.back()->getSymbolTable())[leftVarName], leftVarName, this->program->cfgs.back()->get_bb_by_index(0));
+    IRInstr* instr = dynamic_cast<IRInstr*> (copyInstr);
+    this->program->cfgs.back()->get_bb_by_index(0)->add_IRInstr(instr);
+
     return 0;
   }
 
@@ -194,20 +210,21 @@ public:
   virtual antlrcpp::Any visitDeclarationInitialiseeCharAssign(ifccParser::DeclarationInitialiseeCharAssignContext *context) override
   {
     // Updates the current max offset with the size
-    this->maxOffset += 1;
-
+    this->program->cfgs.back()->maxOffset +=1;
+    
     // Inserts in both tables (symbol/type)
-    this->program->get_cfg_by_index(0)->getSymbolTable()->insert({context->ID()->getText(), maxOffset});
-    this->program->get_cfg_by_index(0)->getTypeTable()->insert({context->ID()->getText(), "char"});
-
+    this->program->cfgs.back()->getSymbolTable()->insert({context->ID()->getText(), this->program->cfgs.back()->maxOffset});
+    this->program->cfgs.back()->getTypeTable()->insert({context->ID()->getText(), "char"});
+    
     // Gets name and offset
     std::string leftVarName = context->ID()->getText();
     int exprOffset = visit(context->assignment());
-
+    
     // Creates the instruction in the current BB
-    Copy *copyInstr = new Copy(exprOffset, (*this->program->get_cfg_by_index(0)->getSymbolTable())[leftVarName], leftVarName, this->program->get_cfg_by_index(0)->get_bb_by_index(0));
-    IRInstr *instr = dynamic_cast<IRInstr *>(copyInstr);
-    this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr);
+    Copy* copyInstr = new Copy(exprOffset, (*this->program->cfgs.back()->getSymbolTable())[leftVarName], leftVarName, this->program->cfgs.back()->get_bb_by_index(0));
+    IRInstr* instr = dynamic_cast<IRInstr*> (copyInstr);
+    this->program->cfgs.back()->get_bb_by_index(0)->add_IRInstr(instr);
+
     return 0;
   }
 
@@ -219,10 +236,11 @@ public:
   virtual antlrcpp::Any visitDeclarationSeule64(ifccParser::DeclarationSeule64Context *context) override
   {
     // Upadtes the maximum offset with the size
-    this->maxOffset += 8;
+    this->program->cfgs.back()->maxOffset +=8;
+    
     // Inserts in both tables (symbol/tables)
-    this->program->get_cfg_by_index(0)->getSymbolTable()->insert({context->ID()->getText(), maxOffset});
-    this->program->get_cfg_by_index(0)->getTypeTable()->insert({context->ID()->getText(), "int64"});
+    this->program->cfgs.back()->getSymbolTable()->insert({context->ID()->getText(), this->program->cfgs.back()->maxOffset});
+    this->program->cfgs.back()->getTypeTable()->insert({context->ID()->getText(), "int64"});
 
     return 0;
   }
@@ -230,20 +248,21 @@ public:
   // Method for initialized declaration of an int64 variable with an expression
   virtual antlrcpp::Any visitDeclarationInitialisee64Expr(ifccParser::DeclarationInitialisee64ExprContext *context) override
   {
-    // Updates the maximum offset with the size
-    this->maxOffset += 8;
-    // Inserts in both tables (symbol/type)
-    this->program->get_cfg_by_index(0)->getSymbolTable()->insert({context->ID()->getText(), maxOffset});
-    this->program->get_cfg_by_index(0)->getTypeTable()->insert({context->ID()->getText(), "int64"});
 
+    // Updates the maximum offset with the size
+    this->program->cfgs.back()->maxOffset +=8;
+    // Inserts in both tables (symbol/type)
+    this->program->cfgs.back()->getSymbolTable()->insert({context->ID()->getText(), this->program->cfgs.back()->maxOffset});
+    this->program->cfgs.back()->getTypeTable()->insert({context->ID()->getText(), "int64"});
+    
     // Gets its name and offset
     std::string leftVarName = context->ID()->getText();
     int exprOffset = visit(context->expr());
-
+    
     // Creates the instruction in the current BB
-    Copy *copyInstr = new Copy(exprOffset, (*this->program->get_cfg_by_index(0)->getSymbolTable())[leftVarName], leftVarName, this->program->get_cfg_by_index(0)->get_bb_by_index(0));
-    IRInstr *instr = dynamic_cast<IRInstr *>(copyInstr);
-    this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr);
+    Copy* copyInstr = new Copy(exprOffset, (*this->program->cfgs.back()->getSymbolTable())[leftVarName], leftVarName, this->program->cfgs.back()->get_bb_by_index(0));
+    IRInstr* instr = dynamic_cast<IRInstr*> (copyInstr);
+    this->program->cfgs.back()->get_bb_by_index(0)->add_IRInstr(instr);
     return 0;
   }
 
@@ -251,20 +270,19 @@ public:
   virtual antlrcpp::Any visitDeclarationInitialisee64Assign(ifccParser::DeclarationInitialisee64AssignContext *context) override
   {
     // Updates the maximum offset with the size
-    this->maxOffset += 8;
+    this->program->cfgs.back()->maxOffset +=8;
     // Inserts it in both tables (symbol/type)
-    this->program->get_cfg_by_index(0)->getSymbolTable()->insert({context->ID()->getText(), maxOffset});
-    this->program->get_cfg_by_index(0)->getTypeTable()->insert({context->ID()->getText(), "int64"});
-
+    this->program->cfgs.back()->getSymbolTable()->insert({context->ID()->getText(), this->program->cfgs.back()->maxOffset});
+    this->program->cfgs.back()->getTypeTable()->insert({context->ID()->getText(), "int64"});
+    
     // Gets the name and offset in the expression
     std::string leftVarName = context->ID()->getText();
     int exprOffset = visit(context->assignment());
-
+    
     // Then creates the instruction to do so in the current BB
-    Copy *copyInstr = new Copy(exprOffset, (*this->program->get_cfg_by_index(0)->getSymbolTable())[leftVarName], leftVarName, this->program->get_cfg_by_index(0)->get_bb_by_index(0));
-    IRInstr *instr = dynamic_cast<IRInstr *>(copyInstr);
-    this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr);
-
+    Copy* copyInstr = new Copy(exprOffset, (*this->program->cfgs.back()->getSymbolTable())[leftVarName], leftVarName, this->program->cfgs.back()->get_bb_by_index(0));
+    IRInstr* instr = dynamic_cast<IRInstr*> (copyInstr);
+    this->program->cfgs.back()->get_bb_by_index(0)->add_IRInstr(instr);
     return 0;
   }
 
@@ -274,12 +292,12 @@ public:
     // Gets the name as a string and its offset
     std::string leftVarName = context->ID()->getText();
     int exprOffset = visit(context->expr());
-
+    
     // Then creates a copy instruction in the current BB
-    Copy *copyInstr = new Copy(exprOffset, (*this->program->get_cfg_by_index(0)->getSymbolTable())[leftVarName], leftVarName, this->program->get_cfg_by_index(0)->get_bb_by_index(0));
-    IRInstr *instr = dynamic_cast<IRInstr *>(copyInstr);
-    this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr);
-
+    Copy* copyInstr = new Copy(exprOffset, (*this->program->cfgs.back()->getSymbolTable())[leftVarName], leftVarName, this->program->cfgs.back()->get_bb_by_index(0));
+    IRInstr* instr = dynamic_cast<IRInstr*> (copyInstr);
+    this->program->cfgs.back()->get_bb_by_index(0)->add_IRInstr(instr);
+    
     return exprOffset; //In case of chain assignments
   }
 
@@ -291,10 +309,10 @@ public:
     int exprOffset = visit(context->assignment());
 
     // Then creates a copy instruction in the current BB
-    Copy *copyInstr = new Copy(exprOffset, (*this->program->get_cfg_by_index(0)->getSymbolTable())[leftVarName], leftVarName, this->program->get_cfg_by_index(0)->get_bb_by_index(0));
-    IRInstr *instr = dynamic_cast<IRInstr *>(copyInstr);
-    this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr);
-
+    Copy* copyInstr = new Copy(exprOffset, (*this->program->cfgs.back()->getSymbolTable())[leftVarName], leftVarName, this->program->cfgs.back()->get_bb_by_index(0));
+    IRInstr* instr = dynamic_cast<IRInstr*> (copyInstr);
+    this->program->cfgs.back()->get_bb_by_index(0)->add_IRInstr(instr);
+    
     return exprOffset; //In case of chain assignments
   }
 
@@ -306,7 +324,7 @@ public:
   virtual antlrcpp::Any visitVarExpr(ifccParser::VarExprContext *ctx) override
   {
     // Returns the offset in the symbol table
-    return (*(this->program->get_cfg_by_index(0)->getSymbolTable()))[ctx->ID()->getText()]; // returns an int
+    return (*(this->program->cfgs.back()->getSymbolTable()))[ctx->ID()->getText()]; // returns an int
   }
 
   // Method associated with the constant expression
@@ -342,25 +360,25 @@ public:
     int offsetRight = visit(ctx->expr(1));
 
     // Updates the value of the current maximum offset
-    this->maxOffset += 4;
+    this->program->cfgs.back()->maxOffset += 4;
     // And adds a new temporary variable in the symbol table
-    this->program->get_cfg_by_index(0)->getSymbolTable()->insert({"tmp" + std::to_string(this->maxOffset), this->maxOffset});
+    this->program->cfgs.back()->getSymbolTable()->insert({"tmp" + std::to_string(this->program->cfgs.back()->maxOffset), this->program->cfgs.back()->maxOffset});
 
     // Different cases whether it is '+' or '-' : in every case, create the corresponding instruction in the current BB
     if (ctx->children[1]->getText() == "+")
     {
-      Add *addInstr = new Add(offsetLeft, offsetRight, maxOffset, this->program->get_cfg_by_index(0)->get_bb_by_index(0));
-      IRInstr *instr = dynamic_cast<IRInstr *>(addInstr);
-      this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr);
+      Add* addInstr = new Add(offsetLeft, offsetRight, this->program->cfgs.back()->maxOffset, this->program->cfgs.back()->get_bb_by_index(0));
+      IRInstr* instr = dynamic_cast<IRInstr*> (addInstr);
+      this->program->cfgs.back()->get_bb_by_index(0)->add_IRInstr(instr);
     }
     else if (ctx->children[1]->getText() == "-")
     {
-      Sub *subInstr = new Sub(offsetLeft, offsetRight, maxOffset, this->program->get_cfg_by_index(0)->get_bb_by_index(0));
-      IRInstr *instr = dynamic_cast<IRInstr *>(subInstr);
-      this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr);
+      Sub* subInstr = new Sub(offsetLeft, offsetRight, this->program->cfgs.back()->maxOffset, this->program->cfgs.back()->get_bb_by_index(0));
+      IRInstr* instr = dynamic_cast<IRInstr*> (subInstr);
+      this->program->cfgs.back()->get_bb_by_index(0)->add_IRInstr(instr);
     }
 
-    return maxOffset;
+    return this->program->cfgs.back()->maxOffset;
   }
 
   // Method associated with the '*' sign in an expression
@@ -371,16 +389,17 @@ public:
     int offsetRight = visit(ctx->expr(1));
 
     // Updates the current maximum offset
-    this->maxOffset += 4;
+    this->program->cfgs.back()->maxOffset += 4;
+    
     // And adds a new temporary variable in the symbol table
-    this->program->get_cfg_by_index(0)->getSymbolTable()->insert({"tmp" + std::to_string(this->maxOffset), this->maxOffset});
-
+    this->program->cfgs.back()->getSymbolTable()->insert({"tmp" + std::to_string(this->program->cfgs.back()->maxOffset), this->program->cfgs.back()->maxOffset});
+    
     // Adds a new MUL instruction in the current BB
-    Mul *mulInstr = new Mul(offsetLeft, offsetRight, maxOffset, this->program->get_cfg_by_index(0)->get_bb_by_index(0));
-    IRInstr *instr = dynamic_cast<IRInstr *>(mulInstr);
-    this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr);
+    Mul* mulInstr = new Mul(offsetLeft, offsetRight, this->program->cfgs.back()->maxOffset, this->program->cfgs.back()->get_bb_by_index(0));
+    IRInstr* instr = dynamic_cast<IRInstr*> (mulInstr);
+    this->program->cfgs.back()->get_bb_by_index(0)->add_IRInstr(instr);
 
-    return maxOffset;
+    return this->program->cfgs.back()->maxOffset;
   }
 
   // Method associated with the '&' sign in an expression
@@ -391,16 +410,16 @@ public:
     int offsetRight = visit(ctx->expr(1));
 
     // Updates the current maximum offset
-    this->maxOffset += 4;
+    this->program->cfgs.back()->maxOffset += 4;
     // And adds a new temporary variable in the symbol table
-    this->program->get_cfg_by_index(0)->getSymbolTable()->insert({"tmp" + std::to_string(this->maxOffset), this->maxOffset});
+    this->program->cfgs.back()->getSymbolTable()->insert({"tmp" + std::to_string(this->program->cfgs.back()->maxOffset), this->program->cfgs.back()->maxOffset});
 
     // Adds a new AND instruction in the current BB
-    And *andInstr = new And(offsetLeft, offsetRight, maxOffset, this->program->get_cfg_by_index(0)->get_bb_by_index(0));
-    IRInstr *instr = dynamic_cast<IRInstr *>(andInstr);
-    this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr);
+    And* andInstr = new And(offsetLeft, offsetRight, this->program->cfgs.back()->maxOffset, this->program->cfgs.back()->get_bb_by_index(0));
+    IRInstr* instr = dynamic_cast<IRInstr*> (andInstr);
+    this->program->cfgs.back()->get_bb_by_index(0)->add_IRInstr(instr);
 
-    return maxOffset;
+    return this->program->cfgs.back()->maxOffset;
   }
 
   // Method associated with the '^' sign in an expression
@@ -411,16 +430,17 @@ public:
     int offsetRight = visit(ctx->expr(1));
 
     // Updates the current maximum offset...
-    this->maxOffset += 4;
+    this->program->cfgs.back()->maxOffset += 4;
     // ...and adds a new temporary variable in the symbol table
-    this->program->get_cfg_by_index(0)->getSymbolTable()->insert({"tmp" + std::to_string(this->maxOffset), this->maxOffset});
-
+    this->program->cfgs.back()->getSymbolTable()->insert({"tmp" + std::to_string(this->program->cfgs.back()->maxOffset), this->program->cfgs.back()->maxOffset});
+    
     // Creates a new XOR instruction in the current BB
-    Xor *xorInstr = new Xor(offsetLeft, offsetRight, maxOffset, this->program->get_cfg_by_index(0)->get_bb_by_index(0));
-    IRInstr *instr = dynamic_cast<IRInstr *>(xorInstr);
-    this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr);
+    Xor* xorInstr = new Xor(offsetLeft, offsetRight, this->program->cfgs.back()->maxOffset, this->program->cfgs.back()->get_bb_by_index(0));
+    IRInstr* instr = dynamic_cast<IRInstr*> (xorInstr);
+    this->program->cfgs.back()->get_bb_by_index(0)->add_IRInstr(instr);
 
-    return maxOffset;
+
+    return this->program->cfgs.back()->maxOffset;
   }
 
   // Method associated with the '|' sign in an expression
@@ -431,16 +451,16 @@ public:
     int offsetRight = visit(ctx->expr(1));
 
     // Updates the current maximum...
-    this->maxOffset += 4;
+    this->program->cfgs.back()->maxOffset += 4;
     // ... and inserts a new tmp var in the symbol table
-    this->program->get_cfg_by_index(0)->getSymbolTable()->insert({"tmp" + std::to_string(this->maxOffset), this->maxOffset});
-
+    this->program->cfgs.back()->getSymbolTable()->insert({"tmp" + std::to_string(this->program->cfgs.back()->maxOffset), this->program->cfgs.back()->maxOffset});
+    
     // Creates a new instruction for the logical OR in the current BB
-    Or *orInstr = new Or(offsetLeft, offsetRight, maxOffset, this->program->get_cfg_by_index(0)->get_bb_by_index(0));
-    IRInstr *instr = dynamic_cast<IRInstr *>(orInstr);
-    this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr);
+    Or* orInstr = new Or(offsetLeft, offsetRight, this->program->cfgs.back()->maxOffset, this->program->cfgs.back()->get_bb_by_index(0));
+    IRInstr* instr = dynamic_cast<IRInstr*> (orInstr);
+    this->program->cfgs.back()->get_bb_by_index(0)->add_IRInstr(instr);
 
-    return maxOffset;
+    return this->program->cfgs.back()->maxOffset;
   }
 
   /*
@@ -450,7 +470,7 @@ public:
   // Method associated with calling a function
   virtual antlrcpp::Any visitFunctionCallSeul(ifccParser::FunctionCallSeulContext *ctx) override
   {
-    int offsetArg = visit(ctx->expr(0));
+    int offsetArg = visit(ctx->expr());
     // Gets the name of the function to be called
     std::string functionName = ctx->ID()->getText();
 
@@ -459,12 +479,13 @@ public:
     {
       functionName = "putchar@PLT";
     }
-
+    this->program->cfgs.back()->maxOffset += 4;
+    this->program->cfgs.back()->getSymbolTable()->insert({"tmp" + std::to_string(this->program->cfgs.back()->maxOffset), this->program->cfgs.back()->maxOffset});
     // Creates a new call instruction in the current BB for the current function
-    Call *callInstr = new Call(offsetArg, functionName, this->program->get_cfg_by_index(0)->get_bb_by_index(0));
-    IRInstr *instr = dynamic_cast<IRInstr *>(callInstr);
-    this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr);
-    return 0;
+    Call* callInstr = new Call(offsetArg, functionName, this->program->cfgs.back()->maxOffset, this->program->cfgs.back()->get_bb_by_index(0));
+    IRInstr* instr = dynamic_cast<IRInstr*> (callInstr);
+    this->program->cfgs.back()->get_bb_by_index(0)->add_IRInstr(instr);
+    return this->program->cfgs.back()->maxOffset;
   }
 
   /*
@@ -478,9 +499,10 @@ public:
     visitChildren(ctx);
 
     // Creates the write instruction in the current BB in order to have a new label on which we can jump eventually
-    Write_label *write_labelInstr = new Write_label(".L" + to_string(this->ifCounter), this->program->get_cfg_by_index(0)->get_bb_by_index(0));
-    IRInstr *instr = dynamic_cast<IRInstr *>(write_labelInstr);
-    this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr);
+    Write_label* write_labelInstr = new Write_label(".L"+to_string(this->ifCounter), this->program->cfgs.back()->get_bb_by_index(0));
+    IRInstr* instr = dynamic_cast<IRInstr*> (write_labelInstr);
+    this->program->cfgs.back()->get_bb_by_index(0)->add_IRInstr(instr);
+    
     this->ifCounter++;
     return 0;
   }
@@ -492,11 +514,11 @@ public:
     int offsetLeft = visit(ctx->expr(0));
     int offsetRight = visit(ctx->expr(1));
     std::string labelDestination = ".L" + to_string(this->ifCounter);
-
+    
     // Creates a new instruction in the current BB to compare these two values
-    Cmp_eq *cmp_eqInstr = new Cmp_eq(offsetLeft, offsetRight, ".L" + to_string(this->ifCounter), "==", this->program->get_cfg_by_index(0)->get_bb_by_index(0));
-    IRInstr *instr = dynamic_cast<IRInstr *>(cmp_eqInstr);
-    this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr);
+    Cmp_eq* cmp_eqInstr = new Cmp_eq(offsetLeft, offsetRight, ".L"+to_string(this->ifCounter), "==", this->program->cfgs.back()->get_bb_by_index(0));
+    IRInstr* instr = dynamic_cast<IRInstr*> (cmp_eqInstr);
+    this->program->cfgs.back()->get_bb_by_index(0)->add_IRInstr(instr);
     return 0;
   }
 
@@ -509,9 +531,10 @@ public:
     std::string labelDestination = ".L" + to_string(this->ifCounter);
 
     // Creates a new instruction in the current CFG to compare these two values
-    Cmp_eq *cmp_eqInstr = new Cmp_eq(offsetLeft, offsetRight, ".L" + to_string(this->ifCounter), "!=", this->program->get_cfg_by_index(0)->get_bb_by_index(0));
-    IRInstr *instr = dynamic_cast<IRInstr *>(cmp_eqInstr);
-    this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr);
+    Cmp_eq* cmp_eqInstr = new Cmp_eq(offsetLeft, offsetRight, ".L"+to_string(this->ifCounter), "!=", this->program->cfgs.back()->get_bb_by_index(0));
+    IRInstr* instr = dynamic_cast<IRInstr*> (cmp_eqInstr);
+    this->program->cfgs.back()->get_bb_by_index(0)->add_IRInstr(instr);
+
     return 0;
   }
 
@@ -524,10 +547,10 @@ public:
     std::string labelDestination = ".L" + to_string(this->ifCounter);
 
     // Creates a new instruction in the current CFG to compare these two values
-    Cmp_eq *cmp_eqInstr = new Cmp_eq(offsetLeft, offsetRight, ".L" + to_string(this->ifCounter), "<", this->program->get_cfg_by_index(0)->get_bb_by_index(0));
-    IRInstr *instr = dynamic_cast<IRInstr *>(cmp_eqInstr);
-    this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr);
-
+    Cmp_eq* cmp_eqInstr = new Cmp_eq(offsetLeft, offsetRight, ".L"+to_string(this->ifCounter), "<", this->program->cfgs.back()->get_bb_by_index(0));
+    IRInstr* instr = dynamic_cast<IRInstr*> (cmp_eqInstr);
+    this->program->cfgs.back()->get_bb_by_index(0)->add_IRInstr(instr);
+    
     return 0;
   }
 
@@ -540,10 +563,10 @@ public:
     std::string labelDestination = ".L" + to_string(this->ifCounter);
 
     // Creates a new instruction in the current CFG to compare these two values
-    Cmp_eq *cmp_eqInstr = new Cmp_eq(offsetLeft, offsetRight, ".L" + to_string(this->ifCounter), ">", this->program->get_cfg_by_index(0)->get_bb_by_index(0));
-    IRInstr *instr = dynamic_cast<IRInstr *>(cmp_eqInstr);
-    this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr);
-
+    Cmp_eq* cmp_eqInstr = new Cmp_eq(offsetLeft, offsetRight, ".L"+to_string(this->ifCounter), ">", this->program->cfgs.back()->get_bb_by_index(0));
+    IRInstr* instr = dynamic_cast<IRInstr*> (cmp_eqInstr);
+    this->program->cfgs.back()->get_bb_by_index(0)->add_IRInstr(instr);
+    
     return 0;
   }
 
@@ -552,15 +575,16 @@ public:
   {
     this->ifCounter++;
 
+
     // Creates a new instruction of jumping to a particular label as an instruction in the CFG
-    Jmp *jmpInstr = new Jmp(".L" + to_string(this->ifCounter), this->program->get_cfg_by_index(0)->get_bb_by_index(0));
-    IRInstr *instr = dynamic_cast<IRInstr *>(jmpInstr);
-    this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr);
+    Jmp* jmpInstr = new Jmp(".L"+to_string(this->ifCounter), this->program->cfgs.back()->get_bb_by_index(0));
+    IRInstr* instr = dynamic_cast<IRInstr*> (jmpInstr);
+    this->program->cfgs.back()->get_bb_by_index(0)->add_IRInstr(instr);
 
     // Creates a new instruction in the current CFG for writing a new label
-    Write_label *write_labelInstrElse = new Write_label(".L" + to_string(this->ifCounter - 1), this->program->get_cfg_by_index(0)->get_bb_by_index(0));
-    IRInstr *instrElse = dynamic_cast<IRInstr *>(write_labelInstrElse);
-    this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instrElse);
+    Write_label* write_labelInstrElse = new Write_label(".L"+to_string(this->ifCounter-1), this->program->cfgs.back()->get_bb_by_index(0));
+    IRInstr* instrElse = dynamic_cast<IRInstr*> (write_labelInstrElse);
+    this->program->cfgs.back()->get_bb_by_index(0)->add_IRInstr(instrElse);
 
     // Visit the next block
     visit(ctx->bloc());
@@ -581,9 +605,9 @@ public:
     int boucle = this->ifCounter + 1;
 
     // Creates a new label with the current index as an instruction in the current CFG
-    Write_label *write_labelInstrLoop = new Write_label(".L" + to_string(boucle), this->program->get_cfg_by_index(0)->get_bb_by_index(0));
-    IRInstr *instrLoop = dynamic_cast<IRInstr *>(write_labelInstrLoop);
-    this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instrLoop);
+    Write_label* write_labelInstrLoop = new Write_label(".L"+to_string(boucle), this->program->cfgs.back()->get_bb_by_index(0));
+    IRInstr* instrLoop = dynamic_cast<IRInstr*> (write_labelInstrLoop);
+    this->program->cfgs.back()->get_bb_by_index(0)->add_IRInstr(instrLoop); 
 
     // Checks the current condition
     visit(ctx->condition());
@@ -594,14 +618,14 @@ public:
     visit(ctx->bloc());
 
     // Creates a new instruction in the current CFG in order to jump to the newly created label
-    Jmp *jmpInstr = new Jmp(".L" + to_string(boucle), this->program->get_cfg_by_index(0)->get_bb_by_index(0));
-    IRInstr *instr = dynamic_cast<IRInstr *>(jmpInstr);
-    this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr);
+    Jmp* jmpInstr = new Jmp(".L"+to_string(boucle), this->program->cfgs.back()->get_bb_by_index(0));
+    IRInstr* instr = dynamic_cast<IRInstr*> (jmpInstr);
+    this->program->cfgs.back()->get_bb_by_index(0)->add_IRInstr(instr);
 
     // Creates a new instruction in the current CFG for the end label
-    Write_label *write_labelInstrEnd = new Write_label(".L" + to_string(sortie), this->program->get_cfg_by_index(0)->get_bb_by_index(0));
-    IRInstr *instrEnd = dynamic_cast<IRInstr *>(write_labelInstrEnd);
-    this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instrEnd);
+    Write_label* write_labelInstrEnd = new Write_label(".L"+to_string(sortie), this->program->cfgs.back()->get_bb_by_index(0));
+    IRInstr* instrEnd = dynamic_cast<IRInstr*> (write_labelInstrEnd);
+    this->program->cfgs.back()->get_bb_by_index(0)->add_IRInstr(instrEnd);
 
     return 0;
   }
@@ -621,43 +645,43 @@ public:
   int createTemporaryFromConstant(int val)
   {
     // Updates the offset with the size of an integer
-    this->maxOffset += 4;
+    this->program->cfgs.back()->maxOffset += 4;
     // Creates a new temporary name with the offset (tmp4 for example)
-    std::string temporaryName = "tmp" + std::to_string(this->maxOffset);
+    std::string temporaryName = "tmp"+std::to_string(this->program->cfgs.back()->maxOffset);
     // Inserts this new variable in both tables (symbol/type)
-    this->program->get_cfg_by_index(0)->getSymbolTable()->insert({"tmp" + std::to_string(this->maxOffset), this->maxOffset});
-    this->program->get_cfg_by_index(0)->getTypeTable()->insert({"tmp" + std::to_string(this->maxOffset), "int"});
+    this->program->cfgs.back()->getSymbolTable()->insert({"tmp"+std::to_string(this->program->cfgs.back()->maxOffset), this->program->cfgs.back()->maxOffset});
+    this->program->cfgs.back()->getTypeTable()->insert({"tmp"+std::to_string(this->program->cfgs.back()->maxOffset), "int"});
+    
     // Uses instructions with this new variable
-    ldconst *ldconstInstr = new ldconst(val, this->maxOffset, temporaryName, this->program->get_cfg_by_index(0)->get_bb_by_index(0));
-    IRInstr *instr = dynamic_cast<IRInstr *>(ldconstInstr);
-    this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr);
-
+    ldconst* ldconstInstr = new ldconst(val, this->program->cfgs.back()->maxOffset, temporaryName, this->program->cfgs.back()->get_bb_by_index(0));
+    IRInstr* instr = dynamic_cast<IRInstr*> (ldconstInstr);
+    this->program->cfgs.back()->get_bb_by_index(0)->add_IRInstr(instr);
+    
     // returns the current offset
-    return this->maxOffset;
+    return this->program->cfgs.back()->maxOffset;
   }
 
   // Method that creates a temporary variable given a character in parameter.
   int createTemporaryFromConstant(char val)
   {
     // Updates the offset with the size of a character
-    this->maxOffset += 1;
+    this->program->cfgs.back()->maxOffset += 1;
     // Creates a new temporary name with the offset (tmp1 stands for a temporary variable which offset is -4)
-    std::string temporaryName = "tmp" + std::to_string(this->maxOffset);
+    std::string temporaryName = "tmp"+std::to_string(this->program->cfgs.back()->maxOffset);
     // Inserts this variable in both tables (symbol/type)
-    this->program->get_cfg_by_index(0)->getSymbolTable()->insert({"tmp" + std::to_string(this->maxOffset), this->maxOffset});
-    this->program->get_cfg_by_index(0)->getTypeTable()->insert({"tmp" + std::to_string(this->maxOffset), "char"});
+    this->program->cfgs.back()->getSymbolTable()->insert({"tmp"+std::to_string(this->program->cfgs.back()->maxOffset), this->program->cfgs.back()->maxOffset});
+    this->program->cfgs.back()->getTypeTable()->insert({"tmp"+std::to_string(this->program->cfgs.back()->maxOffset), "char"});
     // Uses instructions with this new variable
-    ldconst *ldconstInstr = new ldconst(val, this->maxOffset, temporaryName, this->program->get_cfg_by_index(0)->get_bb_by_index(0));
-    IRInstr *instr = dynamic_cast<IRInstr *>(ldconstInstr);
-    this->program->get_cfg_by_index(0)->get_bb_by_index(0)->add_IRInstr(instr);
-
+    ldconst* ldconstInstr = new ldconst(val, this->program->cfgs.back()->maxOffset, temporaryName, this->program->cfgs.back()->get_bb_by_index(0));
+    IRInstr* instr = dynamic_cast<IRInstr*> (ldconstInstr);
+    this->program->cfgs.back()->get_bb_by_index(0)->add_IRInstr(instr);
+    
     // returns the current offset
-    return this->maxOffset;
+    return this->program->cfgs.back()->maxOffset;
   }
 
   // Protected methods and attributes of the class
 protected:
-  int maxOffset;
   int ifCounter;
   Program *program;
 };

@@ -1,10 +1,12 @@
 #include "call.h"
 
 // Constructor
-Call::Call(const int &_argumentOffset, std::string _functionName, BasicBlock *bb) : IRInstr("add", bb)
+Call::Call(const int & _argumentOffset, std::string _functionName, const int & _offset, BasicBlock* bb) : IRInstr("call",bb)
 {
-  this->argumentOffset = _argumentOffset;
-  this->functionName = _functionName;
+    this->argumentOffset = _argumentOffset;
+    this->functionName = _functionName;
+    this->offset = _offset;
+
 }
 
 // Assembly generator for calling
@@ -22,8 +24,11 @@ void Call::gen_asm(ostream &o)
       << std::endl; // calling the function
   o
       << "\tmovl "
-      << "$0, %eax"
-      << std::endl; // returning the value
+      << "%eax, -"
+      << this->offset
+      << "(%rbp)"
+      << std::endl;
+
 }
 
 // Destructor
