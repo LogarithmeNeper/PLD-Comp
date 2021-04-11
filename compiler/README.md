@@ -16,7 +16,7 @@ where `n` is a positive integer.
 We change our grammar to read the assignments differently then the expressions in order to be able to force the left side of an equals character to be the identifier of a variable, it can no longer be an expression (like a+b=2).
 
 
-## Source Files
+## Fichiers source
 - `ifcc.g4` contient la grammaire au format ANTLR4
 - `main.cpp` est le point d'entrée C++ pour appeler le parser généré par antlr4 sur le fichier passé en paramètre dans la ligne de commande.
 - `visitor.h` est le visiteur de l'arbre de parsing qui produit un langage assembleur en sortie.
