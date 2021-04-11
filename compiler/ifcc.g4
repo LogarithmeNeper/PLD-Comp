@@ -25,17 +25,17 @@ declarationchar : 'char' (declarationvarchar ',')* declarationvarchar;
 declaration64 : 'int64_t' (declarationvar64',')* declarationvar64;
 
 declarationvarint : ID #DeclarationSeuleInt
-            | <assoc=right> ID '=' expr #DeclarationInitialiseeIntExpr
+            | ID '=' expr #DeclarationInitialiseeIntExpr
             | <assoc=right> ID '=' assignment #DeclarationInitialiseeIntAssign
               ;
 
 declarationvarchar : ID #DeclarationSeuleChar
-            | <assoc=right> ID '=' expr #DeclarationInitialiseeCharExpr
+            | ID '=' expr #DeclarationInitialiseeCharExpr
             | <assoc=right> ID '=' assignment #DeclarationInitialiseeCharAssign
               ;
 
 declarationvar64 : ID #DeclarationSeule64
-            | <assoc=right> ID '=' expr #DeclarationInitialisee64Expr
+            | ID '=' expr #DeclarationInitialisee64Expr
             | <assoc=right> ID '=' assignment #DeclarationInitialisee64Assign
               ;
 
@@ -51,7 +51,7 @@ expr : '(' expr ')' #parExpr
       | ID '(' expr* ')' #FunctionCallSeul
       ; 
 
-assignment : <assoc=right> ID '=' expr #assignmentExpr
+assignment : ID '=' expr #assignmentExpr
             | <assoc=right> ID '=' assignment #assignmentChain
             ;
 
