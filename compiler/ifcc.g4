@@ -5,7 +5,7 @@ axiom : prog
 
 prog : 'int' 'main' '(' ')' bloc ;
 bloc : '{' instruction* '}' ;
-instruction : (declaration ';' | assignment ';' | expr ';'| ret ';' | ifStatement | whileStatement) ;
+instruction : (';' | declaration ';' | assignment ';' | expr ';'| ret ';' | ifStatement | whileStatement) ;
 
 whileStatement : WHILE '(' condition ')' bloc ;
 
