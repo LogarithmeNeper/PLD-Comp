@@ -1,10 +1,14 @@
 #pragma once
 
+// Personal includes
 #include "IR.h"
 #include "basic_block.h"
+
+// System includes
 #include <iostream>
 
-class Cmp_eq : public IRInstr{ // Used to load a constant into a temporary var
+// Class used to load a constant into a temporary var
+class Cmp_eq : public IRInstr{ 
     public:
         Cmp_eq();
         Cmp_eq(const int & _offsetLeft, const int & _offsetRight, const string & _destinationLabel, const string & _comparativeSign, BasicBlock* bb);
