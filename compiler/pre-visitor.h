@@ -139,14 +139,14 @@ public:
   // Method for an initialized declaration of an integer in a chain of assignments
   antlrcpp::Any visitDeclarationInitialiseeIntAssign(ifccParser::DeclarationInitialiseeIntAssignContext *context)
   {
-    int currentOffset = maxOffset;
+    int currentOffset = this->program->cfgs.back()->maxOffset;
 
     // Checks if the variable has indeed been added to the symbolTable.
     // If not, it means that that variable name is already declared.
-    if (symbolTable.insert({context->ID()->getText(), maxOffset}).second == true)
+    if (this->program->cfgs.back()->symbolTable->insert({context->ID()->getText(), this->program->cfgs.back()->maxOffset}).second == true)
     {
       // Updates the current max offset if it worked
-      this->maxOffset += 4;
+      this->program->cfgs.back()->maxOffset += 4;
     }
     else
     {
@@ -162,9 +162,9 @@ public:
     // Checks if the assignment is correctly done (it returns the value assigned), if not, prints a warning in the error output.
     if (exprOffset != -1)
     {
-      if (affectedOffsets.count(exprOffset) == 1)
+      if (this->program->cfgs.back()->affectedOffsets->count(exprOffset) == 1)
       {
-        this->affectedOffsets.insert(currentOffset);
+        this->program->cfgs.back()->affectedOffsets->insert(currentOffset);
       }
       else
       {
@@ -239,14 +239,14 @@ public:
   // Method for an initialized declaration of a character in a chain of assignments
   antlrcpp::Any visitDeclarationInitialiseeCharAssign(ifccParser::DeclarationInitialiseeCharAssignContext *context)
   {
-    int currentOffset = maxOffset;
+    int currentOffset = this->program->cfgs.back()->maxOffset;
 
     // Checks if the variable has indeed been added to the symbolTable.
     // If not, it means that that variable name is already declared.
-    if (symbolTable.insert({context->ID()->getText(), maxOffset}).second == true)
+    if (this->program->cfgs.back()->symbolTable->insert({context->ID()->getText(), this->program->cfgs.back()->maxOffset}).second == true)
     {
       // Updates if true
-      this->maxOffset += 1;
+      this->program->cfgs.back()->maxOffset += 1;
     }
     else
     {
@@ -261,9 +261,9 @@ public:
     // Checks if the assignment is correctly done (it returns the value assigned), if not, prints a warning in the error output.
     if (exprOffset != -1)
     {
-      if (affectedOffsets.count(exprOffset) == 1)
+      if (this->program->cfgs.back()->affectedOffsets->count(exprOffset) == 1)
       {
-        this->affectedOffsets.insert(currentOffset);
+        this->program->cfgs.back()->affectedOffsets->insert(currentOffset);
       }
       else
       {
@@ -339,14 +339,14 @@ public:
   // Method for an initialized declaration of an int 64 variable in a chain of assignments
   antlrcpp::Any visitDeclarationInitialisee64Assign(ifccParser::DeclarationInitialisee64AssignContext *context)
   {
-    int currentOffset = maxOffset;
+    int currentOffset = this->program->cfgs.back()->maxOffset;
 
     // Checks if the variable has indeed been added to the symbolTable.
     // If not, it means that that variable name is already declared.
-    if (symbolTable.insert({context->ID()->getText(), maxOffset}).second == true)
+    if (this->program->cfgs.back()->symbolTable->insert({context->ID()->getText(), this->program->cfgs.back()->maxOffset}).second == true)
     {
       // Updated max offset if it worked
-      this->maxOffset += 8;
+      this->program->cfgs.back()->maxOffset += 8;
     }
     else
     {
@@ -362,9 +362,9 @@ public:
     // Checks if the assignment is correctly done (it returns the value assigned), if not, prints a warning in the error output.
     if (exprOffset != -1)
     {
-      if (affectedOffsets.count(exprOffset) == 1)
+      if (this->program->cfgs.back()->affectedOffsets->count(exprOffset) == 1)
       {
-        this->affectedOffsets.insert(currentOffset);
+        this->program->cfgs.back()->affectedOffsets->insert(currentOffset);
       }
       else
       {
@@ -417,15 +417,15 @@ public:
     // Then, checks if the assignment is correct, if not, prints a warning in the error output.
     std::string leftVarName = context->ID()->getText();
     // If there is the variable name in the symbol table
-    if (this->symbolTable.count(leftVarName) == 1)
+    if (this->program->cfgs.back()->symbolTable->count(leftVarName) == 1)
     {
       // Get the offset of the corresponding assignment
       int exprOffset = visit(context->assignment());
       if (exprOffset != -1)
       {
-        if (affectedOffsets.count(exprOffset) == 1)
+        if (this->program->cfgs.back()->affectedOffsets->count(exprOffset) == 1)
         {
-          this->affectedOffsets.insert(this->symbolTable[leftVarName]);
+          this->program->cfgs.back()->affectedOffsets->insert((*(this->program->cfgs.back()->symbolTable))[leftVarName]);
         }
         else
         {
@@ -626,10 +626,10 @@ public:
   */
 
   // Void method for uninitialized variable warning
-void printAlreadyDeclaredError(std::string variableName, int line){
-  std::cerr << "The variable "
+void printUnitializedWarning(std::string variableName, int line){
+  std::cerr << "WARNING : The variable "
             << variableName
-            << " is already declared. Line : "
+            << " has not yet been initialized. Line : "
             << line
             << std::endl;
 }
