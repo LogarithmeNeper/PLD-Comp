@@ -1,7 +1,7 @@
 int main() {
     int a = 8;
     int b = 1;
-    if(a > 10) {
+    if(a < 10) {
         b = 7;
     } else {
         if(a > 7){
