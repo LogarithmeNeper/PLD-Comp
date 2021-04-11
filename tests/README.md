@@ -46,3 +46,9 @@ Les tests sont dans le sous-dossier `tests`.
 `6-21_variable_reach.c` : Si une variable est déclarée dans un bloc if, notre compilateur permet de l'utiliser en dehors de la portée du if.
 `6-23_condition_without_operator.c` : Notre compilateur ne permet de tester que des expressions contenant un opérateur logique, et pas d'expressions de type `if(2)`.
 `6-24_false_condition_without_operator.c` : Idem.
+
+### While
+
+`7-9_variable_reach.c` : Comme dans le cas du if, les portées de variables ne sont pas gérées correctement.
+`7-11_condition_without_operator.c` : Comme dans le cas du if, notre compilateur ne permet de tester que des expressions contenant un opérateur logique.
+`7-12_false_condition_without_operator.c` : Idem.
