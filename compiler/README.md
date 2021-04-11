@@ -9,8 +9,8 @@
 - Les autres fichiers permettent de gérer individuellement les actions à effectuer selon les instructions utilisées pour écrire l'assembleur du programme.
 
 ## Compilation scripts
-- `Makefile` can be used to compile the parser. Libraries and include directories default to the values that work in the IF machines of rooms 208 and 219.
-- `compile_ubuntu.sh` is a script that compiles the project in a different environment (a ubuntu where the antlr runtime had to be compiled manually).
-- `compile_docker.sh` is a script to use if you are desperate. It compiles the project in a docker environment where antlr4 and its dependencies are properly installed.
-- `fast_test.sh` is a script to make a fast test on a given .c file. To use it type sh fast_test.sh <cfile_name> and it will give you the return value of the program after being compile by ifcc
+- `Makefile` peut être utilisé pour compiler le parseur. Les librairies et includes par défaut sont ceux qui fonctionnent sur les machines des salles IF 208 et 219.
+- `compile_ubuntu.sh` est un script qui compile le projet sur un environnement ubuntu.
+- `compile_docker.sh` est un script qui permet de compiler le projet sur n'importe quelle distribution linux en se servant de docker.
+- `fast_test.sh` est un script qui permet de faire un test rapide sur un fichier de test .c. Pour l'utiliser il faut taper sh fast_test.sh <cfile_name> et cela va donner la valeur de retour du programme compilé par ifcc puis exécuté.
 
