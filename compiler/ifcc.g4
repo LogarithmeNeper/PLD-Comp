@@ -5,7 +5,7 @@ axiom : prog
 
 prog : 'int' 'main' '(' ')' bloc ;
 bloc : '{' instruction* '}' ;
-instruction : (declaration ';' | affectation ';' | expr ';'| ret ';' | ifStatement | whileStatement) ;
+instruction : (declaration ';' | assignment ';' | expr ';'| ret ';' | ifStatement | whileStatement) ;
 
 whileStatement : WHILE '(' condition ')' bloc ;
 
@@ -26,17 +26,17 @@ declaration64 : 'int64_t' (declarationvar64',')* declarationvar64;
 
 declarationvarint : ID #DeclarationSeuleInt
             | <assoc=right> ID '=' expr #DeclarationInitialiseeIntExpr
-            | <assoc=right> ID '=' affectation #DeclarationInitialiseeIntAff
+            | <assoc=right> ID '=' assignment #DeclarationInitialiseeIntAssign
               ;
 
 declarationvarchar : ID #DeclarationSeuleChar
             | <assoc=right> ID '=' expr #DeclarationInitialiseeCharExpr
-            | <assoc=right> ID '=' affectation #DeclarationInitialiseeCharAff
+            | <assoc=right> ID '=' assignment #DeclarationInitialiseeCharAssign
               ;
 
 declarationvar64 : ID #DeclarationSeule64
             | <assoc=right> ID '=' expr #DeclarationInitialisee64Expr
-            | <assoc=right> ID '=' affectation #DeclarationInitialisee64Aff
+            | <assoc=right> ID '=' assignment #DeclarationInitialisee64Assign
               ;
 
 expr : '(' expr ')' #parExpr
@@ -51,8 +51,8 @@ expr : '(' expr ')' #parExpr
       | ID '(' expr* ')' #FunctionCallSeul
       ; 
 
-affectation : <assoc=right> ID '=' expr #AffectationExpr
-            | <assoc=right> ID '=' affectation #AffectationChain
+assignment : <assoc=right> ID '=' expr #assignmentExpr
+            | <assoc=right> ID '=' assignment #assignmentChain
             ;
 
 ret : RETURN expr;
