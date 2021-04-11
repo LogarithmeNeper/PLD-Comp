@@ -10,6 +10,7 @@ CFG::CFG(Program* program, string name, int nbArguments)
     this->name = name;
     this->nbArguments = nbArguments;
     this->typeTable = new map<string,string>();
+    this->affectedOffsets = new set<int>();
     this->maxOffset = 0;
 }
 CFG::~CFG() {
@@ -97,6 +98,11 @@ BasicBlock* CFG::get_bb_by_index(int index)
 map<string,int>* CFG::getSymbolTable()
 {
     return this->symbolTable;
+}
+
+set<int>* CFG::getAffectedOffsets()
+{
+    return this->affectedOffsets;
 }
 
 map<string,string>* CFG::getTypeTable()

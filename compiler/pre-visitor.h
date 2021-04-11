@@ -94,9 +94,9 @@ public:
     // Then, checks if the expr is affected, if not, prints a warning in the error output.
     if (exprOffset != -1)
     {
-      if (affectedOffsets.count(exprOffset) == 1)
+      if (this->program->cfgs.back()->affectedOffsets->count(exprOffset) == 1)
       {
-        this->affectedOffsets.insert(currentOffset);
+        this->program->cfgs.back()->affectedOffsets->insert(currentOffset);
       }
       else
       {
@@ -142,9 +142,9 @@ public:
     // Then, checks if the expr is affected, if not, prints a warning in the error output.
     if (exprOffset != -1)
     {
-      if (affectedOffsets.count(exprOffset) == 1)
+      if (this->program->cfgs.back()->affectedOffsets->count(exprOffset) == 1)
       {
-        this->affectedOffsets.insert(currentOffset);
+        this->program->cfgs.back()->affectedOffsets->insert(currentOffset);
       }
       else
       {
@@ -190,9 +190,9 @@ public:
     // Then, checks if the expr is affected, if not, prints a warning in the error output.
     if (exprOffset != -1)
     {
-      if (affectedOffsets.count(exprOffset) == 1)
+      if (this->program->cfgs.back()->affectedOffsets->count(exprOffset) == 1)
       {
-        this->affectedOffsets.insert(currentOffset);
+        this->program->cfgs.back()->affectedOffsets->insert(currentOffset);
       }
       else
       {
@@ -212,9 +212,9 @@ public:
       int exprOffset = visit(context->expr());
       if (exprOffset != -1)
       {
-        if (affectedOffsets.count(exprOffset) == 1)
+        if (this->program->cfgs.back()->affectedOffsets->count(exprOffset) == 1)
         {
-          this->affectedOffsets.insert((*(this->program->cfgs.back()->symbolTable))[leftVarName]);
+          this->program->cfgs.back()->affectedOffsets->insert((*(this->program->cfgs.back()->symbolTable))[leftVarName]);
         }
         else
         {
@@ -288,7 +288,7 @@ public:
     int offsetLeft = visit(context->expr(0));
     if (offsetLeft != -1)
     {
-      if (affectedOffsets.count(offsetLeft) != 1)
+      if (this->program->cfgs.back()->affectedOffsets->count(offsetLeft) != 1)
       {
         printUnitializedWarning(findVariableNameFromOffset(offsetLeft), context->start->getLine());
       }
@@ -296,7 +296,7 @@ public:
     int offsetRight = visit(context->expr(1));
     if (offsetRight != -1)
     {
-      if (affectedOffsets.count(offsetRight) != 1)
+      if (this->program->cfgs.back()->affectedOffsets->count(offsetRight) != 1)
       {
         printUnitializedWarning(findVariableNameFromOffset(offsetRight), context->start->getLine());
       }
@@ -311,7 +311,7 @@ public:
     int offsetLeft = visit(context->expr(0));
     if (offsetLeft != -1)
     {
-      if (affectedOffsets.count(offsetLeft) != 1)
+      if (this->program->cfgs.back()->affectedOffsets->count(offsetLeft) != 1)
       {
         printUnitializedWarning(findVariableNameFromOffset(offsetLeft), context->start->getLine());
       }
@@ -319,7 +319,7 @@ public:
     int offsetRight = visit(context->expr(1));
     if (offsetRight != -1)
     {
-      if (affectedOffsets.count(offsetRight) != 1)
+      if (this->program->cfgs.back()->affectedOffsets->count(offsetRight) != 1)
       {
         printUnitializedWarning(findVariableNameFromOffset(offsetRight), context->start->getLine());
       }
@@ -336,7 +336,7 @@ public:
   {
     this->program->cfgs.back()->maxOffset += 4;
     this->program->cfgs.back()->symbolTable->insert({"tmp" + std::to_string( this->program->cfgs.back()->maxOffset),  this->program->cfgs.back()->maxOffset});
-    this->affectedOffsets.insert(this->program->cfgs.back()->maxOffset);
+    this->program->cfgs.back()->affectedOffsets->insert(this->program->cfgs.back()->maxOffset);
     return this->program->cfgs.back()->maxOffset;
   }
 
@@ -345,7 +345,7 @@ public:
     val = (int)val;
     this->program->cfgs.back()->maxOffset += 1;
     this->program->cfgs.back()->symbolTable->insert({"tmp" + std::to_string(this->program->cfgs.back()->maxOffset), this->program->cfgs.back()->maxOffset});
-    this->affectedOffsets.insert(this->program->cfgs.back()->maxOffset);
+    this->program->cfgs.back()->affectedOffsets->insert(this->program->cfgs.back()->maxOffset);
     return this->program->cfgs.back()->maxOffset;
   }
 
@@ -354,7 +354,7 @@ public:
 
     this->program->cfgs.back()->maxOffset += 4;
     this->program->cfgs.back()->symbolTable->insert({"tmp" + std::to_string(this->program->cfgs.back()->maxOffset), this->program->cfgs.back()->maxOffset});
-    this->affectedOffsets.insert(this->program->cfgs.back()->maxOffset);
+    this->program->cfgs.back()->affectedOffsets->insert(this->program->cfgs.back()->maxOffset);
     return this->program->cfgs.back()->maxOffset;
   }
 
@@ -399,11 +399,10 @@ antlrcpp::Any visitFunctionCallSeul(ifccParser::FunctionCallSeulContext *ctx)
       {
         return createTemporaryVariable();
       }
-      
     }
     printNotDeclaredError(functionName,ctx->start->getLine());
     this->correctCode = false;
-    return -1;
+    return -1;    
   }
 
 void printMissingParenthesis(int line){
@@ -414,7 +413,7 @@ void printMissingParenthesis(int line){
 
 void printNotDeclaredError(std::string variableName, int line){
   std::cerr << "ERROR : "
-                << "The variable or function"
+                << "The variable or function "
                 << variableName
                 << " is not declared. Line : "
                 << line
@@ -422,7 +421,6 @@ void printNotDeclaredError(std::string variableName, int line){
 }
 
 protected:
-  std::set<int> affectedOffsets;
   bool correctCode = true;
   std::vector<CFG*> cfgs;
   Program* program;

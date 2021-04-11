@@ -7,6 +7,7 @@
 #include <initializer_list>
 #include <map>
 #include <list>
+#include <set>
 
 //#include "basic_block.h"
 //#include "program.h"
@@ -52,11 +53,13 @@ class CFG {
 	BasicBlock* current_bb;
 
     map<string,int>* getSymbolTable();
+	set<int>* getAffectedOffsets();
 	vector <BasicBlock*> bbs; /**< all the basic blocks of this CFG*/
 	int maxOffset;
 	string name;
 	int nbArguments;
 	map <string, int>* symbolTable; /**< part of the symbol table  */
+	std::set<int>* affectedOffsets; /** This set is used to track the offset that have been affected once for pre visitor **/
 
  protected:
 	map <string, string>* typeTable;
