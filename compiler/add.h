@@ -1,9 +1,17 @@
+// Add Class
+
 #pragma once
 
-#include "IR.h"
+// System includes
 #include <iostream>
 
-class Add : public IRInstr{ // Used to make an addition
+// Personal includes 
+#include "IR.h"
+
+// Used to make an addition instruction
+// Inherits from Instruction
+class Add : public IRInstr { 
+    // Public methods and attributes
     public:
         Add();
         Add(const int & _offsetLeft, const int & _offsetRight, const int & _offsetDest, BasicBlock* bb);
@@ -13,6 +21,7 @@ class Add : public IRInstr{ // Used to make an addition
         int offsetRight; // the offset of the right var
         int offsetDest; // the offset of the destination var
 
+    // Protected methods and attributes
     protected:
         
 

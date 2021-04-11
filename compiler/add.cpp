@@ -1,39 +1,42 @@
+// Personal include
+
 #include "add.h"
 
-Add::Add(const int & _offsetLeft, const int & _offsetRight, const int & _offsetDest, BasicBlock* bb) : IRInstr("add",bb)
+// Constructor of the class
+Add::Add(const int &_offsetLeft, const int &_offsetRight, const int &_offsetDest, BasicBlock *bb) : IRInstr("add", bb)
 {
-    this->offsetLeft = _offsetLeft;
-    this->offsetRight = _offsetRight;
-    this->offsetDest = _offsetDest;
-
+  this->offsetLeft = _offsetLeft;
+  this->offsetRight = _offsetRight;
+  this->offsetDest = _offsetDest;
 }
 
-void Add::gen_asm(ostream & o) // x86 asm for now
+// Method for assembly generation
+// x86 asm for now
+void Add::gen_asm(ostream &o)
 {
-    o 
+  o
       << "\tmovl -"
       << this->offsetLeft
       << "(%rbp), %eax"
-      << std::endl;
-    o
+      << std::endl; // moving the variable
+  o
       << "\taddl -"
-      << this->offsetRight 
+      << this->offsetRight
       << "(%rbp), %eax"
-      << std::endl;
-    o
-        << "\tmovl %eax, -" 
-        << this->offsetDest
-        << "(%rbp)" 
-        << std::endl;
-
+      << std::endl; // adding the variable
+  o
+      << "\tmovl %eax, -"
+      << this->offsetDest
+      << "(%rbp)"
+      << std::endl; // moving the result in the registry
 }
 
+// Destructor
 Add::~Add()
 {
-
 }
 
+// No-params constructor
 Add::Add()
 {
-
 }
