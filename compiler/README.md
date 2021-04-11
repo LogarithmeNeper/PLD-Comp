@@ -1,26 +1,15 @@
 # C compiler with antlr4/c++
 
-## Instructions
+## Changement après la présentation
 
-This minimal example shows how to build a basic C compiler using Antlr4 for C++. The only file the compiler can deal with is:
+Nous avons modifié notre grammaire pour que les affectations soient gérées en dehors des expressions pour pouvoir vérifier que l'élément à gauche du '=' soit toujours une variable et jamais une expression (a+b=2 est incorrect).
+Nous avons également modifié notre gestion des fonctions. Il est possible d'initialiser une fonction avec plusieurs arguments de type int (ou aucun), en revanche on ne peux appeler que des fonctions à un argument entier.
 
-```
-int main() {
-   return n;
-}
-```
-where `n` is a positive integer. 
-
-## Changes after the presentation
-
-We change our grammar to read the assignments differently then the expressions in order to be able to force the left side of an equals character to be the identifier of a variable, it can no longer be an expression (like a+b=2).
-
-
-## Source Files
-- `ifcc.g4` contains the grammar in antlr4 format
-- `main.cpp` contains the C++ code to call the antlr4-generated parser on the  file name provided in the command line.
-- `visitor.h` is a visitor of the parse tree that produces an assembly-language output
-- `pre-visitor.h` is a visitor of the parse tree that attemps to detect problems such as undeclared or non initialized variables in the program
+## Fichiers source
+- `ifcc.g4` contient la grammaire au format ANTLR4
+- `main.cpp` est le point d'entrée C++ pour appeler le parser généré par antlr4 sur le fichier passé en paramètre dans la ligne de commande.
+- `visitor.h` est le visiteur de l'arbre de parsing qui produit un langage assembleur en sortie.
+- `pre-visitor.h` est un visiteur de l'arbre de parsing qui tente de détecter des problèmes tels que des varibles non déclarées ou non initialisées dans le programme.
 
 ## Compilation scripts
 - `Makefile` peut être utilisé pour compiler le parseur. Les librairies et includes par défaut sont ceux qui fonctionnent sur les machines des salles IF 208 et 219.
