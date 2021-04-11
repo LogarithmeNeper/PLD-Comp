@@ -7,6 +7,7 @@ int main() {
             if (a > 6) {
                 b = 4;
             }
+            b = 5;
         }
     }
     return b;
