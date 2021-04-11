@@ -17,10 +17,10 @@ We change our grammar to read the assignments differently then the expressions i
 
 
 ## Source Files
-- `ifcc.g4` contains the grammar in antlr4 format
-- `main.cpp` contains the C++ code to call the antlr4-generated parser on the  file name provided in the command line.
-- `visitor.h` is a visitor of the parse tree that produces an assembly-language output
-- `pre-visitor.h` is a visitor of the parse tree that attemps to detect problems such as undeclared or non initialized variables in the program
+- `ifcc.g4` contient la grammaire au format ANTLR4
+- `main.cpp` est le point d'entrée C++ pour appeler le parser généré par antlr4 sur le fichier passé en paramètre dans la ligne de commande.
+- `visitor.h` est le visiteur de l'arbre de parsing qui produit un langage assembleur en sortie.
+- `pre-visitor.h` est un visiteur de l'arbre de parsing qui tente de détecter des problèmes tels que des varibles non déclarées ou non initialisées dans le programme.
 
 ## Compilation scripts
 - `Makefile` can be used to compile the parser. Libraries and include directories default to the values that work in the IF machines of rooms 208 and 219.
