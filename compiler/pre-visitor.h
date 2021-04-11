@@ -460,26 +460,6 @@ public:
   // Method for parenthesis around an expression
   antlrcpp::Any visitParExpr(ifccParser::ParExprContext *context)
   {
-    // We check if there is the same number of opening and closing parenthesis by counting them
-    int closingParCounter = 0, openingParCounter = 0;
-    for (int i = 0; i < context->children.size(); i++)
-    {
-      if (context->children[i]->getText() == "(")
-      {
-        openingParCounter++;
-      }
-      if (context->children[i]->getText() == ")")
-      {
-        closingParCounter++;
-      }
-    }
-    // If there are more ( than ) or more ) than ( we throw an exception, and locate it in the code
-    if (openingParCounter != closingParCounter)
-    {
-      printMissingParenthesis(context->start->getLine());
-      // code is indeed false
-      this->correctCode = false;
-    }
     return visit(context->expr());
   }
 
@@ -645,14 +625,6 @@ public:
     std::cerr << "The variable "
               << variableName
               << " is already declared. Line : "
-              << line
-              << std::endl;
-  }
-
-  // Void method for missing parenthesis
-  void printMissingParenthesis(int line)
-  {
-    std::cerr << "ERROR : Missing parenthesis. Line : "
               << line
               << std::endl;
   }
