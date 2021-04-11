@@ -1,10 +1,13 @@
 #pragma once
 
+// Personal include
 #include "IR.h"
+// System include
 #include <iostream>
 #include <string>
 
-class Call : public IRInstr{ // Used to make a function call
+// Class used to make a function call
+class Call : public IRInstr { 
     public:
         Call();
         Call(const int & _argumentOffset, std::string _functionName, BasicBlock* bb);
