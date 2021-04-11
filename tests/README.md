@@ -39,16 +39,18 @@ Ici sont énumérés les tests qui ne correspondent pas au comportement de gcc.
 
 ### Fonctions
 
-`5-1_putchar.c` : Notre compilateur vérifie si une fonction a été créée avant de l'appeler, et n'accepte donc pas de fonctions provenant de librairies.
-`5-4_twoParams.c` : Notre compilateur n'accepte que les fonctions à un paramètre. 
+`5-1_putchar.c` : Notre compilateur vérifie si une fonction a été créée avant de l'appeler, et n'accepte donc pas de fonctions provenant de librairies.   
+`5-2_noParams.c` : Notre compilateur n'accepte que les fonctions à un paramètre.   
+`5-4_twoParams.c` :  Idem.   
 `5-5_threeParams.c` : Idem.  
-`5-6_fourParams.c` : Idem.   
-`5-8_callFunctionInFunction.c` : Notre compilateur n'accepte pas les appels imbriqués de fonctions.   
-`5-9_no_return.c` : Notre compilateur ne produit pas d'assembleur si une fonction ne finit pas par un return.
-`5-10.c` : La gestion des fonctions de type void n'est pas implémentée dans notre compilateur.
+`5-6_fourParams.c` : Idem.     
+`5-9_no_return.c` : Notre compilateur ne produit pas d'assembleur si une fonction ne finit pas par un return.   
+`5-10_void.c` : La gestion des fonctions de type void n'est pas implémentée dans notre compilateur.   
 `5-11_several_returns.c` : Notre compilateur n'accepte pas plusieurs return à la fin d'une fonction.   
-`5-12_returnFunction.c` : Notre compilateur n'accepte pas l'appel à une fonction dans un return.   
 `5-14_maininmain.c` : Notre compilateur n'accepte pas l'appel de main() dans elle-même.   
+`5-17_functions_with_same_name.c` : Si deux fonctions ont même nom et même signature, notre compilateur appelle la première tandis que gcc considère cela comme une erreur.   
+`5-19_missing_parameter.c` : Si un paramètre n'est pas fourni à l'appel d'une fonction, notre compilateur ne considère pas cela comme incorrect.   
+`5-23_verify_value.c` : Notre compilateur modifie les paramètres des fonctions quand elles sont appelées.   
 
 ### If
 
