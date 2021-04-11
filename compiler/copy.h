@@ -1,10 +1,15 @@
 #pragma once
 
+// Personal includes
 #include "IR.h"
 #include "basic_block.h"
+
+// System include
 #include <iostream>
 
-class Copy : public IRInstr{ // Used to load a constant into a temporary var
+// Class used to implement the instruction of copy
+class Copy : public IRInstr{
+    // Public methods and attributes
     public:
         Copy();
         Copy(const int & _offsetSource, const int & _offsetDest, const string & destName, BasicBlock* bb);
@@ -14,6 +19,7 @@ class Copy : public IRInstr{ // Used to load a constant into a temporary var
         int offsetDest; // The offset of the destination var
         string destName; // The name of the destination variable
 
+    // Protected methods and attributes
     protected:
         
 
