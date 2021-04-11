@@ -53,5 +53,6 @@ Notre compilateur ne gère pas l'ensemble du langage C. Nous avons identifié qu
 - Boucle for non implémentée.
 - Pas de possibilité d'imbriquer des structures conditionnelles "if"
 - Opérateurs logiques ||, &&, ! non implémentée.
+- Appels de fonctions limités à des fonctions personnelles.
 
  
