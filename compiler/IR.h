@@ -1,6 +1,7 @@
 // Code adapté de celui fourni ici : https://moodle.insa-lyon.fr/pluginfile.php/98639/mod_resource/content/3/IR.h
 #pragma once
 
+// System includes
 #include <vector>
 #include <string>
 #include <iostream>
@@ -8,16 +9,14 @@
 #include <map>
 #include <list>
 
-// #include "basic_block.h"
+// Personal includes
 #include "cfg.h"
+
+// Anticipated declaration for the class
 class BasicBlock;
 
+// Namespace
 using namespace std;
-
-// Declarations from the parser -- replace with your own
-//#include "type.h"
-//#include "symbole.h"
-
 
 //! The class for one 3-address instruction
 class IRInstr {

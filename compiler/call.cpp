@@ -1,5 +1,6 @@
 #include "call.h"
 
+// Constructor
 Call::Call(const int & _argumentOffset, std::string _functionName, const int & _offset, BasicBlock* bb) : IRInstr("call",bb)
 {
     this->argumentOffset = _argumentOffset;
@@ -8,18 +9,20 @@ Call::Call(const int & _argumentOffset, std::string _functionName, const int & _
 
 }
 
-void Call::gen_asm(ostream & o) // x86 asm for now
+// Assembly generator for calling
+// x86 asm for now
+void Call::gen_asm(ostream &o)
 {
-    o 
+  o
       << "\tmovl -"
       << this->argumentOffset
       << "(%rbp), %edi"
-      << std::endl;
-    o
+      << std::endl; // moving the argument in the edi registry
+  o
       << "\tcall "
       << this->functionName
-      << std::endl;
-    o
+      << std::endl; // calling the function
+  o
       << "\tmovl "
       << "%eax, -"
       << this->offset
@@ -28,12 +31,12 @@ void Call::gen_asm(ostream & o) // x86 asm for now
 
 }
 
+// Destructor
 Call::~Call()
 {
-
 }
 
+// No-params constructor
 Call::Call()
 {
-
 }

@@ -6,7 +6,7 @@ axiom : prog
 prog : definitionFunction* ;
 definitionFunction : 'int' ID '(' ('int' ID ',')* 'int' ID ')' bloc;
 bloc : '{' instruction* '}' ;
-instruction : (declaration ';' | expr ';'| ret ';' | ifStatement | whileStatement) ;
+instruction : (';' | declaration ';' | assignment ';' | expr ';'| ret ';' | ifStatement | whileStatement) ;
 
 whileStatement : WHILE '(' condition ')' bloc ;
 
@@ -26,15 +26,18 @@ declarationchar : 'char' (declarationvarchar ',')* declarationvarchar;
 declaration64 : 'int64_t' (declarationvar64',')* declarationvar64;
 
 declarationvarint : ID #DeclarationSeuleInt
-            | ID '=' expr #DeclarationInitialiseeInt
+            | ID '=' expr #DeclarationInitialiseeIntExpr
+            | <assoc=right> ID '=' assignment #DeclarationInitialiseeIntAssign
               ;
 
 declarationvarchar : ID #DeclarationSeuleChar
-            | ID '=' expr #DeclarationInitialiseeChar
+            | ID '=' expr #DeclarationInitialiseeCharExpr
+            | <assoc=right> ID '=' assignment #DeclarationInitialiseeCharAssign
               ;
 
 declarationvar64 : ID #DeclarationSeule64
-            | ID '=' expr #DeclarationInitialisee64
+            | ID '=' expr #DeclarationInitialisee64Expr
+            | <assoc=right> ID '=' assignment #DeclarationInitialisee64Assign
               ;
 
 expr : '(' expr ')' #parExpr
@@ -43,12 +46,15 @@ expr : '(' expr ')' #parExpr
       | expr '&' expr #ANDExpr
       | expr '^' expr #XORExpr
       | expr '|' expr #ORExpr
-      | ID '=' expr #affectation
       | CONST #constExpr
       | ID #varExpr
       | CONSTCHAR #constCharExpr
       | ID '(' expr ')' #FunctionCallSeul
       ; 
+
+assignment : ID '=' expr #assignmentExpr
+            | <assoc=right> ID '=' assignment #assignmentChain
+            ;
 
 ret : RETURN expr;
 

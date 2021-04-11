@@ -1,6 +1,7 @@
 // Code adapté de celui fourni ici : https://moodle.insa-lyon.fr/pluginfile.php/98639/mod_resource/content/3/IR.h
 #pragma once
 
+// System includes
 #include <vector>
 #include <string>
 #include <iostream>
@@ -9,11 +10,11 @@
 #include <list>
 #include <set>
 
-//#include "basic_block.h"
-//#include "program.h"
+// Predeclaration
 class BasicBlock;
 class Program;
 
+// Namespace
 using namespace std;
 
 /** The class for the control flow graph, also includes the symbol table */
@@ -29,28 +30,28 @@ class CFG {
  public:
 	CFG(Program* program, string name, int nbArguments);
 	~CFG();
-	Program* program; /**< The AST this CFG comes from */
-	
-	void add_bb(BasicBlock* bb); 
+	Program *program; /**< The AST this CFG comes from */
+
+	void add_bb(BasicBlock *bb);
 
 	// x86 code generation: could be encapsulated in a processor class in a retargetable compiler
-	void gen_asm(ostream& o);
+	void gen_asm(ostream &o);
 	// string IR_reg_to_asm(string reg); /**< helper method: inputs a IR reg or input variable, returns e.g. "-24(%rbp)" for the proper value of 24 */
-	void gen_asm_prologue(ostream& o);
-	void gen_asm_epilogue(ostream& o, int offsetReturn);
+	void gen_asm_prologue(ostream &o);
+	void gen_asm_epilogue(ostream &o, int offsetReturn);
 
 	// symbol table methods
-	void add_to_symbol_table(string & name, int & index);
+	void add_to_symbol_table(string &name, int &index);
 	//string create_new_tempvar(/*Type t*/);
-	int get_var_index(string & name);
-	string get_var_type(string & name);
-	map<string,string>* getTypeTable();
+	int get_var_index(string &name);
+	string get_var_type(string &name);
+	map<string, string> *getTypeTable();
 
 	// basic block management
 
-	BasicBlock* get_bb_by_index(int index);
+	BasicBlock *get_bb_by_index(int index);
 	// string new_BB_name();
-	BasicBlock* current_bb;
+	BasicBlock *current_bb;
 
     map<string,int>* getSymbolTable();
 	set<int>* getAffectedOffsets();
@@ -65,6 +66,4 @@ class CFG {
 	map <string, string>* typeTable;
 	int nextFreeSymbolIndex; /**< to allocate new symbols in the symbol table */
 	int nextBBnumber; /**< just for naming */
-	
-	
 };

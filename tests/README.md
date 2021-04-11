@@ -1,18 +1,15 @@
-# C Compiler test framework
+# Framework de tests
 
-This directory contains scripts to test your compiler along with 
-a collection of C language source codes that can be tested.
+Ce dossier contient des scripts pour tester le compilateur ainsi qu'un ensemble de codes sources en C pouvant être testés.
 
-## Prerequisites
+## Prérequis
 
-Docker must be installed in order to execute these scripts. The compiler has 
-to be present in the directory `../compiler/ifcc`. Compiler options and location
-can be customized in the `pld-wrapper.sh` script.
+Docker doit être installé afin de pouvoir exécuter ces scripts. Le compilateur doit être présent dans le répertoire `../compiler/ifcc`. Les options et la location du compilateur peuvent être modifiées dans le script `pld-wrapper.sh`.
 
-## Files
+## Fichiers
 
-`test.sh` is the base file to launch. It will call the appropriate Docker
-image and execute the `pld-test.py` script. Results are put in a new directory
-`pld-test-outputs`.
+`test.sh` est le fichier de base à lancer. Il appelle l'image Docker appropriée et exécute le script `pld-test.py`. Les résultats sont placés dans le nouveau répertoire `pld-test-outputs`.
 
-The tests are in the `tests` subfolder. 
+Les tests sont dans le sous-dossier `tests`.
+
+## Test results
