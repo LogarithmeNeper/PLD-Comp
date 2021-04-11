@@ -4,7 +4,7 @@ axiom : prog
       ;
 
 prog : definitionFunction* ;
-definitionFunction : 'int' ID '(' ('int' ID ',')* 'int' ID ')' bloc;
+definitionFunction : 'int' ID '(' (('int' ID ',')* 'int' ID | )')' bloc;
 bloc : '{' instruction* '}' ;
 instruction : (';' | declaration ';' | assignment ';' | expr ';'| ret ';' | ifStatement | whileStatement) ;
 
