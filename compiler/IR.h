@@ -35,9 +35,10 @@ class IRInstr {
 		call, // call to a function
 		cmp_eq, // ==
 		cmp_lt, // <
-		cmp_le // <=
+		cmp_le, // <=
+		write_label // instruction to write a label for if instr
 	} Operation;
-
+	BasicBlock* bb; /**< The BB this instruction belongs to, which provides a pointer to the CFG this instruction belong to */
 
 	IRInstr(std::string description="", BasicBlock* bb = nullptr):description(description), bb(bb){}
 	string getDescription(){return this->description;}
@@ -47,7 +48,7 @@ class IRInstr {
 	virtual void gen_asm(ostream & o = cout)=0; /**< x86 assembly code generation for this IR instruction */
 	
  private:
-	BasicBlock* bb; /**< The BB this instruction belongs to, which provides a pointer to the CFG this instruction belong to */
+	
 	Operation op;
 	//Type t;
 	vector<string> params; /**< For 3-op instrs: d, x, y; for ldconst: d, c;  For call: label, d, params;  for wmem and rmem: choose yourself */

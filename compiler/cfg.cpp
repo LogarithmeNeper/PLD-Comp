@@ -7,12 +7,10 @@ CFG::CFG(Program* program, string name, int nbArguments)
 {
     this->program = program;
     this->symbolTable = new map<string,int>();
-    this->maxOffset = 0;
     this->name = name;
     this->nbArguments = nbArguments;
-
+    this->typeTable = new map<string,string>();
 }
-
 CFG::~CFG() {
     delete symbolTable;
     for(int i=0; i < bbs.size(); i++){
@@ -84,6 +82,11 @@ int CFG::get_var_index(string & name)
     return (*(this->symbolTable))[name];
 }
 
+string CFG::get_var_type(string & name)
+{
+    return (*(this->typeTable))[name];
+}
+
 BasicBlock* CFG::get_bb_by_index(int index)
 {
     return this->bbs.at(index);
@@ -93,4 +96,9 @@ BasicBlock* CFG::get_bb_by_index(int index)
 map<string,int>* CFG::getSymbolTable()
 {
     return this->symbolTable;
+}
+
+map<string,string>* CFG::getTypeTable()
+{
+    return this->typeTable;
 }
