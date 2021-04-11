@@ -95,7 +95,7 @@ public:
 
   /*
   * INT
-  */ 
+  */
 
   // Method for a  declaration for an integer as assigned
   virtual antlrcpp::Any visitDeclarationSeuleInt(ifccParser::DeclarationSeuleIntContext *context) override
@@ -118,7 +118,7 @@ public:
     // Inserts in both tables (symbol/type)
     this->program->get_cfg_by_index(0)->getSymbolTable()->insert({context->ID()->getText(), maxOffset});
     this->program->get_cfg_by_index(0)->getTypeTable()->insert({context->ID()->getText(), "int"});
-    
+
     // Gets name and offset
     std::string leftVarName = context->ID()->getText();
     int exprOffset = visit(context->expr());
@@ -140,7 +140,7 @@ public:
     // Inserts in both tables (symbol/type)
     this->program->get_cfg_by_index(0)->getSymbolTable()->insert({context->ID()->getText(), maxOffset});
     this->program->get_cfg_by_index(0)->getTypeTable()->insert({context->ID()->getText(), "int"});
-    
+
     // Gets name and offset
     std::string leftVarName = context->ID()->getText();
     int exprOffset = visit(context->assignment());
@@ -178,7 +178,7 @@ public:
     // Inserts in both tables (symbol/type)
     this->program->get_cfg_by_index(0)->getSymbolTable()->insert({context->ID()->getText(), maxOffset});
     this->program->get_cfg_by_index(0)->getTypeTable()->insert({context->ID()->getText(), "char"});
-    
+
     // Gets name and offset
     std::string leftVarName = context->ID()->getText();
     int exprOffset = visit(context->expr());
@@ -199,11 +199,10 @@ public:
     // Inserts in both tables (symbol/type)
     this->program->get_cfg_by_index(0)->getSymbolTable()->insert({context->ID()->getText(), maxOffset});
     this->program->get_cfg_by_index(0)->getTypeTable()->insert({context->ID()->getText(), "char"});
-    
+
     // Gets name and offset
     std::string leftVarName = context->ID()->getText();
     int exprOffset = visit(context->assignment());
-
 
     // Creates the instruction in the current BB
     Copy *copyInstr = new Copy(exprOffset, (*this->program->get_cfg_by_index(0)->getSymbolTable())[leftVarName], leftVarName, this->program->get_cfg_by_index(0)->get_bb_by_index(0));
@@ -224,7 +223,7 @@ public:
     // Inserts in both tables (symbol/tables)
     this->program->get_cfg_by_index(0)->getSymbolTable()->insert({context->ID()->getText(), maxOffset});
     this->program->get_cfg_by_index(0)->getTypeTable()->insert({context->ID()->getText(), "int64"});
-    
+
     return 0;
   }
 
@@ -236,7 +235,7 @@ public:
     // Inserts in both tables (symbol/type)
     this->program->get_cfg_by_index(0)->getSymbolTable()->insert({context->ID()->getText(), maxOffset});
     this->program->get_cfg_by_index(0)->getTypeTable()->insert({context->ID()->getText(), "int64"});
-    
+
     // Gets its name and offset
     std::string leftVarName = context->ID()->getText();
     int exprOffset = visit(context->expr());
@@ -256,7 +255,7 @@ public:
     // Inserts it in both tables (symbol/type)
     this->program->get_cfg_by_index(0)->getSymbolTable()->insert({context->ID()->getText(), maxOffset});
     this->program->get_cfg_by_index(0)->getTypeTable()->insert({context->ID()->getText(), "int64"});
-    
+
     // Gets the name and offset in the expression
     std::string leftVarName = context->ID()->getText();
     int exprOffset = visit(context->assignment());
