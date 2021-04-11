@@ -54,7 +54,7 @@ public:
     return 0;
   }
 
-  antlrcpp::Any visitDeclarationInitialiseeInt(ifccParser::DeclarationInitialiseeIntContext *context)
+  antlrcpp::Any visitDeclarationInitialiseeIntExpr(ifccParser::DeclarationInitialiseeIntExprContext *context)
   {
     int currentOffset = maxOffset;
 
@@ -88,6 +88,40 @@ public:
     return 0;
   }
 
+  antlrcpp::Any visitDeclarationInitialiseeIntAssign(ifccParser::DeclarationInitialiseeIntAssignContext *context)
+  {
+    int currentOffset = maxOffset;
+
+    // Checks if the variable has indeed been added to the symbolTable.
+    // If not, it means that that variable name is already declared.
+    if (symbolTable.insert({context->ID()->getText(), maxOffset}).second == true)
+    {
+      this->maxOffset += 4;
+    }
+    else
+    {
+      printAlreadyDeclaredError(context->ID()->getText(), context->start->getLine());
+      this->correctCode = false;
+    };
+
+    int exprOffset = visit(context->assignment());
+
+    // Checks if the expr is effectively in the symbolTable (see visitVarExpr)
+    // Then, checks if the expr is affected, if not, prints a warning in the error output.
+    if (exprOffset != -1)
+    {
+      if (affectedOffsets.count(exprOffset) == 1)
+      {
+        this->affectedOffsets.insert(currentOffset);
+      }
+      else
+      {
+        printUnitializedWarning(findVariableNameFromOffset(exprOffset), context->start->getLine());
+      }
+    }
+    return 0;
+  }
+
   antlrcpp::Any visitDeclarationSeuleChar(ifccParser::DeclarationSeuleCharContext *context)
   {
     if (this->symbolTable.insert({context->ID()->getText(), maxOffset}).second == true)
@@ -102,7 +136,7 @@ public:
     return 0;
   }
 
-  antlrcpp::Any visitDeclarationInitialiseeChar(ifccParser::DeclarationInitialiseeCharContext *context)
+  antlrcpp::Any visitDeclarationInitialiseeCharExpr(ifccParser::DeclarationInitialiseeCharExprContext *context)
   {
     int currentOffset = maxOffset;
 
@@ -119,6 +153,40 @@ public:
     };
 
     int exprOffset = visit(context->expr());
+
+    // Checks if the expr is effectively in the symbolTable (see visitVarExpr)
+    // Then, checks if the expr is affected, if not, prints a warning in the error output.
+    if (exprOffset != -1)
+    {
+      if (affectedOffsets.count(exprOffset) == 1)
+      {
+        this->affectedOffsets.insert(currentOffset);
+      }
+      else
+      {
+        printUnitializedWarning(findVariableNameFromOffset(exprOffset), context->start->getLine());
+      }
+    }
+    return 0;
+  }
+
+  antlrcpp::Any visitDeclarationInitialiseeCharAssign(ifccParser::DeclarationInitialiseeCharAssignContext *context)
+  {
+    int currentOffset = maxOffset;
+
+    // Checks if the variable has indeed been added to the symbolTable.
+    // If not, it means that that variable name is already declared.
+    if (symbolTable.insert({context->ID()->getText(), maxOffset}).second == true)
+    {
+      this->maxOffset += 1;
+    }
+    else
+    {
+      printAlreadyDeclaredError(context->ID()->getText(), context->start->getLine());
+      this->correctCode = false;
+    };
+
+    int exprOffset = visit(context->assignment());
 
     // Checks if the expr is effectively in the symbolTable (see visitVarExpr)
     // Then, checks if the expr is affected, if not, prints a warning in the error output.
@@ -150,7 +218,7 @@ public:
     return 0;
   }
 
-  antlrcpp::Any visitDeclarationInitialisee64(ifccParser::DeclarationInitialisee64Context *context)
+  antlrcpp::Any visitDeclarationInitialisee64Expr(ifccParser::DeclarationInitialisee64ExprContext *context)
   {
     int currentOffset = maxOffset;
 
@@ -184,7 +252,41 @@ public:
     return 0;
   }
 
-  antlrcpp::Any visitAffectation(ifccParser::AffectationContext *context)
+  antlrcpp::Any visitDeclarationInitialisee64Assign(ifccParser::DeclarationInitialisee64AssignContext *context)
+  {
+    int currentOffset = maxOffset;
+
+    // Checks if the variable has indeed been added to the symbolTable.
+    // If not, it means that that variable name is already declared.
+    if (symbolTable.insert({context->ID()->getText(), maxOffset}).second == true)
+    {
+      this->maxOffset += 8;
+    }
+    else
+    {
+      printAlreadyDeclaredError(context->ID()->getText(), context->start->getLine());
+      this->correctCode = false;
+    };
+
+    int exprOffset = visit(context->assignment());
+
+    // Checks if the expr is effectively in the symbolTable (see visitVarExpr)
+    // Then, checks if the expr is affected, if not, prints a warning in the error output.
+    if (exprOffset != -1)
+    {
+      if (affectedOffsets.count(exprOffset) == 1)
+      {
+        this->affectedOffsets.insert(currentOffset);
+      }
+      else
+      {
+        printUnitializedWarning(findVariableNameFromOffset(exprOffset), context->start->getLine());
+      }
+    }
+    return 0;
+  }
+
+  antlrcpp::Any visitAssignmentExpr(ifccParser::AssignmentExprContext *context)
   {
     // Checks if the variable is declared in the symbolTable, if not prints an error to the output error.
     // Then, checks if the expr is affected, if not, prints a warning in the error output.
@@ -192,6 +294,34 @@ public:
     if (this->symbolTable.count(leftVarName) == 1)
     {
       int exprOffset = visit(context->expr());
+      if (exprOffset != -1)
+      {
+        if (affectedOffsets.count(exprOffset) == 1)
+        {
+          this->affectedOffsets.insert(this->symbolTable[leftVarName]);
+        }
+        else
+        {
+          printUnitializedWarning(findVariableNameFromOffset(exprOffset), context->start->getLine());
+        }
+      }
+    }
+    else
+    {
+      printNotDeclaredError(leftVarName, context->start->getLine());
+      this->correctCode = false;
+    }
+    return 0;
+  }
+
+  antlrcpp::Any visitAssignmentChain(ifccParser::AssignmentChainContext *context)
+  {
+    // Checks if the variable is declared in the symbolTable, if not prints an error to the output error.
+    // Then, checks if the expr is affected, if not, prints a warning in the error output.
+    std::string leftVarName = context->ID()->getText();
+    if (this->symbolTable.count(leftVarName) == 1)
+    {
+      int exprOffset = visit(context->assignment());
       if (exprOffset != -1)
       {
         if (affectedOffsets.count(exprOffset) == 1)
