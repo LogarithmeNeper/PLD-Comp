@@ -40,3 +40,9 @@ Les tests sont dans le sous-dossier `tests`.
 
 ### If
 
+`6-16_multi_return.c` : S'il y a un return dans le bloc if et un autre dans le bloc else, notre compilateur génère autant de main dans l'assembleur qu'il n'y a de return.
+`6-18_if_nested_in_else.c` : L'imbrication des if n'est pas implémentée dans notre compilateur.
+`6-20_three_if_all_false.c` : Idem.
+`6-21_variable_reach.c` : Si une variable est déclarée dans un bloc if, notre compilateur permet de l'utiliser en dehors de la portée du if.
+`6-23_condition_without_operator.c` : Notre compilateur ne permet de tester que des expressions contenant un opérateur logique, et pas d'expressions de type `if(2)`.
+`6-24_false_condition_without_operator.c` : Idem.
