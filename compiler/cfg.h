@@ -59,7 +59,6 @@ class CFG {
 	map <string, int>* symbolTable; /**< part of the symbol table  */
 
  protected:
-	map <string, int>* symbolTable; /**< part of the symbol table  */
 	map <string, string>* typeTable;
 	int nextFreeSymbolIndex; /**< to allocate new symbols in the symbol table */
 	int nextBBnumber; /**< just for naming */

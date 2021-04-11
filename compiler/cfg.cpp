@@ -10,6 +10,7 @@ CFG::CFG(Program* program, string name, int nbArguments)
     this->name = name;
     this->nbArguments = nbArguments;
     this->typeTable = new map<string,string>();
+    this->maxOffset = 0;
 }
 CFG::~CFG() {
     delete symbolTable;
@@ -50,7 +51,7 @@ void CFG::gen_asm_prologue(ostream & o)
 
         case 2:
         o << "\tmovl %edi, -4(%rbp) \n";
-        o << "\tmovel %esi, -8(%rbp) \n";
+        o << "\tmovl %esi, -8(%rbp) \n";
         break;
 
         default:

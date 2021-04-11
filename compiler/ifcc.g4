@@ -47,7 +47,7 @@ expr : '(' expr ')' #parExpr
       | CONST #constExpr
       | ID #varExpr
       | CONSTCHAR #constCharExpr
-      | ID '(' expr* ')' #FunctionCallSeul
+      | ID '(' (expr ','?)* ')' #FunctionCallSeul
       ; 
 
 ret : RETURN expr;

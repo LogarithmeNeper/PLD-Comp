@@ -10,6 +10,7 @@
 #include "antlr4-runtime.h"
 #include "antlr4-generated/ifccBaseVisitor.h"
 #include "cfg.h"
+#include "program.h"
 
 /**
  * This class provides an empty implementation of ifccVisitor, which can be
@@ -21,6 +22,7 @@ class PreVisitor : public ifccBaseVisitor
 public:
   antlrcpp::Any visitProg(ifccParser::ProgContext *context)
   {
+    this->program = new Program();
     visitChildren(context);
     return 0;
   }
@@ -30,12 +32,12 @@ public:
     
     std::string functionName = ctx->ID(0)->getText();
     int nbArguments = ctx->ID().size()-1;
-    this->cfgs.push_back(new CFG(nullptr, functionName, nbArguments));
+    this->program->cfgs.push_back(new CFG(this->program, functionName, nbArguments));
     for(int i = 1; i <= nbArguments; i++ )
     {
-      if (this->cfgs.back()->symbolTable->insert({ctx->ID(i)->getText(), this->cfgs.back()->maxOffset}).second == true)
+      if (this->program->cfgs.back()->symbolTable->insert({ctx->ID(i)->getText(), this->program->cfgs.back()->maxOffset}).second == true)
       {
-        this->cfgs.back()->maxOffset += 4;
+        this->program->cfgs.back()->maxOffset += 4;
       }
 
     }
@@ -58,9 +60,9 @@ public:
 
   antlrcpp::Any visitDeclarationSeuleInt(ifccParser::DeclarationSeuleIntContext *context)
   {
-    if (this->cfgs.back()->symbolTable->insert({context->ID()->getText(), this->cfgs.back()->maxOffset}).second == true)
+    if (this->program->cfgs.back()->symbolTable->insert({context->ID()->getText(), this->program->cfgs.back()->maxOffset}).second == true)
     {
-      this->cfgs.back()->maxOffset += 4;
+      this->program->cfgs.back()->maxOffset += 4;
     }
     else
     {
@@ -72,13 +74,13 @@ public:
 
   antlrcpp::Any visitDeclarationInitialiseeInt(ifccParser::DeclarationInitialiseeIntContext *context)
   {
-    int currentOffset = this->cfgs.back()->maxOffset;
+    int currentOffset = this->program->cfgs.back()->maxOffset;
 
     // Checks if the variable has indeed been added to the symbolTable.
     // If not, it means that that variable name is already declared.
-    if (this->cfgs.back()->symbolTable->insert({context->ID()->getText(), this->cfgs.back()->maxOffset}).second == true)
+    if (this->program->cfgs.back()->symbolTable->insert({context->ID()->getText(), this->program->cfgs.back()->maxOffset}).second == true)
     {
-      this->cfgs.back()->maxOffset += 4;
+      this->program->cfgs.back()->maxOffset += 4;
     }
     else
     {
@@ -106,9 +108,9 @@ public:
 
   antlrcpp::Any visitDeclarationSeuleChar(ifccParser::DeclarationSeuleCharContext *context)
   {
-    if (this->cfgs.back()->symbolTable->insert({context->ID()->getText(), this->cfgs.back()->maxOffset}).second == true)
+    if (this->program->cfgs.back()->symbolTable->insert({context->ID()->getText(), this->program->cfgs.back()->maxOffset}).second == true)
     {
-      this->cfgs.back()->maxOffset += 1;
+      this->program->cfgs.back()->maxOffset += 1;
     }
     else
     {
@@ -120,13 +122,13 @@ public:
 
   antlrcpp::Any visitDeclarationInitialiseeChar(ifccParser::DeclarationInitialiseeCharContext *context)
   {
-    int currentOffset = this->cfgs.back()->maxOffset;
+    int currentOffset = this->program->cfgs.back()->maxOffset;
 
     // Checks if the variable has indeed been added to the symbolTable.
     // If not, it means that that variable name is already declared.
-    if (this->cfgs.back()->symbolTable->insert({context->ID()->getText(), this->cfgs.back()->maxOffset}).second == true)
+    if (this->program->cfgs.back()->symbolTable->insert({context->ID()->getText(), this->program->cfgs.back()->maxOffset}).second == true)
     {
-      this->cfgs.back()->maxOffset += 1;
+      this->program->cfgs.back()->maxOffset += 1;
     }
     else
     {
@@ -154,9 +156,9 @@ public:
 
   antlrcpp::Any visitDeclarationSeule64(ifccParser::DeclarationSeule64Context *context)
   {
-    if (this->cfgs.back()->symbolTable->insert({context->ID()->getText(), this->cfgs.back()->maxOffset}).second == true)
+    if (this->program->cfgs.back()->symbolTable->insert({context->ID()->getText(), this->program->cfgs.back()->maxOffset}).second == true)
     {
-      this->cfgs.back()->maxOffset += 8;
+      this->program->cfgs.back()->maxOffset += 8;
     }
     else
     {
@@ -168,13 +170,13 @@ public:
 
   antlrcpp::Any visitDeclarationInitialisee64(ifccParser::DeclarationInitialisee64Context *context)
   {
-    int currentOffset = this->cfgs.back()->maxOffset;
+    int currentOffset = this->program->cfgs.back()->maxOffset;
 
     // Checks if the variable has indeed been added to the symbolTable.
     // If not, it means that that variable name is already declared.
-    if (this->cfgs.back()->symbolTable->insert({context->ID()->getText(), this->cfgs.back()->maxOffset}).second == true)
+    if (this->program->cfgs.back()->symbolTable->insert({context->ID()->getText(), this->program->cfgs.back()->maxOffset}).second == true)
     {
-      this->cfgs.back()->maxOffset += 8;
+      this->program->cfgs.back()->maxOffset += 8;
     }
     else
     {
@@ -205,14 +207,14 @@ public:
     // Checks if the variable is declared in the symbolTable, if not prints an error to the output error.
     // Then, checks if the expr is affected, if not, prints a warning in the error output.
     std::string leftVarName = context->ID()->getText();
-    if (this->cfgs.back()->symbolTable->count(leftVarName) == 1)
+    if (this->program->cfgs.back()->symbolTable->count(leftVarName) == 1)
     {
       int exprOffset = visit(context->expr());
       if (exprOffset != -1)
       {
         if (affectedOffsets.count(exprOffset) == 1)
         {
-          this->affectedOffsets.insert((*(this->cfgs.back()->symbolTable))[leftVarName]);
+          this->affectedOffsets.insert((*(this->program->cfgs.back()->symbolTable))[leftVarName]);
         }
         else
         {
@@ -232,9 +234,9 @@ public:
   {
     // Checks if the Var is declared in the symbolTable.
     // If not, prints an error to the error output.
-    if (this->cfgs.back()->symbolTable->count(context->ID()->getText()) == 1)
+    if (this->program->cfgs.back()->symbolTable->count(context->ID()->getText()) == 1)
     {
-      return (*(this->cfgs.back()->symbolTable))[context->ID()->getText()];
+      return (*(this->program->cfgs.back()->symbolTable))[context->ID()->getText()];
     }
     else
     {
@@ -242,7 +244,7 @@ public:
       this->correctCode = false;
       return -1;
     }
-    return (*(this->cfgs.back()->symbolTable))[context->ID()->getText()]; // returns an int
+    return (*(this->program->cfgs.back()->symbolTable))[context->ID()->getText()]; // returns an int
   }
 
   antlrcpp::Any visitConstExpr(ifccParser::ConstExprContext *context)
@@ -332,33 +334,33 @@ public:
 
   int createTemporaryFromConstant(int val)
   {
-    this->cfgs.back()->maxOffset += 4;
-    this->cfgs.back()->symbolTable->insert({"tmp" + std::to_string( this->cfgs.back()->maxOffset),  this->cfgs.back()->maxOffset});
-    this->affectedOffsets.insert( this->cfgs.back()->maxOffset);
-    return this->cfgs.back()->maxOffset;
+    this->program->cfgs.back()->maxOffset += 4;
+    this->program->cfgs.back()->symbolTable->insert({"tmp" + std::to_string( this->program->cfgs.back()->maxOffset),  this->program->cfgs.back()->maxOffset});
+    this->affectedOffsets.insert(this->program->cfgs.back()->maxOffset);
+    return this->program->cfgs.back()->maxOffset;
   }
 
   int createTemporaryFromConstant(char val)
   {
     val = (int)val;
-    this->cfgs.back()->maxOffset += 1;
-    this->cfgs.back()->symbolTable->insert({"tmp" + std::to_string(this->cfgs.back()->maxOffset), this->cfgs.back()->maxOffset});
-    this->affectedOffsets.insert(this->cfgs.back()->maxOffset);
-    return this->cfgs.back()->maxOffset;
+    this->program->cfgs.back()->maxOffset += 1;
+    this->program->cfgs.back()->symbolTable->insert({"tmp" + std::to_string(this->program->cfgs.back()->maxOffset), this->program->cfgs.back()->maxOffset});
+    this->affectedOffsets.insert(this->program->cfgs.back()->maxOffset);
+    return this->program->cfgs.back()->maxOffset;
   }
 
   int createTemporaryVariable()
   {
 
-    this->cfgs.back()->maxOffset += 4;
-    this->cfgs.back()->symbolTable->insert({"tmp" + std::to_string(this->cfgs.back()->maxOffset), this->cfgs.back()->maxOffset});
-    this->affectedOffsets.insert(this->cfgs.back()->maxOffset);
-    return this->cfgs.back()->maxOffset;
+    this->program->cfgs.back()->maxOffset += 4;
+    this->program->cfgs.back()->symbolTable->insert({"tmp" + std::to_string(this->program->cfgs.back()->maxOffset), this->program->cfgs.back()->maxOffset});
+    this->affectedOffsets.insert(this->program->cfgs.back()->maxOffset);
+    return this->program->cfgs.back()->maxOffset;
   }
 
   std::string findVariableNameFromOffset(int offset)
   {
-    for (auto it = this->cfgs.back()->symbolTable->begin(); it != this->cfgs.back()->symbolTable->end(); ++it)
+    for (auto it = this->program->cfgs.back()->symbolTable->begin(); it != this->program->cfgs.back()->symbolTable->end(); ++it)
     {
       if (it->second == offset)
       {
@@ -391,9 +393,9 @@ void printAlreadyDeclaredError(std::string variableName, int line){
 antlrcpp::Any visitFunctionCallSeul(ifccParser::FunctionCallSeulContext *ctx)
   {
     std::string functionName = ctx->ID()->getText();
-    for(int i = 0; i < this->cfgs.size(); i++)
+    for(int i = 0; i < this->program->cfgs.size(); i++)
     {
-      if(this->cfgs[i]->name == functionName)
+      if(this->program->cfgs[i]->name == functionName)
       {
         return createTemporaryVariable();
       }
@@ -423,4 +425,5 @@ protected:
   std::set<int> affectedOffsets;
   bool correctCode = true;
   std::vector<CFG*> cfgs;
+  Program* program;
 };
