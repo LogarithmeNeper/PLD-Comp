@@ -1,6 +1,7 @@
 // Code adapté de celui fourni ici : https://moodle.insa-lyon.fr/pluginfile.php/98639/mod_resource/content/3/IR.h
 #pragma once
 
+// System includes
 #include <vector>
 #include <string>
 #include <iostream>
@@ -8,11 +9,11 @@
 #include <map>
 #include <list>
 
-//#include "basic_block.h"
-//#include "program.h"
+// Predeclaration
 class BasicBlock;
 class Program;
 
+// Namespace
 using namespace std;
 
 /** The class for the control flow graph, also includes the symbol table */
