@@ -319,7 +319,7 @@ public:
 
   virtual antlrcpp::Any visitFunctionCallSeul(ifccParser::FunctionCallSeulContext *ctx) override
   {
-    int offsetArg = visit(ctx->expr(0));
+    int offsetArg = visit(ctx->expr());
     std::string functionName = ctx->ID()->getText();
     if(functionName == "putchar")
     {
