@@ -55,3 +55,7 @@ Notre compilateur ne gère pas l'ensemble du langage C. Nous avons identifié qu
 - Opérateurs logiques ||, &&, ! non implémentée.
 
  
+## Changement après la présentation
+
+Nous avons modifié notre grammaire pour que les affectations soient gérées en dehors des expressions pour pouvoir vérifier que l'élément à gauche du '=' soit toujours une variable et jamais une expression (a+b=2 est incorrect).
+Nous avons également modifié notre gestion des fonctions. Il est possible d'initialiser une fonction avec plusieurs arguments de type int (ou aucun), en revanche on ne peux appeler que des fonctions à un argument entier. La gestion des fonctions reste limitée est entraine toujours des problèmes de changement de valeurs des arguments.
