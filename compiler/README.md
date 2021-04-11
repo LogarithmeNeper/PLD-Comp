@@ -5,6 +5,8 @@
 - `main.cpp` est le point d'entrée C++ pour appeler le parser généré par antlr4 sur le fichier passé en paramètre dans la ligne de commande.
 - `visitor.h` est le visiteur de l'arbre de parsing qui produit un langage assembleur en sortie.
 - `pre-visitor.h` est un visiteur de l'arbre de parsing qui tente de détecter des problèmes tels que des varibles non déclarées ou non initialisées dans le programme.
+- `cfg.*`  et `basic_block.*` permettent de gérer les basic blocks et la gestion des instructions.
+- Les autres fichiers permettent de gérer individuellement les actions à effectuer selon les instructions utilisées pour écrire l'assembleur du programme.
 
 ## Compilation scripts
 - `Makefile` can be used to compile the parser. Libraries and include directories default to the values that work in the IF machines of rooms 208 and 219.
