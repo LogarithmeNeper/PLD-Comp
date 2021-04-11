@@ -1,20 +1,9 @@
 # C compiler with antlr4/c++
 
-## Instructions
+## Changement après la présentation
 
-This minimal example shows how to build a basic C compiler using Antlr4 for C++. The only file the compiler can deal with is:
-
-```
-int main() {
-   return n;
-}
-```
-where `n` is a positive integer. 
-
-## Changes after the presentation
-
-We change our grammar to read the assignments differently then the expressions in order to be able to force the left side of an equals character to be the identifier of a variable, it can no longer be an expression (like a+b=2).
-
+Nous avons modifié notre grammaire pour que les affectations soient gérées en dehors des expressions pour pouvoir vérifier que l'élément à gauche du '=' soit toujours une variable et jamais une expression (a+b=2 est incorrect).
+Nous avons également modifié notre gestion des fonctions. Il est possible d'initialiser une fonction avec plusieurs arguments de type int (ou aucun), en revanche on ne peux appeler que des fonctions à un argument entier.
 
 ## Source Files
 - `ifcc.g4` contains the grammar in antlr4 format
