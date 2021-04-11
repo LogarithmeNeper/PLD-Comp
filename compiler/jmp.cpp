@@ -1,23 +1,25 @@
 #include "jmp.h"
 
-Jmp::Jmp(const string & _destinationLabel, BasicBlock* bb) : IRInstr("cmp_eq",bb)
+// Constructor of the class
+Jmp::Jmp(const string &_destinationLabel, BasicBlock *bb) : IRInstr("cmp_eq", bb)
 {
-    this->destinationLabel = _destinationLabel;
+  this->destinationLabel = _destinationLabel;
 }
 
-void Jmp::gen_asm(ostream & o) // x86 asm for now
-{       
-        o << "\tjmp "
-          << this->destinationLabel
-          << std::endl;
+// Assembly generation in x86 for the jump
+void Jmp::gen_asm(ostream &o)
+{
+  o << "\tjmp "
+    << this->destinationLabel
+    << std::endl;
 }
 
+// Destructor of the class
 Jmp::~Jmp()
 {
-
 }
 
+// No-params constructor
 Jmp::Jmp()
 {
-
 }
