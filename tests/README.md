@@ -52,3 +52,20 @@ Les tests sont dans le sous-dossier `tests`.
 `7-9_variable_reach.c` : Comme dans le cas du if, les portées de variables ne sont pas gérées correctement.
 `7-11_condition_without_operator.c` : Comme dans le cas du if, notre compilateur ne permet de tester que des expressions contenant un opérateur logique.
 `7-12_false_condition_without_operator.c` : Idem.
+
+### Types
+
+`8-9_declaration_int64_not_in_range.c` : Notre compilateur n'accepte pas les affectations d'int64 hors du range d'un int64.
+`8-11_soust_int64.c` : Notre compilateur ne gère pas les expressions pour les types autres que int.
+`8-13_mult_int64.c` : Idem.
+`8-20_function_type_char.c` : Notre compilateur n'accepte que des fonctions de type int.
+`8-21_funtion_type_int64.c` : Idem.
+`8-22_function_with_whar_param.c` : Notre compilateur n'accepte que des fonctions avec des paramètres de type int.
+`8-23_function_with_int64_param.c` : Idem.
+`8-24_wrong_type_param.c` : Notre compilateur n'accepte pas le passage d'un char en paramètre d'une fonction demandant un int.
+`8-27_compare_chars.c` : Notre compilateur ne gère pas les comparaisons entre types autres que int.
+`8-29_equal_int_and_char.c` : Idem
+
+### Syntaxe
+
+Tous les tests passent.
