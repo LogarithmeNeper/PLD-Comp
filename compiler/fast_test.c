@@ -1,6 +1,5 @@
-int main() {
-    putchar('a');
-    putchar('b');
-    main();
-    return 0;
+int main(){
+    int a = 1, b = 2, c = 3;
+    a = b = c;
+    return a;
 }
