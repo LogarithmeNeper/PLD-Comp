@@ -81,7 +81,7 @@ public:
     return 0;
   }
 
-  // Method for an initialized declaration of an integer
+  // Method for an initialized declaration of an integer with an expression
   antlrcpp::Any visitDeclarationInitialiseeIntExpr(ifccParser::DeclarationInitialiseeIntExprContext *context)
   {
     int currentOffset = maxOffset;
@@ -120,6 +120,7 @@ public:
     return 0;
   }
 
+  // Method for an initialized declaration of an integer in a chain of assignments
   antlrcpp::Any visitDeclarationInitialiseeIntAssign(ifccParser::DeclarationInitialiseeIntAssignContext *context)
   {
     int currentOffset = maxOffset;
@@ -128,18 +129,21 @@ public:
     // If not, it means that that variable name is already declared.
     if (symbolTable.insert({context->ID()->getText(), maxOffset}).second == true)
     {
+      // Updates the current max offset if it worked
       this->maxOffset += 4;
     }
     else
     {
+      // Failed case : print an error with the name of the variable and the line on which the error occured
       printAlreadyDeclaredError(context->ID()->getText(), context->start->getLine());
+      // Code is said to be incorrect
       this->correctCode = false;
     };
 
     int exprOffset = visit(context->assignment());
 
-    // Checks if the expr is effectively in the symbolTable (see visitVarExpr)
-    // Then, checks if the expr is affected, if not, prints a warning in the error output.
+    // Checks if the left side of the child assignment is in the symbolTable.
+    // Checks if the assignment is correctly done (it returns the value assigned), if not, prints a warning in the error output.
     if (exprOffset != -1)
     {
       if (affectedOffsets.count(exprOffset) == 1)
@@ -148,6 +152,7 @@ public:
       }
       else
       {
+        // If we find a unknown variable in the table, then we raise a warning.
         printUnitializedWarning(findVariableNameFromOffset(exprOffset), context->start->getLine());
       }
     }
@@ -177,7 +182,7 @@ public:
     return 0;
   }
 
-  // Method for an initialized declaration of a character
+  // Method for an initialized declaration of a character with an expression
   antlrcpp::Any visitDeclarationInitialiseeCharExpr(ifccParser::DeclarationInitialiseeCharExprContext *context)
   {
     int currentOffset = maxOffset;
@@ -215,6 +220,7 @@ public:
     return 0;
   }
 
+  // Method for an initialized declaration of a character in a chain of assignments
   antlrcpp::Any visitDeclarationInitialiseeCharAssign(ifccParser::DeclarationInitialiseeCharAssignContext *context)
   {
     int currentOffset = maxOffset;
@@ -223,18 +229,20 @@ public:
     // If not, it means that that variable name is already declared.
     if (symbolTable.insert({context->ID()->getText(), maxOffset}).second == true)
     {
+      // Updates if true
       this->maxOffset += 1;
     }
     else
     {
+      // Else, is already declared, we print an error and the code is false
       printAlreadyDeclaredError(context->ID()->getText(), context->start->getLine());
       this->correctCode = false;
     };
 
     int exprOffset = visit(context->assignment());
 
-    // Checks if the expr is effectively in the symbolTable (see visitVarExpr)
-    // Then, checks if the expr is affected, if not, prints a warning in the error output.
+    // Checks if the left side of the child assignment is in the symbolTable.
+    // Checks if the assignment is correctly done (it returns the value assigned), if not, prints a warning in the error output.
     if (exprOffset != -1)
     {
       if (affectedOffsets.count(exprOffset) == 1)
@@ -243,6 +251,7 @@ public:
       }
       else
       {
+        // If we found an unknown variable for the symbol table, then we throw the corresponding exception
         printUnitializedWarning(findVariableNameFromOffset(exprOffset), context->start->getLine());
       }
     }
@@ -272,7 +281,7 @@ public:
     return 0;
   }
 
-  // Method for an initialized declaration of an int 64 variable
+  // Method for an initialized declaration of an int 64 variable with an expression
   antlrcpp::Any visitDeclarationInitialisee64Expr(ifccParser::DeclarationInitialisee64ExprContext *context)
   {
     int currentOffset = maxOffset;
@@ -311,6 +320,7 @@ public:
     return 0;
   }
 
+  // Method for an initialized declaration of an int 64 variable in a chain of assignments
   antlrcpp::Any visitDeclarationInitialisee64Assign(ifccParser::DeclarationInitialisee64AssignContext *context)
   {
     int currentOffset = maxOffset;
@@ -319,18 +329,21 @@ public:
     // If not, it means that that variable name is already declared.
     if (symbolTable.insert({context->ID()->getText(), maxOffset}).second == true)
     {
+      // Updated max offset if it worked
       this->maxOffset += 8;
     }
     else
     {
+      // Otherwise error of redeclaration
       printAlreadyDeclaredError(context->ID()->getText(), context->start->getLine());
+      // code is incorrect
       this->correctCode = false;
     };
 
     int exprOffset = visit(context->assignment());
 
-    // Checks if the expr is effectively in the symbolTable (see visitVarExpr)
-    // Then, checks if the expr is affected, if not, prints a warning in the error output.
+    // Checks if the left side of the child assignment is in the symbolTable.
+    // Checks if the assignment is correctly done (it returns the value assigned), if not, prints a warning in the error output.
     if (exprOffset != -1)
     {
       if (affectedOffsets.count(exprOffset) == 1)
@@ -339,11 +352,16 @@ public:
       }
       else
       {
+        // If we found an uninitialized variable, we throw the corresponding warning with name and line
         printUnitializedWarning(findVariableNameFromOffset(exprOffset), context->start->getLine());
       }
     }
     return 0;
   }
+
+  /*
+  * ASSIGNMENT METHODS
+  */
 
   antlrcpp::Any visitAssignmentExpr(ifccParser::AssignmentExprContext *context)
   {
@@ -377,18 +395,15 @@ public:
     return 0;
   }
 
-  /*
-  * EXPR METHODS
-  */
-
-  // Method for visiting the variable leaf in an expression
   antlrcpp::Any visitAssignmentChain(ifccParser::AssignmentChainContext *context)
   {
     // Checks if the variable is declared in the symbolTable, if not prints an error to the output error.
-    // Then, checks if the expr is affected, if not, prints a warning in the error output.
+    // Then, checks if the assignment is correct, if not, prints a warning in the error output.
     std::string leftVarName = context->ID()->getText();
+    // If there is the variable name in the symbol table
     if (this->symbolTable.count(leftVarName) == 1)
     {
+      // Get the offset of the corresponding assignment
       int exprOffset = visit(context->assignment());
       if (exprOffset != -1)
       {
@@ -398,17 +413,23 @@ public:
         }
         else
         {
+          // If we found an uninitialized variable, we throw the corresponding warning with name and line
           printUnitializedWarning(findVariableNameFromOffset(exprOffset), context->start->getLine());
         }
       }
     }
     else
     {
+      // If the variable was not declared before, then the code is false, and we throw the exception
       printNotDeclaredError(leftVarName, context->start->getLine());
       this->correctCode = false;
     }
     return 0;
   }
+
+  /*
+  * EXPR METHODS
+  */
 
   antlrcpp::Any visitVarExpr(ifccParser::VarExprContext *context)
   {
