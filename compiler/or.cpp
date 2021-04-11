@@ -1,39 +1,39 @@
 #include "or.h"
 
-Or::Or(const int & _offsetLeft, const int & _offsetRight, const int & _offsetDest, BasicBlock* bb) : IRInstr("add",bb)
+// Constructor of the class
+Or::Or(const int &_offsetLeft, const int &_offsetRight, const int &_offsetDest, BasicBlock *bb) : IRInstr("add", bb)
 {
-    this->offsetLeft = _offsetLeft;
-    this->offsetRight = _offsetRight;
-    this->offsetDest = _offsetDest;
-
+  this->offsetLeft = _offsetLeft;
+  this->offsetRight = _offsetRight;
+  this->offsetDest = _offsetDest;
 }
 
-void Or::gen_asm(ostream & o) // x86 asm for now
+// OR assembly generator in x86 ASM
+void Or::gen_asm(ostream &o)
 {
-    o 
+  o
       << "\tmovl -"
       << this->offsetLeft
       << "(%rbp), %eax"
-      << std::endl;
-    o
+      << std::endl; // Moving left variable in eax
+  o
       << "\torl -"
-      << this->offsetRight 
+      << this->offsetRight
       << "(%rbp), %eax"
-      << std::endl;
-    o
-        << "\tmovl %eax, -" 
-        << this->offsetDest
-        << "(%rbp)" 
-        << std::endl;
-
+      << std::endl; // ORL right with eax
+  o
+      << "\tmovl %eax, -"
+      << this->offsetDest
+      << "(%rbp)"
+      << std::endl; // Moving result
 }
 
+// Destructor of the class
 Or::~Or()
 {
-
 }
 
+// No-params constructor
 Or::Or()
 {
-
 }
